@@ -2,46 +2,52 @@
 
 class Movie
 {
-	var $_url;
-	var $_url_short;
-	var $_title;
-	var $_rating;
+	var $_url;        # http://us.imdb.com/title/tt0424205/
+	var $_url_short;  # 0424205
+	var $_title;      # Joyeux Noël (2005) 
+	var $_rating;     # 1-10
   
-	// constructor
+	# constructor
 	function Movie($url, $rating)
 	{
-		$this->_url = trim($url);
+		$this->_url_short = $url;
+		$this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
 		$this->_rating = $rating;
 	}
 
-	// get title
+	# get title
 	function get_title()
 	{
-		# http://us.imdb.com/title/tt0424205/
-		if (preg_match("/^http:\/\/(us\.|uk\.|akas\.){0,1}imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $url_matches))
-		{
-			$this->_url_short = $url_matches[2];
-			$req = new HTTPRequest($this->_url);
-			$imdb = $req->DownloadToString();
+		$req = new HTTPRequest($this->_url);
+		$imdb = $req->DownloadToString();
+		preg_match("/<title>(.+)<\/title>/i", $imdb, $title_matches);
+		$this->_title = $title_matches[1];
 
-			preg_match("/<title>(.+)<\/title>/i", $imdb, $title_matches);
-			$this->_title = $title_matches[1];
+		if ($this->_title == "")
+		{
+			$msg = '<p class="error">Error while retrieving the title of the movie.</p>';
+			return $msg;
 		}
+		else return '';
 	}
 
 	# save to database
 	function save()
 	{
-		if ($this->_title != "")
-		{
-			$link = mysql_connect('localhost', 'root', '');
-			mysql_select_db("wp_movies");
-			mysql_query("INSERT INTO movies (title, imdb_url_short, rating, created_on, updated_on) VALUES ('$this->_title', '$this->_url_short', $this->_rating, NOW(), NOW())");
-		}
+		$link = mysql_connect('localhost', 'root', '');
+		if (!$link) return '<p class="error">Error: could not connect to the database.</p>';
+
+		$db = mysql_select_db("wp_movies");
+		if (!$db) return '<p class="error">Error: could not select the database.</p>';
+
+		$result = mysql_query("INSERT INTO movies (title, imdb_url_short, rating, created_on, updated_on) VALUES ('$this->_title', '$this->_url_short', $this->_rating, NOW(), NOW())");
+		if (!$result) return '<p class="error">Error: could not add record to the database.</p>';
+
+		return '<p>' . rawurlencode($this->_title) . ' rated ' . $this->_rating . '/10 saved.';
 	}
 
-	# print on screen
-	function show()
+	# debug information
+	function debug()
 	{
 		?>
 		<p>URL: <a href="<?= $this->_url ?>"><?= $this->_url ?></a></p>

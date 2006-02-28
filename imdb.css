@@ -4,31 +4,28 @@ body {
 }
 
 label {
-	font: bold 11px verdana, sans-serif;
+	font: 12px verdana, sans-serif;
 	display: block;
-	margin: 12px 0 1px 0;
+	margin: 12px 0 2px 0;
 }
 
-p, ul, li {
+div, p, ul, li {
 	margin: 0;
 	padding: 0;
 }
 
 input.text {
-	padding: 3px 4px;
-	font: 14px arial, sans-serif;
-	border: 1px solid #888;
+	padding: 4px 6px;
+	font: bold 13px verdana, sans-serif;
+	border: 1px solid #666;
 	background: #FFFFF5;
-	width: 280px;
+	background: white;
+	width: 300px;
+	color: #222;
 }
 
 input.text:focus {
 	border-color: #800;
-	background-color: #FFD;
-}
-
-input.text:active {
-	border-color: #C00;
 }
 
 .star-rating {
@@ -140,3 +137,18 @@ input.text:active {
 	width: 200px;
 }
 
+#loading {
+	position: absolute;
+	top: 3px;
+	left: 207px;
+}
+
+#message p {
+	font: bold 12px tahoma, sans-serif;
+	color: #070;
+	margin: 12px 0 0 1px;
+}
+
+#message p.error {
+	color: #A11;
+}
