@@ -1,9 +1,10 @@
 <?php
 
+# Get title of the movie and save its rating in the database
 if (isset($_POST["url"]) && isset($_POST["rating"]))
 {
-	require_once("movie.class.php");
 	require_once("httprequest.class.php");
+	require_once("movie.class.php");
 
 	$url = rawurldecode(trim($_POST["url"]));
 	$rating = intval($_POST["rating"]);

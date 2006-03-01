@@ -1,6 +1,7 @@
 
 //var url = 'http://wieprz.oi.pg.gda.pl/pawel/wp_movie_ratings/index.php'
 
+// AJAX activity indicators
 Ajax.Responders.register({
   onCreate: function() {
     if($('loading') && Ajax.activeRequestCount>0)
@@ -12,6 +13,7 @@ Ajax.Responders.register({
   }
 });
 
+// Cross-browser AddEvent function
 function addEvent(obj, evType, fn) { 
 	if (obj.addEventListener) {
 		obj.addEventListener(evType, fn, false); 
@@ -24,11 +26,11 @@ function addEvent(obj, evType, fn) {
 	} 
 }
 
+// attach separate AJAX call to each star
 function add_behaviour() {
 	// get <a href> stars
 	var elements = $A( $('rating').getElementsByTagName('a') )
 	
-	// attach separate AJAX call to each star
 	elements.each( function(node) {
 		node.addEventListener('click', function () {
 			var msg = $('message')
@@ -44,6 +46,7 @@ function add_behaviour() {
 	})
 }
 
+// show AJAX response
 function show_response(originalRequest) {
 	var msg = $('message')
 	msg.innerHTML = unescape(originalRequest.responseText)
@@ -51,4 +54,3 @@ function show_response(originalRequest) {
 }
 
 addEvent(window, 'load', add_behaviour);
-

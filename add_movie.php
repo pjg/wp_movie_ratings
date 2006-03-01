@@ -2,14 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>iMDB movie ratings</title>
-<link rel="stylesheet" type="text/css" media="screen" href="imdb.css" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF8" />
+<link rel="stylesheet" type="text/css" media="screen" href="add_movie.css" />
 <script type="text/javascript" src="prototype.js"></script>
 <script type="text/javascript" src="effects.js"></script>
 <script type="text/javascript" src="add_movie.js"></script>
 </head>
 <body>
 
-<form id="movie_data" method="post">
+<form id="movie_data" action="post">
 
 <p>
 <label for="url">iMDB link:</label>
@@ -18,6 +19,8 @@
 
 <p>
 <label>Movie rating:</label>
+</p>
+
 <ul class="star-rating" id="rating">
 <li><a id="rating1" href="#" title="Rate this movie 1 star out of 10" class="one-star"></a></li>
 <li><a id="rating2" href="#" title="Rate this movie 2 stars out of 10" class="two-stars"></a></li>
@@ -31,7 +34,6 @@
 <li><a id="rating10" href="#" title="Rate this movie 10 stars out of 10" class="ten-stars"></a></li>
 <li><img id="loading" src="loading.gif" alt="Sending request... please wait." style="display: none" /></li>
 </ul>
-</p>
 
 </form>
 
