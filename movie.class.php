@@ -22,6 +22,7 @@ class Movie
 		$this->_watched_on = $watched_on;
 	}
 
+/*
 	# connect to the database
 	function _connect_to_database()
 	{
@@ -37,6 +38,7 @@ class Movie
 		if (!$this->_db) return false;
 		else return true;
 	}
+*/
 
 	# get title from imdb.com
 	function get_title()
@@ -48,7 +50,7 @@ class Movie
 
 		if ($this->_title == "")
 		{
-			$msg = '<p class="error">Error while retrieving the title of the movie.</p>';
+			$msg = '<div class="error"><p><strong>Error while retrieving the title of the movie.</strong></p></div>';
 			return $msg;
 		}
 		else return '';
@@ -57,14 +59,14 @@ class Movie
 	# save movie rating to the database
 	function save()
 	{
-		if (!$this->_connect_to_database()) return '<p class="error">Error: could not connect to the database.</p>';
-		if (!$this->_select_database()) return '<p class="error">Error: could not select the database.</p>';
+		#if (!$this->_connect_to_database()) return '<p class="error">Error: could not connect to the database.</p>';
+		#if (!$this->_select_database()) return '<p class="error">Error: could not select the database.</p>';
 
-		$result = mysql_query("INSERT INTO wp_movies (title, imdb_url_short, rating, created_on, updated_on) VALUES ('$this->_title', '$this->_url_short', $this->_rating, NOW(), NOW())");
-		if (!$result) return '<p class="error">Error: could not add record to the database.</p>';
+		#$result = mysql_query("INSERT INTO wp_movies (title, imdb_url_short, rating, created_on, updated_on) VALUES ('$this->_title', '$this->_url_short', $this->_rating, NOW(), NOW())");
+		#if (!$result) return '<p class="error">Error: could not add record to the database.</p>';
 
 		# str_replace is to drop the 'magic quotes' (they tend to be here)
-		return '<p>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.';
+		return '<div class="updated"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
 	}
 
 	# get latest movies
