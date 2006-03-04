@@ -8,6 +8,9 @@ Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
 */
 
+include_once(dirname(__FILE__) . "/httprequest.class.php");
+include_once(dirname(__FILE__) . "/movie.class.php");
+
 # Plugin installation function
 function wp_movie_ratings_install() {
 	global $table_prefix, $wpdb, $user_level;
@@ -28,7 +31,8 @@ function wp_movie_ratings_install() {
 			rating tinyint(2) unsigned NOT NULL default '0',
 			created_on timestamp NOT NULL default '0000-00-00 00:00:00',
 			updated_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-			PRIMARY KEY (id)
+			PRIMARY KEY (id),
+			UNIQUE KEY (imdb_url_short)
 		);";
 
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
@@ -36,40 +40,39 @@ function wp_movie_ratings_install() {
 	}
 }
 
-
+# Show latest movie ratings
 function wp_movie_ratings_show()
 {
-	#<link rel="stylesheet" type="text/css" media="screen" href="wp_movie_ratings.css" />
+	global $wpdb, $table_prefix;
 
-	# do not display additional quotes in strings from the database
-	#set_magic_quotes_runtime(0);
-
-	#require_once("movie.class.php");
-
-	$link = mysql_connect('localhost', 'root', '');
-	if (!$link) echo '<p class="error">Error: could not connect to the database.</p>';
-
-	$db = mysql_select_db("wp_movies");
-	if (!$db) echo '<p class="error">Error: could not select the database.</p>';
+	# image path
+	$siteurl = get_option("siteurl");
+	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
+	$tmp_array = parse_url($siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/");
+	$img_path = $tmp_array["path"];
 
 	$m = new Movie();
-	$movies = $m->get_latest_movies();
+	$m->set_database($wpdb, $table_prefix);
+	$movies = $m->get_latest_movies(30);
 
-	$i = 0;
+	if (!is_plugin_page())
+	{
+		$css_path = $img_path . basename(__FILE__, ".php") . ".css";
+		echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"$css_path\" />\n";
+	}
 
 	echo "<div id=\"wp_movie_ratings\">\n";
-	echo "<h1>Movies I've watched recently:</h1>\n";
+	echo "<h2>Movies I've watched recently:</h2>\n";
 	echo "<ul>\n";
+	$i = 0; # row alternator
 	foreach($movies as $movie)
 	{
 		echo "<li" . (($i++ % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		$movie->show();
+		$movie->show($img_path);
 		echo "</li>\n";
 	}
 	echo "</ul>\n";
 	echo "</div>\n";
-
-
 }
 
 # Add 'Movies' page to Wordpress' Manage menu
@@ -77,47 +80,30 @@ function wp_movie_ratings_add_management_page() {
     if (function_exists('add_management_page')) {
 		  add_management_page('Movies', 'Movies', 8, basename(__FILE__), 'wp_movie_ratings_management_page');
     }
- }
+}
 
-
+# Manage Movies administration page
 function wp_movie_ratings_management_page() {
-	if (isset($_POST['info_update'])) {
-		# Get title of the movie and save its rating in the database
-		if (isset($_POST["url"]) && isset($_POST["rating"]))
-		{ 
-			#include_once(ABSPATH . 'wp-content/plugins/' . $plugin); 
-			include_once(ABSPATH . 'wp-content/plugins/wp_movie_ratings/' . "httprequest.class.php");
-			include_once(ABSPATH . 'wp-content/plugins/wp_movie_ratings/' . "movie.class.php");
+	global $table_prefix, $wpdb;
 
-			$url = rawurldecode(trim($_POST["url"]));
-			$rating = intval($_POST["rating"]);
-
-			$msg = "";
-
-			if (preg_match("/^http:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $url, $matches))
-			{
-				if (($rating > 0) && ($rating < 11))
-				{
-					$movie = new Movie($matches[2], $rating);
-					$msg = $movie->get_title();
-					
-					if (strlen($msg) < 1) $msg = $movie->save();
-				}
-				else $msg = '<div class="error"><p><strong>Error: wrong rating.</strong></p></div>';
+	# Get title of the movie and save its rating in the database
+	if (isset($_POST["url"]) && isset($_POST["rating"])) { 
+		$movie = new Movie($_POST["url"], $_POST["rating"]);
+		$msg = $movie->parse_parameters();
+		if ($msg == "") {
+			$msg = $movie->get_title();
+			if ($msg == "")	{
+				$movie->set_database($wpdb, $table_prefix);
+				$msg = $movie->save();
 			}
-			else $msg = '<div class="error"><p><strong>Error: wrong imdb link.</strong></p></div>';
-
-			echo rawurldecode($msg);
-
-
-		# div class=updated/error
 		}
+		echo rawurldecode($msg);
 	}
 ?>
 
-<div class=wrap>
+<div class="wrap">
 
-<form method="post">
+<form method="post" action="">
 <h2>Add new movie rating</h2>
 <p>
 <label for="url">iMDB link:</label>
@@ -146,11 +132,12 @@ function wp_movie_ratings_management_page() {
 
 </form>
 
-<h2>Last added movies</h2>
+<? wp_movie_ratings_show() ?>
 
- </div><?php
+</div>
+
+<?php
 }
-
 
 
 # Hook for plugin installation

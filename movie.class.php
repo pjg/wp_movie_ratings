@@ -1,114 +1,108 @@
 <?php
 
-class Movie
-{
+class Movie {
 	var $_url;             # http://us.imdb.com/title/tt0424205/
 	var $_url_short;       # 0424205
 	var $_title;           # Joyeux Noël (2005)
 	var $_rating;          # 10
 	var $_watched_on;      # 2006-03-01 23:15
 
-	var $_link;            # database connection handle
-	var $_db;              # database handle
-	var $_char_limit = 45; # limit on number of characters in the movie's title (so it won't collapse the page)
+	var $_wpdb;            # wordpress database handle
+	var $_table;		   # database table name
+	var $_char_limit = 45; # limit on number of characters in the movie's title when displaying (so it won't collapse the page when)
 
 	# constructor
-	function Movie($url_short=null, $rating=null, $title=null, $watched_on=null)
-	{
-		$this->_url_short = $url_short;
-		$this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
-		$this->_rating = $rating;
+	function Movie($url=null, $rating=null, $title=null, $watched_on=null) {
+		$this->_url = rawurldecode(trim($url));
+		$this->_rating = intval($rating);
 		$this->_title = $title;
 		$this->_watched_on = $watched_on;
 	}
-
-/*
-	# connect to the database
-	function _connect_to_database()
-	{
-		$this->_link = mysql_connect('localhost', 'root', '');
-		if (!$this->_link) return false;
-		else return true;
+	
+	function set_database($wpdb, $table_prefix) {
+		$this->_wpdb = $wpdb;
+		$this->_table = $table_prefix . "movie_ratings";
 	}
 
-	# select database
-	function _select_database()
-	{
-		$this->_db = mysql_select_db("wp_movies");
-		if (!$this->_db) return false;
-		else return true;
+	function parse_parameters() {
+		$msg = "";
+
+		if (preg_match("/^http:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $matches))	{
+			if (($this->_rating > 0) && ($this->_rating < 11)) {
+				$this->_url_short = $matches[2];
+				$this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
+				return "";
+			}
+			else $msg = '<div class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
+		}
+		else $msg = '<div class="error fade"><p><strong>Error: wrong imdb link.</strong></p></div>';
+
+		return $msg;
 	}
-*/
+
 
 	# get title from imdb.com
-	function get_title()
-	{
+	function get_title() {
 		$req = new HTTPRequest($this->_url);
 		$imdb = $req->DownloadToString();
 		preg_match("/<title>(.+)<\/title>/i", $imdb, $title_matches);
 		$this->_title = $title_matches[1];
 
-		if ($this->_title == "")
-		{
-			$msg = '<div class="error"><p><strong>Error while retrieving the title of the movie.</strong></p></div>';
+		if ($this->_title == "") {
+			$msg = '<div class="error fade"><p><strong>Error while retrieving the title of the movie.</strong></p></div>';
 			return $msg;
 		}
-		else return '';
+		else return "";
 	}
 
 	# save movie rating to the database
-	function save()
-	{
-		#if (!$this->_connect_to_database()) return '<p class="error">Error: could not connect to the database.</p>';
-		#if (!$this->_select_database()) return '<p class="error">Error: could not select the database.</p>';
-
-		#$result = mysql_query("INSERT INTO wp_movies (title, imdb_url_short, rating, created_on, updated_on) VALUES ('$this->_title', '$this->_url_short', $this->_rating, NOW(), NOW())");
-		#if (!$result) return '<p class="error">Error: could not add record to the database.</p>';
+	function save() {
+		# insert into db
+		$this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, created_on, updated_on) VALUES ('" . addslashes($this->_title) . "', '$this->_url_short', $this->_rating, NOW(), NOW());");
 
 		# str_replace is to drop the 'magic quotes' (they tend to be here)
-		return '<div class="updated"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
+		return '<div class="updated fade"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
 	}
 
 	# get latest movies
-	function get_latest_movies()
-	{
-		if (!$this->_connect_to_database()) return '<p class="error">Error: could not connect to the database.</p>';
-		if (!$this->_select_database()) return '<p class="error">Error: could not select the database.</p>';
-
+	function get_latest_movies($count) {
 		$movies = array();
+		$results = $this->_wpdb->get_results("SELECT title, imdb_url_short, rating, DATE_FORMAT(created_on, '%Y-%m-%d %H:%i') AS watched_on FROM $this->_table ORDER BY id DESC LIMIT " . intval($count));
 
-		$result = mysql_query("SELECT title, imdb_url_short, rating, DATE_FORMAT(created_on, '%Y-%m-%d %H:%i') AS watched_on FROM wp_movies ORDER BY id DESC LIMIT 7");
-		if (!$result) return $movies;
-		
-		while ($row = mysql_fetch_array($result))
-		{
-			$movie = new Movie($row["imdb_url_short"], $row["rating"], $row["title"], $row["watched_on"]);
-			array_push($movies, $movie);
+		if ($results) {
+			foreach ($results as $r) {
+				$movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, $r->title, $r->watched_on);
+				array_push($movies, $movie);
+			}
 		}
+	
 		return $movies;
 	}
 	
 	# show movie
-	function show()
-	{
-		# shorten the title
-		if (strlen($this->_title) <= $this->_char_limit) $title_short = $this->_title;
-		else
+	function show($img_path) {
+		if (!is_plugin_page())
 		{
-			# cut at limit
-			$title_short = substr($this->_title, 0, $this->_char_limit);
-			# find last space char: " "
-			$last_space_position = strrpos($title_short, " ");
-			# cut at last space
-			$title_short = substr($title_short, 0, $last_space_position) . "...";
+			# shorten the title
+			if (strlen($this->_title) <= $this->_char_limit) $title_short = $this->_title;
+			else {
+				# cut at limit
+				$title_short = substr($this->_title, 0, $this->_char_limit);
+				
+				# find last space char: " "
+				$last_space_position = strrpos($title_short, " ");
+				
+				# cut at last space
+				$title_short = substr($title_short, 0, $last_space_position) . "...";
+			}
 		}
+		else $title_short = $this->_title;
 
 		?><a href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched on <?= $this->_watched_on ?>"><?= $title_short ?></a><? echo "\n";
-		
-		for($i=1; $i<11; $i++)
-		{
-			if ($this->_rating >= $i) { ?><img src="full_star.gif" alt="Full star gives one rating point" /><? echo "\n"; }
-			else { ?><img src="empty_star.gif" alt="Empty star gives no rating points" /><? echo "\n"; }
+
+		for ($i=1; $i<11; $i++) {
+			if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="Full star gives one rating point" /><? echo "\n"; }
+			else { ?><img src="<?= $img_path ?>/empty_star.gif" alt="Empty star gives no rating points" /><? echo "\n"; }
 		}
 	}
 }

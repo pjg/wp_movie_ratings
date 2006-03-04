@@ -4,14 +4,14 @@
 // AJAX activity indicators
 Ajax.Responders.register({
   onCreate: function() {
-    if($('loading') && Ajax.activeRequestCount>0)
-      Effect.Appear('loading',{duration:0.4,queue:'end'});
+    if($('loading') && Ajax.activeRequestCount > 0)
+      Effect.Appear('loading', {duration: 0.4, queue: 'end'})
   },
   onComplete: function() {
-    if($('loading') && Ajax.activeRequestCount==0)
-      Effect.Fade('loading',{duration:0.4,queue:'end'});
+    if($('loading') && Ajax.activeRequestCount == 0)
+      Effect.Fade('loading', {duration: 0.4, queue: 'end'})
   }
-});
+})
 
 // Cross-browser AddEvent function
 function addEvent(obj, evType, fn) { 
@@ -37,7 +37,7 @@ function add_behaviour() {
 			if ($F('url').match(/^http:\/\/(us\.|uk\.|akas\.){0,1}imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i)) {
 				msg.style.display = 'none'
 				var pars = 'rating=' + this.id.substr(6) + '&url=' + escape($F('url'))
-				var myAjax = new Ajax.Request('index.php', { method: 'post', parameters: pars, onComplete: show_response })
+				var myAjax = new Ajax.Request('../../../wp-admin/edit.php?page=wp_movie_ratings.php', { method: 'post', parameters: pars, onComplete: show_response })
 			} else {
 				msg.innerHTML = '<p class="error">Error: wrong imdb link.</p>'
 				msg.style.display = 'block'
