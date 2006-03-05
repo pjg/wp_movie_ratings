@@ -57,8 +57,11 @@ class Movie {
 
 	# save movie rating to the database
 	function save() {
+		# 2006-03-05 01:03:44
+		$created_on = date("Y-m-d H:i:s");
+
 		# insert into db
-		$this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, created_on, updated_on) VALUES ('" . addslashes($this->_title) . "', '$this->_url_short', $this->_rating, NOW(), NOW());");
+		$this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, created_on) VALUES ('" . addslashes($this->_title) . "', '$this->_url_short', $this->_rating, $created_on);");
 
 		# str_replace is to drop the 'magic quotes' (they tend to be here)
 		return '<div class="updated fade"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';

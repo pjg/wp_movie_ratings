@@ -30,7 +30,6 @@ function wp_movie_ratings_install() {
 			imdb_url_short varchar(10) NOT NULL default '',
 			rating tinyint(2) unsigned NOT NULL default '0',
 			created_on timestamp NOT NULL default '0000-00-00 00:00:00',
-			updated_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			UNIQUE KEY (imdb_url_short)
 		);";
