@@ -5,27 +5,40 @@ body {
 
 label {
 	font: 12px verdana, sans-serif;
+
+	font: bold 14px arial, serif;
+	letter-spacing: 0;
+
 	display: block;
 	margin: 12px 0 2px 0;
 }
 
-div, p, ul, li {
+div, p, ul, li, h1 {
 	margin: 0;
 	padding: 0;
 }
 
-input.text {
+h1 {
+	font: bold 24px arial, serif;
+	letter-spacing: -2px;
+}
+
+input.text, textarea {
 	padding: 4px 6px;
-	font: bold 13px verdana, sans-serif;
+	font: 13px verdana, sans-serif;
 	border: 1px solid #666;
-	background: #FFFFF5;
-	background: white;
-	width: 300px;
+	background: #F9F9F5;
+	width: 400px;
 	color: #222;
 }
 
-input.text:focus {
+input.text:focus, textarea:focus {
 	border-color: #800;
+	background: white;
+}
+
+textarea {
+	height: 50px;
 }
 
 .star-rating {
@@ -83,7 +96,7 @@ input.text:focus {
 
 .star-rating a.four-stars {
 	left: 60px;
-}	
+}
 
 .star-rating a.four-stars:hover {
 	width: 80px;
@@ -143,12 +156,19 @@ input.text:focus {
 	left: 207px;
 }
 
-#message p {
-	font: bold 12px tahoma, sans-serif;
-	color: #070;
-	margin: 12px 0 0 1px;
+div.updated, div.error {
+	font: 12px tahoma, sans-serif;
+	margin-top: 16px;
+	padding: 6px 9px;
+	width: 394px;
 }
 
-#message p.error {
-	color: #A11;
+div.updated {
+	background: #CFEBF7;
+	border: 1px solid #2580B2;
+}
+
+div.error {
+	background: #FFEFF7;
+	border: 1px solid #CC6699;
 }

@@ -3,7 +3,7 @@
 Plugin Name: Movie ratings
 Version: 1.0.0
 Plugin URI: http://paulgoscicki.com/
-Description: Rate movies that you've seen recently and display short list of those movies on your blog (kottke.org style). iMDB used to automatically fetch movie titles.
+Description: Rate movies that you've seen recently and display short list of those movies on your blog (kottke.org style). Internet Movie Database (imdb.com) used to automatically fetch movie titles.
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
 */
@@ -139,7 +139,17 @@ function wp_movie_ratings_management_page() {
 
 </form>
 
+
 <? wp_movie_ratings_show() ?>
+
+
+<h2>Firefox bookmarklet</h1>
+<p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress' administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work.</p>
+
+<p><a href="javascript:(function(){open('https://192.168.16.121:32124/wordpress/wp-content/plugins/wp_movie_ratings/add_movie.html','<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=325')})()">Add movie rating bookmarklet</a></p>
+
+<p><a href="javascript:(function(){open('http://del.icio.us/paulgoscicki?v=3&noui=yes&jump=close&url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title),'delicious','toolbar=no,width=700,height=250')})()">Original del.icio.us bookmarklet</a></p>
+
 
 </div>
 

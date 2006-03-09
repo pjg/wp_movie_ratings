@@ -35,9 +35,9 @@ class Movie {
 				$this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
 				return "";
 			}
-			else $msg = '<div class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
+			else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
 		}
-		else $msg = '<div class="error fade"><p><strong>Error: wrong imdb link.</strong></p></div>';
+		else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong imdb link.</strong></p></div>';
 
 		return $msg;
 	}
@@ -51,7 +51,7 @@ class Movie {
 		$this->_title = $title_matches[1];
 
 		if ($this->_title == "") {
-			$msg = '<div class="error fade"><p><strong>Error while retrieving the title of the movie.</strong></p></div>';
+			$msg = '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie.</strong></p></div>';
 			return $msg;
 		}
 		else return "";
@@ -68,10 +68,26 @@ class Movie {
 		$watched_on = gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * $gmt_offset));
 
 		# insert into db
+		$this->_wpdb->hide_errors();
 		$this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('" . addslashes($this->_title) . "', '$this->_url_short', $this->_rating, '$this->_review', '$watched_on');");
 
-		# str_replace is to drop the 'magic quotes' (they tend to be here)
-		return '<div class="updated fade"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
+		$this->_wpdb->show_errors();
+
+		if ($this->_wpdb->rows_affected == 1)
+		{
+			# str_replace is to drop the 'magic quotes' (they tend to be here)
+			return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
+		}
+		else
+		{
+			$mysql_error = mysql_error();
+			$msg = "";
+
+			if (strpos($mysql_error, "Duplicate entry") === false) $msg = ' not added. ' . $mysql_error;
+			else $msg = ' is already rated';
+
+			return '<div id="message" class="error fade"><p><strong>Error: ' . rawurlencode(str_replace("''", "'", $this->_title)) . $msg . '.</strong></p></div>';
+		}
 	}
 
 	# get latest movies
@@ -115,7 +131,7 @@ class Movie {
 			else { ?><img src="<?= $img_path ?>/empty_star.gif" alt="Empty star gives no rating points" /><? echo "\n"; }
 		}
 
-		if ($with_review) echo "<p>" . $this->_review . "</p>\n";
+		if (($with_review) && ($this->_review != "")) echo "<p>" . $this->_review . "</p>\n";
 	}
 }
 

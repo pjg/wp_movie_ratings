@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>iMDB movie ratings</title>
+<title>Wodpress' movie ratings</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8" />
 <link rel="stylesheet" type="text/css" media="screen" href="add_movie.css" />
 <script type="text/javascript" src="prototype.js"></script>
@@ -12,15 +12,22 @@
 
 <form id="movie_data" method="post" action="">
 
+<h1>Add new movie rating:</h1>
+
 <p>
-<label for="url">iMDB link:</label>
+<label for="url">imdb link:</label>
 <input type="text" name="url" id="url" class="text" />
+</p>
+
+<p>
+<label for="review">Short review:</label>
+<textarea name="review" id="review">
+</textarea>
 </p>
 
 <p>
 <label>Movie rating:</label>
 </p>
-
 <ul class="star-rating" id="rating">
 <li><a id="rating1" href="#" title="Rate this movie 1 star out of 10" class="one-star"></a></li>
 <li><a id="rating2" href="#" title="Rate this movie 2 stars out of 10" class="two-stars"></a></li>
@@ -39,5 +46,7 @@
 
 <div id="message" style="display: none"></div>
 
+
 </body>
+
 </html>
