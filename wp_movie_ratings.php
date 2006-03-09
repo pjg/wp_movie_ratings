@@ -29,12 +29,14 @@ function wp_movie_ratings_install() {
 			title varchar(255) NOT NULL default '',
 			imdb_url_short varchar(10) NOT NULL default '',
 			rating tinyint(2) unsigned NOT NULL default '0',
-			created_on timestamp NOT NULL default '0000-00-00 00:00:00',
+			review text,
+			watched_on datetime NOT NULL default '0000-00-00 00:00:00',
 			PRIMARY KEY (id),
 			UNIQUE KEY (imdb_url_short)
 		);";
 
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+
 		dbDelta($sql);
 	}
 }
@@ -67,7 +69,7 @@ function wp_movie_ratings_show()
 	foreach($movies as $movie)
 	{
 		echo "<li" . (($i++ % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		$movie->show($img_path);
+		$movie->show($img_path, true);
 		echo "</li>\n";
 	}
 	echo "</ul>\n";
@@ -86,8 +88,9 @@ function wp_movie_ratings_management_page() {
 	global $table_prefix, $wpdb;
 
 	# Get title of the movie and save its rating in the database
-	if (isset($_POST["url"]) && isset($_POST["rating"])) { 
-		$movie = new Movie($_POST["url"], $_POST["rating"]);
+	if (isset($_POST["url"]) && isset($_POST["rating"])) {
+		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
+		$movie = new Movie($_POST["url"], $_POST["rating"], $review);
 		$msg = $movie->parse_parameters();
 		if ($msg == "") {
 			$msg = $movie->get_title();
@@ -124,7 +127,12 @@ function wp_movie_ratings_management_page() {
 <option value="10">10</option>
 </select>
 </p>
-	 
+
+<p><label for="review">Short review:</label>
+<textarea name="review" id="review" rows="3" cols="45">
+</textarea>
+</p>
+
 <div class="submit" style="text-align: left">
   <input type="submit" name="info_update" value="Add new movie rating &gt;&gt;" />
 </div>
