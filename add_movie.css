@@ -156,9 +156,14 @@ textarea {
 	left: 207px;
 }
 
+p small {
+	color: #999;
+	font: 9px verdana, sans-serif;
+}
+
 div.updated, div.error {
 	font: 12px tahoma, sans-serif;
-	margin-top: 16px;
+	margin-top: 15px;
 	padding: 6px 9px;
 	width: 394px;
 }

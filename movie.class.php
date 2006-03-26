@@ -1,16 +1,16 @@
 <?php
 
 class Movie {
-	var $_url;             # http://us.imdb.com/title/tt0424205/
-	var $_url_short;       # 0424205
-	var $_title;           # Joyeux Noël (2005)
+	var $_url;             # http://imdb.com/title/tt0133093/
+	var $_url_short;       # 0133093
+	var $_title;           # The Matrix (1999)
 	var $_rating;          # 10
-	var $_review;          # Masterpiece.
+	var $_review;          # Truly a masterpiece.
 	var $_watched_on;      # 2006-03-01 23:15
 
 	var $_wpdb;            # wordpress database handle
 	var $_table;		   # database table name
-	var $_char_limit = 45; # limit on number of characters in the movie's title when displaying (so it won't collapse the page when)
+	var $_char_limit = 44; # limit on number of characters in the movie's title when displaying (so it won't collapse)
 
 	# constructor
 	function Movie($url=null, $rating=null, $review=null, $title=null, $watched_on=null) {
@@ -25,7 +25,7 @@ class Movie {
 		$this->_wpdb = $wpdb;
 		$this->_table = $table_prefix . "movie_ratings";
 	}
-
+	
 	function parse_parameters() {
 		$msg = "";
 
@@ -73,13 +73,10 @@ class Movie {
 
 		$this->_wpdb->show_errors();
 
-		if ($this->_wpdb->rows_affected == 1)
-		{
+		if ($this->_wpdb->rows_affected == 1) {
 			# str_replace is to drop the 'magic quotes' (they tend to be here)
 			return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
-		}
-		else
-		{
+		} else {
 			$mysql_error = mysql_error();
 			$msg = "";
 
@@ -105,10 +102,23 @@ class Movie {
 		return $movies;
 	}
 
+	# get total number of watched/rated movies
+	function get_watched_movies_count($range) {
+		switch ($range) {
+			case "month" : $condition = "WHERE MONTH(watched_on)=" . date("n");
+			               break;
+			case "year"  : $condition = "WHERE YEAR(watched_on)=" . date("Y");
+			               break;
+			default      : $condition = "";
+			               break;
+		}
+
+		return $this->_wpdb->get_var("SELECT COUNT(id) AS count FROM $this->_table " . $condition);
+	}
+
 	# show movie
 	function show($img_path, $with_review=false) {
-		if (!is_plugin_page())
-		{
+		if (!is_plugin_page()) {
 			# shorten the title
 			if (strlen($this->_title) <= $this->_char_limit) $title_short = $this->_title;
 			else {
@@ -121,17 +131,24 @@ class Movie {
 				# cut at last space
 				$title_short = substr($title_short, 0, $last_space_position) . "...";
 			}
-		}
-		else $title_short = $this->_title;
+		} else $title_short = $this->_title;
 
-		?><a href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched on <?= $this->_watched_on ?>"><?= $title_short ?></a><? echo "\n";
 
+		?><p><a href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched on <?= $this->_watched_on ?>"><?= $title_short ?></a></p><? echo "\n";
+
+		echo "<div class=\"rating_stars\">\n";
+
+		# Reverse Polish notation (because of the floats)
 		for ($i=1; $i<11; $i++) {
-			if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="Full star gives one rating point" /><? echo "\n"; }
-			else { ?><img src="<?= $img_path ?>/empty_star.gif" alt="Empty star gives no rating points" /><? echo "\n"; }
+			if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
+			else { ?><img src="<?= $img_path ?>/empty_star.gif" alt="" /><? echo "\n"; }
 		}
+		echo "</div>\n";
 
-		if (($with_review) && ($this->_review != "")) echo "<p>" . $this->_review . "</p>\n";
+
+		#echo "</p>\n";
+
+		if (($with_review) && ($this->_review != "")) echo "<p class=\"review\">" . $this->_review . "</p>\n";
 	}
 }
 

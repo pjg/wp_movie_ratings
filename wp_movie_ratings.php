@@ -42,7 +42,7 @@ function wp_movie_ratings_install() {
 }
 
 # Show latest movie ratings
-function wp_movie_ratings_show()
+function wp_movie_ratings_show($count)
 {
 	global $wpdb, $table_prefix;
 
@@ -54,8 +54,10 @@ function wp_movie_ratings_show()
 
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
-	$movies = $m->get_latest_movies(30);
 
+	if (is_plugin_page()) $movies = $m->get_latest_movies(intval($count));
+	else $movies = $m->get_latest_movies(intval($count));
+	
 	if (!is_plugin_page())
 	{
 		$css_path = $img_path . basename(__FILE__, ".php") . ".css";
@@ -140,16 +142,29 @@ function wp_movie_ratings_management_page() {
 </form>
 
 
-<? wp_movie_ratings_show() ?>
+<? wp_movie_ratings_show(10) ?>
+
+<?php
+	$m = new Movie();
+	$m->set_database($wpdb, $table_prefix);
+?>
+
+<h2>Statistics</h2>
+<p>Total number of watched movies: <strong><? echo $m->get_watched_movies_count("all"); ?></strong></p>
+<p>This month: <strong><? echo $m->get_watched_movies_count("month"); ?></strong></p>
+<p>This year: <strong><? echo $m->get_watched_movies_count("year"); ?></strong></p>
 
 
 <h2>Firefox bookmarklet</h1>
 <p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress' administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work.</p>
 
-<p><a href="javascript:(function(){open('https://192.168.16.121:32124/wordpress/wp-content/plugins/wp_movie_ratings/add_movie.html','<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=325')})()">Add movie rating bookmarklet</a></p>
 
-<p><a href="javascript:(function(){open('http://del.icio.us/paulgoscicki?v=3&noui=yes&jump=close&url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title),'delicious','toolbar=no,width=700,height=250')})()">Original del.icio.us bookmarklet</a></p>
-
+<?php
+	$siteurl = get_option("siteurl");
+	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
+	$pluginurl = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
+?>
+<p><a href="javascript:(function(){open('<?= $pluginurl ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating">Add movie rating</a></p>
 
 </div>
 

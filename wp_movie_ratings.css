@@ -1,44 +1,59 @@
-body {
-	background: white;
-}
-
-
-
-
 #wp_movie_ratings {
-	width: 500px;
+	border: 1px dotted #888;
+	border-width: 1px 0;
+	width: 100%;
+	padding: 6px 0;
+	margin: -16px 0 -12px;
 }
 
-#wp_movie_ratings h1 {
-	border-top: 1px dotted #888;
-	margin: 5px 0 0;
-	padding: 0;
-	padding-top: 8px;
-	font: bold 12px verdana, sans-serif;
+#wp_movie_ratings h2 {
+	margin: 2px 0 8px;
+	font: bold 11px verdana, sans-serif;
 }
 
 #wp_movie_ratings ul {
-	margin: 0;
-	padding: 8px 12px 10px;
-	border-bottom: 1px dotted #888;
+	margin: 6px 8px 3px 4px;
+	padding: 0;
 }
 
 #wp_movie_ratings ul li {
 	list-style: none;
-	padding: 3px 7px;
-	background-color: #F5F5F5;
+	padding: 2px 0 2px 4px;
+	background-color: #F2FDFB;
+	position: relative;
 }
 
 #wp_movie_ratings ul li.odd {
-	background-color: #F5FFF5;
+	background-color: #FDFDF2;
 }
 
-#wp_movie_ratings ul li img {
-	margin-left: -2px;
+#wp_movie_ratings ul li:hover {
+	background-color: #E7FDE7;
 }
 
-#wp_movie_ratings ul li a {
-	display: block;
-	float: left;
-	width: 330px;
+#wp_movie_ratings ul li p {
+	margin: 0;
+	padding: 0;
+	text-align: left;
+}
+
+#wp_movie_ratings ul li p a {
+	font: 10px verdana, sans-serif;
+}
+
+#wp_movie_ratings ul li div.rating_stars {
+	position: absolute;
+	top: 1px;
+	right: 5px;
+	font-size: 8px;
+}
+
+#wp_movie_ratings ul li p.review {
+	font: 9px arial, sans-serif;
+	color: #999;
+	margin: 2px 60px 1px 12px;
+}
+
+#wp_movie_ratings ul li p.review a {
+	font: 9px arial, sans-serif;
 }
