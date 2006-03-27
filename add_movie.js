@@ -26,10 +26,6 @@ function addEvent(obj, evType, fn) {
 
 // Attach separate AJAX call to each star
 function add_behaviour() {
-	
-	// focus
-	if (window.focus) window.focus()
-
 	// get <a href> stars
 	var elements = $A( $('rating').getElementsByTagName('a') )
 
@@ -50,10 +46,24 @@ function add_behaviour() {
 	})
 }
 
+function initial_focus() {
+	// focus window
+	if (window.focus) window.focus()
+
+	// focus input -> review, if we have imdb link already, or url in another case
+	var url = $('url')
+	var review = $('review')
+
+	if (url.value.match(/imdb\.com/)) review.focus()
+	else url.focus()
+}
+
 // Parse url and paste it into <input type="text" name="url"> if it's imdb.com page
 function parse_uri() {
+	// No url, nothing to parse
 	if (location.href.indexOf('?url=') == -1) return
-	
+
+	// Parse and set as url if it is imdb movie page
 	var url = unescape(location.href.substring(location.href.indexOf('?url=') + 5))
 	if (url.match(/^http:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i)) {
 		$('url').value = url
@@ -70,7 +80,7 @@ function show_response(originalRequest) {
 	if (matches.length == 3) {
 		message.setAttribute('class', matches[1])
 		message.innerHTML = matches[2]
-	
+
 		// Close the pop-up window on successful update
 		if (matches[1] == 'updated fade') window.close()
 	}
@@ -86,3 +96,4 @@ function show_response(originalRequest) {
 // Add onLoad events
 addEvent(window, 'load', add_behaviour)
 addEvent(window, 'load', parse_uri)
+addEvent(window, 'load', initial_focus)

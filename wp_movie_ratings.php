@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Movie ratings
+Plugin Name: Wordpress movie ratings
 Version: 1.0.0
 Plugin URI: http://paulgoscicki.com/
-Description: Rate movies that you've seen recently and display short list of those movies on your blog (kottke.org style). Internet Movie Database (imdb.com) used to automatically fetch movie titles.
+Description: Rate movies that you've seen recently and display short list of those movies on your blog (kottke.org style). Internet Movie Database (imdb.com) used to automatically fetch movie titles. 1-click movie rating using firefox bookmarklet on imdb page.
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
 */

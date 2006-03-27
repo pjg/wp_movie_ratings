@@ -7,8 +7,8 @@
 }
 
 #wp_movie_ratings h2 {
-	margin: 2px 0 8px;
-	font: bold 11px verdana, sans-serif;
+	margin: 4px 0 11px;
+	font: bold 12px verdana, sans-serif;
 }
 
 #wp_movie_ratings ul {
@@ -18,7 +18,7 @@
 
 #wp_movie_ratings ul li {
 	list-style: none;
-	padding: 2px 0 2px 4px;
+	padding: 2px 4px 5px 5px;
 	background-color: #F2FDFB;
 	position: relative;
 }
@@ -38,22 +38,22 @@
 }
 
 #wp_movie_ratings ul li p a {
-	font: 10px verdana, sans-serif;
+	font: 11px verdana, sans-serif;
 }
 
 #wp_movie_ratings ul li div.rating_stars {
 	position: absolute;
-	top: 1px;
+	top: 2px;
 	right: 5px;
 	font-size: 8px;
 }
 
 #wp_movie_ratings ul li p.review {
-	font: 9px arial, sans-serif;
-	color: #999;
-	margin: 2px 60px 1px 12px;
+	font: 11px arial, sans-serif;
+	color: #555;
+	margin: 2px 80px 1px 12px;
 }
 
 #wp_movie_ratings ul li p.review a {
-	font: 9px arial, sans-serif;
+	font: 11px arial, sans-serif;
 }
