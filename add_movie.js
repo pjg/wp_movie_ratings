@@ -24,6 +24,16 @@ function addEvent(obj, evType, fn) {
 	}
 }
 
+// Clear query parameters in imdb links (added by imdb.com while searching for titles there)
+function beautify_imdb_uri(url) {
+	var i = url.indexOf('?')
+	if (i > 0) {
+		return url.substring(0, i)
+	} else {
+		return url
+	}
+}
+
 // Attach separate AJAX call to each star
 function add_behaviour() {
 	// get <a href> stars
@@ -32,9 +42,9 @@ function add_behaviour() {
 	elements.each( function(node) {
 		node.addEventListener('click', function () {
 			var message = $('message')
-			if ($F('url').match(/^http:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i)) {
+			if ($F('url').match(/^http:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}.*$/i)) {
 				Effect.Fade('message', {duration: 0.4, queue: 'end'})
-				var pars = 'rating=' + this.id.substr(6) + '&url=' + escape($F('url')) + '&review=' + $F('review')
+				var pars = 'rating=' + this.id.substr(6) + '&url=' + escape(beautify_imdb_uri($F('url'))) + '&review=' + $F('review')
 				var myAjax = new Ajax.Request('../../../wp-admin/edit.php?page=wp_movie_ratings.php', { method: 'post', parameters: pars, onComplete: show_response })
 			} else {
 				message.setAttribute('class', 'error')
@@ -46,6 +56,7 @@ function add_behaviour() {
 	})
 }
 
+// Focus window and appropriate input field
 function initial_focus() {
 	// focus window
 	if (window.focus) window.focus()
@@ -53,7 +64,6 @@ function initial_focus() {
 	// focus input -> review, if we have imdb link already, or url in another case
 	var url = $('url')
 	var review = $('review')
-
 	if (url.value.match(/imdb\.com/)) review.focus()
 	else url.focus()
 }
@@ -65,8 +75,8 @@ function parse_uri() {
 
 	// Parse and set as url if it is imdb movie page
 	var url = unescape(location.href.substring(location.href.indexOf('?url=') + 5))
-	if (url.match(/^http:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i)) {
-		$('url').value = url
+	if (url.match(/^http:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}.*$/i)) {
+		$('url').value = beautify_imdb_uri(url)
 	}
 }
 
@@ -74,23 +84,33 @@ function parse_uri() {
 function show_response(originalRequest) {
 	var message = $('message')
 	var response = unescape(originalRequest.responseText)
- 	var matches = response.match(/<div id="message" class="(.+?)">(.*?)<\/div>/)
+ 	var matches = response.match(/<div id="message" class="(.+?)">(.*?)<\/div>/i)
 
 	// Valid response
 	if (matches.length == 3) {
 		message.setAttribute('class', matches[1])
 		message.innerHTML = matches[2]
-
-		// Close the pop-up window on successful update
-		if (matches[1] == 'updated fade') window.close()
-	}
-	// Unknown error
-	else {
+	} else {
+		// Unknown error
 		message.setAttribute('class', 'error')
 		message.innerHTML = '<p><strong>Unrecognized AJAX response.</strong></p>'
 	}
 
+	// Show message
 	Effect.Appear('message', {duration: 0.4, queue: 'end'})
+	
+	// Close the pop-up window on successful update
+	if (matches[1] == 'updated fade') {
+		// Close the window (after a 800ms delay, so the message will actually appear)
+		setTimeout("close_window()", 800);
+	}
+}
+
+// Empty effects queue and close the window
+function close_window() {
+	// We clear the effects because the browser crashes if you issue a window.close when effects are still running
+	Effect.Queues.get('global').each(function (e) { e.cancel(); })
+	window.close()
 }
 
 // Add onLoad events
