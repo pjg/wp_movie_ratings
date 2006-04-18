@@ -101,8 +101,8 @@ function show_response(originalRequest) {
 	
 	// Close the pop-up window on successful update
 	if (matches[1] == 'updated fade') {
-		// Close the window (after a 800ms delay, so the message will actually appear)
-		setTimeout("close_window()", 800);
+		// Close the window (after a 2s delay, so you can actually read the message)
+		setTimeout("close_window()", 2000);
 	}
 }
 
