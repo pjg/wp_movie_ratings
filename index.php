@@ -1,6 +1,10 @@
 <?php
 
-# Get title of the movie and save its rating in the database
+# WP Movie Ratings XML RPC Server (aka server dealing with AJAX requests).
+# Used for:
+#   1. Fetching movie titles from imdb.com;
+#   2. Saving movie ratings in the database;
+
 if (isset($_POST["url"]) && isset($_POST["rating"]))
 {
 	require_once("httprequest.class.php");

@@ -21,11 +21,13 @@ class Movie {
 		$this->_watched_on = $watched_on;
 	}
 
+	# wordpress' database handler and table prefix
 	function set_database($wpdb, $table_prefix) {
 		$this->_wpdb = $wpdb;
 		$this->_table = $table_prefix . "movie_ratings";
 	}
 	
+	# check if we have a valid imdb.com link
 	function parse_parameters() {
 		$msg = "";
 
@@ -41,7 +43,6 @@ class Movie {
 
 		return $msg;
 	}
-
 
 	# get title from imdb.com
 	function get_title() {
@@ -134,21 +135,22 @@ class Movie {
 		} else $title_short = $this->_title;
 
 
-		?><p><a href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched on <?= $this->_watched_on ?>"><?= $title_short ?></a></p><? echo "\n";
+		?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a></p><? echo "\n"; 
+
+		?><abbr class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></abbr><? echo "\n";
 
 		echo "<div class=\"rating_stars\">\n";
-
+		
+		echo "<p class=\"rating\"><span class=\"value\">" . $this->_rating . "</span> stars out of <span class=\"best\">10</span></p>\n";
+		
 		# Reverse Polish notation (because of the floats)
 		for ($i=1; $i<11; $i++) {
 			if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
-			else { ?><img src="<?= $img_path ?>/empty_star.gif" alt="" /><? echo "\n"; }
+			else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
 		}
 		echo "</div>\n";
 
-
-		#echo "</p>\n";
-
-		if (($with_review) && ($this->_review != "")) echo "<p class=\"review\">" . $this->_review . "</p>\n";
+		if (($with_review) && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
 	}
 }
 

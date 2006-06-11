@@ -1,0 +1,59 @@
+WP Movie Ratings v1.0 (2006-05-21)
+==================================
+
+WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
+its core is a Firefox bookmarklet, which combined with Internet Movie Database
+(imdb.com) and a little bit of AJAX magic lets you rate movies with just
+1 click. There is no need to write the title of the movie as it is
+automatically fetched from iMDb. Optionally, you can also write a short review
+for each movie. The output from this plugin is a list of recently watched
+movies, which you can put anywhere on your blog (it's a matter of one simple
+function call from the template).
+
+http://paulgoscicki.com/projects/wp-movie-ratings/
+
+
+Requirements
+----------------------------------
+
+* Wordpress 2.0+
+* FTP/SSH access to your wordpress blog (so you can upload this plugin).
+
+
+Installation
+----------------------------------
+
+1. Download the plugin.
+
+2. Extract the contents of the .tar.gz file into the Wordpress plugins
+   directory (usually wp-content/plugins). Alternatively you can upload
+   them using ftp. You should have a new directory there called
+   wp_movie_ratings (just along the akismet directory)
+
+3. Activate the plugin by going into your administration panel and selecting
+   Plugins from the menu.
+
+4. Go to the Manage section in the administration panel and see the new Movies
+   menu option there (you’ll find the Firefox bookmarklet there too).
+
+
+
+Copyright (c) 2006 by Paul Goscicki http://paulgoscicki.com/
+
+Available under the GNU General Public License (GPL) version 2 or later.
+http://www.gnu.org/licenses/gpl.html
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+

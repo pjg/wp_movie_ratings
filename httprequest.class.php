@@ -1,7 +1,12 @@
 <?php
-#usage:
-# $r = new HTTPRequest('http://www.php.net');
-# echo $r->DownloadToString();
+
+# HTTPRequest PHP class by taken from php.net comments
+# http://php.net/manual/en/function.fopen.php#58099
+# Author: info AT b1g.de
+
+# Usage:
+#	$r = new HTTPRequest('http://www.php.net');
+#	echo $r->DownloadToString();
 
 class HTTPRequest
 {

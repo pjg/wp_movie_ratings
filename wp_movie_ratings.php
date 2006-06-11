@@ -1,11 +1,36 @@
 <?php
 /*
-Plugin Name: Wordpress movie ratings
-Version: 1.0.0
-Plugin URI: http://paulgoscicki.com/
-Description: Rate movies that you've seen recently and display short list of those movies on your blog (kottke.org style). Internet Movie Database (imdb.com) used to automatically fetch movie titles. 1-click movie rating using firefox bookmarklet on imdb page.
+Plugin Name: WP Movie Ratings
+Version: 1.0
+Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
+Description: Wordpress movie rating plugin, which lets you easy rate movies
+that you've seen recently and display short list of those movies on your blog
+(kottke.org style). Internet Movie Database (imdb.com) used to automatically
+fetch movie titles. 1-click movie rating using Firefox bookmarklet while
+browsing the imdb page of a movie.
+*/
+
+/*
+Copyright (c) 2006 by Paul Goscicki http://paulgoscicki.com/
+
+Available under the GNU General Public License (GPL) version 2 or later.
+http://www.gnu.org/licenses/gpl.html
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 include_once(dirname(__FILE__) . "/httprequest.class.php");
@@ -57,7 +82,7 @@ function wp_movie_ratings_show($count)
 
 	if (is_plugin_page()) $movies = $m->get_latest_movies(intval($count));
 	else $movies = $m->get_latest_movies(intval($count));
-	
+
 	if (!is_plugin_page())
 	{
 		$css_path = $img_path . basename(__FILE__, ".php") . ".css";
@@ -70,8 +95,11 @@ function wp_movie_ratings_show($count)
 	$i = 0; # row alternator
 	foreach($movies as $movie)
 	{
-		echo "<li" . (($i++ % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
+		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
+		echo "<div class=\"hreview\">\n";
+		echo "<span class=\"version\">0.3</span>\n";
 		$movie->show($img_path, true);
+		echo "</div>\n";
 		echo "</li>\n";
 	}
 	echo "</ul>\n";
@@ -170,7 +198,6 @@ function wp_movie_ratings_management_page() {
 
 <?php
 }
-
 
 # Hook for plugin installation
 register_activation_hook(__FILE__, 'wp_movie_ratings_install');
