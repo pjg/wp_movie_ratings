@@ -1,0 +1,11 @@
+#wp_movie_ratings ul li abbr.dtreviewed {
+	display: none;
+}
+
+#wp_movie_ratings ul li span.version {
+	display: none;
+}
+
+#wp_movie_ratings ul li div.rating_stars p {
+	display: none;
+}

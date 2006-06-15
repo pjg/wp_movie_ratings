@@ -105,16 +105,35 @@ class Movie {
 
 	# get total number of watched/rated movies
 	function get_watched_movies_count($range) {
+		if ($range == "total-average") {
+			$days_first = $this->_wpdb->get_var("SELECT TO_DAYS((SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MIN(id) FROM wp_movie_ratings)));");
+			$days_last = $this->_wpdb->get_var("SELECT TO_DAYS((SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MAX(id) FROM wp_movie_ratings)));");
+			$days = $days_last - $days_first;
+			$query = "SELECT (COUNT(id)/$days) AS count FROM $this->_table ";
+		}
+		else $query = "SELECT COUNT(id) AS count FROM $this->_table ";
+
 		switch ($range) {
-			case "month" : $condition = "WHERE MONTH(watched_on)=" . date("n");
-			               break;
-			case "year"  : $condition = "WHERE YEAR(watched_on)=" . date("Y");
-			               break;
-			default      : $condition = "";
-			               break;
+			case "30-days-average" : $tmp_date = mktime(0, 0, 0, date("m"), date("j")-30, date("Y"));
+				                     $cond = "WHERE MONTH(watched_on)=" . date("n", $tmp_date) . " AND YEAR(watched_on)=" . date("Y", $tmp_date);
+									 break;
+            case "month"         : $cond = "WHERE MONTH(watched_on)=" . date("n");
+			                       break;
+			case "last-month"    : $cond = "WHERE MONTH(watched_on)=" . date("n", mktime(0, 0, 0, date("m") - 1, 1, date("Y")));
+			                       break;
+			case "year"          : $cond = "WHERE YEAR(watched_on)=" . date("Y");
+			                       break;
+			case "last-year"     : $cond = "WHERE YEAR(watched_on)=" . date("Y", mktime(0, 0, 0, 1, 1, date("Y")-1));
+			                       break;
+			case "total"         : $cond = "";
+							       break;
+			case "total-average" : $cond = "";
+							       break;
+			default              : $cond = "";
+			                       break;
 		}
 
-		return $this->_wpdb->get_var("SELECT COUNT(id) AS count FROM $this->_table " . $condition);
+		return $this->_wpdb->get_var($query . $cond);
 	}
 
 	# show movie
@@ -143,7 +162,7 @@ class Movie {
 		
 		echo "<p class=\"rating\"><span class=\"value\">" . $this->_rating . "</span> stars out of <span class=\"best\">10</span></p>\n";
 		
-		# Reverse Polish notation (because of the floats)
+		# Reverse Polish notation (because of the float: right; in css)
 		for ($i=1; $i<11; $i++) {
 			if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
 			else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }

@@ -4,20 +4,24 @@ WP Movie Ratings v1.0 (2006-05-21)
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
 its core is a Firefox bookmarklet, which combined with Internet Movie Database
 (imdb.com) and a little bit of AJAX magic lets you rate movies with just
-1 click. There is no need to write the title of the movie as it is
-automatically fetched from iMDb. Optionally, you can also write a short review
+1 click. Also, there is no need to write the title of the movie as it is
+automatically fetched from imdb. Optionally, you can also write a short review
 for each movie. The output from this plugin is a list of recently watched
 movies, which you can put anywhere on your blog (it's a matter of one simple
 function call from the template).
 
-http://paulgoscicki.com/projects/wp-movie-ratings/
+The published movie reviews are hReview (http://microformats.org/wiki/hreview)
+compliant.
+
+Plugin page: http://paulgoscicki.com/projects/wp-movie-ratings/
 
 
 Requirements
 ----------------------------------
 
 * Wordpress 2.0+
-* FTP/SSH access to your wordpress blog (so you can upload this plugin).
+* FTP, SSH or SCP access to your wordpress blog (so you can upload this
+  plugin).
 
 
 Installation
@@ -31,11 +35,21 @@ Installation
    wp_movie_ratings (just along the akismet directory)
 
 3. Activate the plugin by going into your administration panel and selecting
-   Plugins from the menu.
+   Plugins from the menu and clicking the Activate button for the WP Movie
+   Ratings.
 
 4. Go to the Manage section in the administration panel and see the new Movies
-   menu option there (you’ll find the Firefox bookmarklet there too).
+   menu option there (you’ll find the Firefox bookmarklet there too). Rate at
+   least one movie (using the bookmarklet or the administration page).
 
+5. Edit your blog template (it’s probably the best to edit the index.php file)
+   and put this line there:
+   
+   wp_movie_ratings_show(6);
+   
+   The argument 6 is the number of recent movie ratings to show.
+
+6. Go to your blog and see the movie ratings!
 
 
 Copyright (c) 2006 by Paul Goscicki http://paulgoscicki.com/

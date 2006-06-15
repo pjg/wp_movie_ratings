@@ -5,11 +5,11 @@ Version: 1.0
 Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
-Description: Wordpress movie rating plugin, which lets you easy rate movies
-that you've seen recently and display short list of those movies on your blog
-(kottke.org style). Internet Movie Database (imdb.com) used to automatically
-fetch movie titles. 1-click movie rating using Firefox bookmarklet while
-browsing the imdb page of a movie.
+Description: Wordpress movie rating plugin, which lets you easily rate movies
+you've seen recently and display a short list of those movies on your blog
+(ala kottke.org style). Internet Movie Database (imdb.com) is used to
+automatically fetch movie titles. 1-click movie rating is possible using
+Firefox bookmarklet (included) while browsing the imdb.com pages.
 */
 
 /*
@@ -66,16 +66,19 @@ function wp_movie_ratings_install() {
 	}
 }
 
+
+
+
+
 # Show latest movie ratings
-function wp_movie_ratings_show($count)
-{
+function wp_movie_ratings_show($count) {
 	global $wpdb, $table_prefix;
 
-	# image path
+	# plugin path
 	$siteurl = get_option("siteurl");
 	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
 	$tmp_array = parse_url($siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/");
-	$img_path = $tmp_array["path"];
+	$plugin_path = $tmp_array["path"];
 
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
@@ -83,22 +86,19 @@ function wp_movie_ratings_show($count)
 	if (is_plugin_page()) $movies = $m->get_latest_movies(intval($count));
 	else $movies = $m->get_latest_movies(intval($count));
 
-	if (!is_plugin_page())
-	{
-		$css_path = $img_path . basename(__FILE__, ".php") . ".css";
-		echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"$css_path\" />\n";
-	}
+	# css file
+	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
+	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
 
 	echo "<div id=\"wp_movie_ratings\">\n";
 	echo "<h2>Movies I've watched recently:</h2>\n";
 	echo "<ul>\n";
 	$i = 0; # row alternator
-	foreach($movies as $movie)
-	{
+	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
 		echo "<div class=\"hreview\">\n";
 		echo "<span class=\"version\">0.3</span>\n";
-		$movie->show($img_path, true);
+		$movie->show($plugin_path, true);
 		echo "</div>\n";
 		echo "</li>\n";
 	}
@@ -131,6 +131,7 @@ function wp_movie_ratings_management_page() {
 		}
 		echo rawurldecode($msg);
 	}
+
 ?>
 
 <div class="wrap">
@@ -178,14 +179,32 @@ function wp_movie_ratings_management_page() {
 ?>
 
 <h2>Statistics</h2>
-<p>Total number of watched movies: <strong><? echo $m->get_watched_movies_count("all"); ?></strong></p>
-<p>This month: <strong><? echo $m->get_watched_movies_count("month"); ?></strong></p>
-<p>This year: <strong><? echo $m->get_watched_movies_count("year"); ?></strong></p>
 
+<?php
+	$total = $m->get_watched_movies_count("total");
+	$total_avg = $m->get_watched_movies_count("total-average");
+	$days = round($total/$total_avg);
 
-<h2>Firefox bookmarklet</h1>
-<p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress' administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work.</p>
+	$last_30_days_avg = $m->get_watched_movies_count("30-days-average") / 30;
+?>
 
+<p>Total number of rated movies: <strong><?= $total ?></strong>
+(average of <strong><?= $total_avg ?></strong> movies per day; <strong><?= $days ?></strong> days of movie ratings).</p>
+
+<p>Average of <strong><? printf("%.4f", $last_30_days_avg); ?></strong> movies per day for the last <strong>30</strong> days.</p>
+
+<p>This month: <strong><?= $m->get_watched_movies_count("month") ?></strong>
+(last month: <strong><?= $m->get_watched_movies_count("last-month") ?></strong>).</p>
+
+<p>This year: <strong><?= $m->get_watched_movies_count("year") ?></strong>
+(last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
+
+<p>First movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MIN(id) FROM wp_movie_ratings);")?></strong>.</p>
+<p>Last movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MAX(id) FROM wp_movie_ratings);")?></strong>.</p>
+
+<h2>Firefox bookmarklet</h2>
+
+<p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work, though.</p>
 
 <?php
 	$siteurl = get_option("siteurl");
