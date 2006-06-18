@@ -141,7 +141,6 @@ class Movie {
                                   break;
         }
 
-        #echo "$query $cond";
         return $this->_wpdb->get_var($query . $cond);
     }
 

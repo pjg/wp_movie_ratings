@@ -20,6 +20,7 @@ Requirements
 ----------------------------------
 
 * Wordpress 2.0+
+* PHP 5.0+
 * FTP, SSH or SCP access to your wordpress blog (so you can upload this
   plugin).
 
