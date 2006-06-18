@@ -71,7 +71,7 @@ function wp_movie_ratings_install() {
 
 
 # Show latest movie ratings
-function wp_movie_ratings_show($count) {
+function wp_movie_ratings_show($count=6) {
 	global $wpdb, $table_prefix;
 
 	# plugin path
