@@ -1,0 +1,6 @@
+2006-06-18
+- fixed division by zero bug in the statistics when there are no movies rated
+- release 1.0.1
+
+2006-06-15
+- release 1.0 (initial release)

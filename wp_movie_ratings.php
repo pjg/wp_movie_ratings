@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP Movie Ratings
-Version: 1.0
+Version: 1.0.1
 Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
@@ -83,6 +83,7 @@ function wp_movie_ratings_show($count) {
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
 
+	# senseless
 	if (is_plugin_page()) $movies = $m->get_latest_movies(intval($count));
 	else $movies = $m->get_latest_movies(intval($count));
 
@@ -93,6 +94,7 @@ function wp_movie_ratings_show($count) {
 	echo "<div id=\"wp_movie_ratings\">\n";
 	echo "<h2>Movies I've watched recently:</h2>\n";
 	echo "<ul>\n";
+
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
@@ -102,6 +104,9 @@ function wp_movie_ratings_show($count) {
 		echo "</div>\n";
 		echo "</li>\n";
 	}
+
+	if (count($movies) == 0) echo "<li>No movies rated yet!</li>\n";
+
 	echo "</ul>\n";
 	echo "</div>\n";
 }
@@ -183,15 +188,19 @@ function wp_movie_ratings_management_page() {
 <?php
 	$total = $m->get_watched_movies_count("total");
 	$total_avg = $m->get_watched_movies_count("total-average");
-	$days = round($total/$total_avg);
 
-	$last_30_days_avg = $m->get_watched_movies_count("30-days-average") / 30;
+	# division by zero bugfix; TODO: change this code to calculate days from the database, not by divisions
+	$days = ($total_avg == 0 ? 1 : round($total/$total_avg));
+
+	$last_30_days_avg = $m->get_watched_movies_count("last-30-days") / 30;
+	$last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
+
 ?>
 
 <p>Total number of rated movies: <strong><?= $total ?></strong>
 (average of <strong><?= $total_avg ?></strong> movies per day; <strong><?= $days ?></strong> days of movie ratings).</p>
 
-<p>Average of <strong><? printf("%.4f", $last_30_days_avg); ?></strong> movies per day for the last <strong>30</strong> days.</p>
+<p>Average of <strong><? printf("%.4f", $last_30_days_avg); ?></strong> movies per day for the past <strong>30</strong> days (<strong><? printf("%.4f", $last_7_days_avg); ?></strong> for the past <strong>7</strong> days).</p>
 
 <p>This month: <strong><?= $m->get_watched_movies_count("month") ?></strong>
 (last month: <strong><?= $m->get_watched_movies_count("last-month") ?></strong>).</p>
@@ -211,7 +220,7 @@ function wp_movie_ratings_management_page() {
 	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
 	$pluginurl = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
 ?>
-<p><a href="javascript:(function(){open('<?= $pluginurl ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating">Add movie rating</a></p>
+<p><a href="javascript:(function(){open('<?= $pluginurl ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
 
 </div>
 
