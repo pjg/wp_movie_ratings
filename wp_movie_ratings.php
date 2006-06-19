@@ -87,6 +87,10 @@ function wp_movie_ratings_show($count=6) {
 	if (is_plugin_page()) $movies = $m->get_latest_movies(intval($count));
 	else $movies = $m->get_latest_movies(intval($count));
 
+	# love advert
+	echo "<!-- The list of recently watched movies below is a result of WP Movie Ratings wordpress plugin by Paul Goscicki. -->\n";
+	echo "<!-- Find it at: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
+
 	# css file
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
