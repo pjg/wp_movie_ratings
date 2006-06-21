@@ -46,7 +46,7 @@
 	font: 11px verdana, sans-serif;
 }
 
-#wp_movie_ratings ul li abbr.dtreviewed {
+#wp_movie_ratings ul li acronym.dtreviewed {
 	display: none;
 }
 
