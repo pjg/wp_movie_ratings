@@ -18,10 +18,13 @@ if (isset($_POST["url"]) && isset($_POST["rating"]))
 	{
 		if (($rating > 0) && ($rating < 11))
 		{
-			$movie = new Movie($matches[2], $rating);
-			$msg = $movie->get_title();
-			
-			if (strlen($msg) < 1) $msg = $movie->save();
+			if ($user_level > 10) {
+				$movie = new Movie($matches[2], $rating);
+				$msg = $movie->get_title();
+				
+				if (strlen($msg) < 1) $msg = $movie->save();
+			}
+			else $msg = '<p class="error">Error: userlevel too low. You must be an admin to rate movies.</p>';
 		}
 		else $msg = '<p class="error">Error: wrong rating.</p>';
 	}

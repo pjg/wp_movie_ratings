@@ -46,7 +46,7 @@ function wp_movie_ratings_install() {
 	# only special users can install plugins
 	if ($user_level < 8) { return; }
 
-	# first installation
+	# create movie ratings table
 	if ($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
 		$sql = "CREATE TABLE ".$table_name." (
@@ -64,6 +64,12 @@ function wp_movie_ratings_install() {
 
 		dbDelta($sql);
 	}
+
+	# plugin options
+	add_option('wp_movie_ratings_count', 6, 'Number of displayed movie ratings (default)', 'no');
+	add_option('wp_movie_ratings_text_ratings', 'no', 'Display movie ratings as text or as images (stars)', 'no');
+	add_option('wp_movie_ratings_include_review', 'yes', 'Include review when displaying movie ratings?', 'no');
+	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
 }
 
 
@@ -74,17 +80,15 @@ function wp_movie_ratings_install() {
 # Params:
 #	$count - number of movies to show; if equals -1 it will read the number from the options saved in the database
 #   $options - optional parameters as hash array
-#		'text_ratings' -> text ratings (like 5/10) or images of stars (true/false); if not specified it will read from the options saved in the database
-
-# TODO: change 6 into -1 (to read from db)
-
-function wp_movie_ratings_show($count = 6, $options = array()) {
+#		'text_ratings' -> text ratings (like 5/10) or images of stars ('yes'/'no'); if not specified it will be read from the options saved in the database
+#       'include_review' -> include review with each movie rating ('yes'/'no'); if not specified it will be read from the options saved in the database
+function wp_movie_ratings_show($count = -1, $options = array()) {
 	global $wpdb, $table_prefix;
 
-	# parse options
-	# TODO: read it from database
-	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : false);
-	$include_review = (isset($options["include_review"]) ? $options["include_review"] : false);
+	# parse function parameters
+	if ($count == -1) $count = get_option("wp_movie_ratings_count");
+	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
+	$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_include_review"));
 
 	# plugin path
 	$siteurl = get_option("siteurl");
@@ -94,17 +98,10 @@ function wp_movie_ratings_show($count = 6, $options = array()) {
 
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
-
-	# TODO: remove this senselessness
-	if (is_plugin_page()) {
-		$movies = $m->get_latest_movies(intval($count));
-	} else {
-		$movies = $m->get_latest_movies(intval($count));
-	}
+	$movies = $m->get_latest_movies(intval($count));
 
 	# love advert
-	echo "<!-- The list of recently watched movies below is a result of WP Movie Ratings wordpress plugin by Paul Goscicki. -->\n";
-	echo "<!-- Find it at: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
+	echo "<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
 
 	# css file
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
@@ -112,14 +109,14 @@ function wp_movie_ratings_show($count = 6, $options = array()) {
 
 	echo "<div id=\"wp_movie_ratings\">\n";
 	echo "<h2>Movies I've watched recently:</h2>\n";
-	echo "<ul" . ($text_ratings ? " class=\"text_ratings\"" : "") .  ">\n";
+	echo "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") .  ">\n";
 
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
 		echo "<div class=\"hreview\">\n";
-		echo "<span class=\"version\">0.3</span>\n";
 		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings));
+		echo "<span class=\"version\">0.3</span>\n";
 		echo "</div>\n";
 		echo "</li>\n";
 	}
@@ -136,6 +133,14 @@ function wp_movie_ratings_add_management_page() {
 		  add_management_page('Movies', 'Movies', 8, basename(__FILE__), 'wp_movie_ratings_management_page');
     }
 }
+
+# Add 'Movies' page to Wordpress' Options menu
+function wp_movie_ratings_add_options_page() {
+    if (function_exists('add_options_page')) {
+		  add_options_page('Movies', 'Movies', 8, basename(__FILE__), 'wp_movie_ratings_options_page');
+    }
+}
+
 
 # Manage Movies administration page
 function wp_movie_ratings_management_page() {
@@ -159,16 +164,20 @@ function wp_movie_ratings_management_page() {
 ?>
 
 <div class="wrap">
+<h2>Add new movie rating</h2>
 
 <form method="post" action="">
-<h2>Add new movie rating</h2>
-<p>
-<label for="url">iMDB link:</label>
-<input type="text" name="url" id="url" class="text" size="40" />
-</p>
 
-<p>
-<label for="rating">Movie rating:</label>
+<table class="optiontable"> 
+
+<tr valign="top"> 
+<th scope="row"><label for="url">iMDB link:</label></th> 
+<td><input type="text" name="url" id="url" class="text" size="40" /></td> 
+</tr> 
+
+<tr valign="top"> 
+<th scope="row"><label for="rating">Movie rating:</label></th> 
+<td>
 <select name="rating" id="rating">
 <option value="1">1</option>
 <option value="2">2</option>
@@ -181,16 +190,20 @@ function wp_movie_ratings_management_page() {
 <option value="9">9</option>
 <option value="10">10</option>
 </select>
-</p>
+</td> 
+</tr> 
 
-<p><label for="review">Short review:</label>
+<tr valign="top"> 
+<th scope="row"><label for="review">Short review:</label></th> 
+<td>
 <textarea name="review" id="review" rows="3" cols="45">
 </textarea>
-</p>
+</td> 
+</tr> 
 
-<div class="submit" style="text-align: left">
-  <input type="submit" name="info_update" value="Add new movie rating &gt;&gt;" />
-</div>
+</table>
+
+<p class="submit"><input type="submit" name="info_update" value="Add new movie rating &raquo;" /></p>
 
 </form>
 
@@ -257,10 +270,81 @@ $pluginurl = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__
 <?php
 }
 
+
+# WP Movie Ratings options page
+function wp_movie_ratings_options_page() {
+	global $table_prefix, $wpdb;
+
+	# Save options in the database
+	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"]) && isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])) { 
+		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
+		update_option("wp_movie_ratings_text_ratings", $_POST["wp_movie_ratings_text_ratings"]);
+		update_option("wp_movie_ratings_include_review", $_POST["wp_movie_ratings_include_review"]);
+		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
+
+		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
+	}
+
+	$wp_movie_ratings_count = get_option("wp_movie_ratings_count");
+	$wp_movie_ratings_text_ratings = get_option("wp_movie_ratings_text_ratings");
+	$wp_movie_ratings_include_review = get_option("wp_movie_ratings_include_review");
+	$wp_movie_ratings_char_limit = get_option("wp_movie_ratings_char_limit");
+
+?>
+
+<div class="wrap">
+<h2>WP Movie Ratings options</h2>
+
+<form method="post">
+
+<table class="optiontable">
+
+<tr valign="top"> 
+<th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings (default):</label></th> 
+<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?= $wp_movie_ratings_count ?>"/></td> 
+</tr> 
+
+<tr valign="top"> 
+<th scope="row"><label for="wp_movie_ratings_text_ratings_yes">Display movie ratings as text?</label></th> 
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_text_ratings_yes" name="wp_movie_ratings_text_ratings"<?= ($wp_movie_ratings_text_ratings == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_text_ratings_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_text_ratings_no" name="wp_movie_ratings_text_ratings"<?= ($wp_movie_ratings_text_ratings == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_text_ratings_no">no</label>
+</td>
+</tr> 
+
+<tr valign="top"> 
+<th scope="row"><label for="wp_movie_ratings_include_review_yes">Display reviews?</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_include_review_yes" name="wp_movie_ratings_include_review"<?= ($wp_movie_ratings_include_review == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_include_review_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_include_review_no" name="wp_movie_ratings_include_review"<?= ($wp_movie_ratings_include_review == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_include_review_no">no</label>
+</td>
+</tr> 
+
+<tr valign="top"> 
+<th scope="row"><label for="wp_movie_ratings_char_limit">Display that much characters when the movie title is too long to fit:</label></th>
+<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $wp_movie_ratings_char_limit ?>"/></td> 
+</tr> 
+
+</table>
+
+<p class="submit"><input type="submit" name="submit" value="Update Options &raquo;" /></p>
+
+</form>
+
+<?php
+}
+
+
 # Hook for plugin installation
 register_activation_hook(__FILE__, 'wp_movie_ratings_install');
 
-# Add action for administration menu
+# Add actions for admin panel
 add_action('admin_menu', 'wp_movie_ratings_add_management_page');
+add_action('admin_menu', 'wp_movie_ratings_add_options_page');
+
 
 ?>

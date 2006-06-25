@@ -10,7 +10,6 @@ class Movie {
 
     var $_wpdb;            # wordpress database handle
     var $_table;           # database table name
-    var $_char_limit = 44; # limit on number of characters in the movie's title when displaying (so it won't collapse)
 
     # constructor
     function Movie($url=null, $rating=null, $review=null, $title=null, $watched_on=null) {
@@ -103,7 +102,7 @@ class Movie {
         return $movies;
     }
 
-    # get total number of watched/rated movies
+    # various statistics
     function get_watched_movies_count($range) {
         if ($range == "total-average") {
 			$min_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
@@ -151,15 +150,17 @@ class Movie {
     function show($img_path, $options = array()) {
 
 		# parse options
-		$include_review = (isset($options["include_review"]) ? $options["include_review"] : true);
-		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : true);
+		$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_text_ratings"));
+		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_include_review"));
 
         if (!is_plugin_page()) {
-            # shorten the title
-            if (strlen($this->_title) <= $this->_char_limit) $title_short = $this->_title;
+			# shorten the title
+			$char_limit = get_option("wp_movie_ratings_char_limit");
+
+            if (strlen($this->_title) <= $char_limit) $title_short = $this->_title;
             else {
                 # cut at limit
-                $title_short = substr($this->_title, 0, $this->_char_limit);
+                $title_short = substr($this->_title, 0, $char_limit);
 
                 # find last space char: " "
                 $last_space_position = strrpos($title_short, " ");
@@ -178,7 +179,7 @@ class Movie {
         ?><acronym class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></acronym><? echo "\n";
 
 		# Star ratings (img)
-		if (!$text_ratings) {
+		if ($text_ratings == "no") {
 			echo "<div class=\"rating_stars\">\n";
 			# Reverse Polish notation (because of the float: right; in css)
 	        for ($i=1; $i<11; $i++) {
@@ -189,7 +190,7 @@ class Movie {
 		}
 
 		# Review
-        if (($include_review) && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
+        if (($include_review == "yes") && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
     }
 }
 
