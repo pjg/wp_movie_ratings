@@ -106,8 +106,11 @@ class Movie {
     # get total number of watched/rated movies
     function get_watched_movies_count($range) {
         if ($range == "total-average") {
-            $days_first = $this->_wpdb->get_var("SELECT TO_DAYS((SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MIN(id) FROM wp_movie_ratings)));");
-            $days_last = $this->_wpdb->get_var("SELECT TO_DAYS((SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MAX(id) FROM wp_movie_ratings)));");
+			$min_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
+			$max_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
+
+            $days_first = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$min_id;");
+            $days_last = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$max_id;");
 
             # division by zero bugfix
             $days_diff = $days_last - $days_first;

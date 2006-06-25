@@ -212,8 +212,13 @@ function wp_movie_ratings_management_page() {
 <p>This year: <strong><?= $m->get_watched_movies_count("year") ?></strong>
 (last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
 
-<p>First movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MIN(id) FROM wp_movie_ratings);")?></strong>.</p>
-<p>Last movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=(SELECT MAX(id) FROM wp_movie_ratings);")?></strong>.</p>
+<?php
+	$min_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
+	$max_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
+?>
+
+<p>First movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=$min_id;")?></strong>.</p>
+<p>Last movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=$max_id;")?></strong>.</p>
 
 <h2>Firefox bookmarklet</h2>
 
