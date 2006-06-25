@@ -50,15 +50,24 @@
 	display: none;
 }
 
-#wp_movie_ratings ul li div.rating_stars {
-	font-size: 8px;
+
+#wp_movie_ratings ul li p span.rating {
+	display: none;
+}
+
+#wp_movie_ratings ul.text_ratings li p span.rating {
+	display: inline;
+	font: bold 11px verdana, sans-serif;
 	position: absolute;
 	right: 5px;
 	top: 2px;
 }
 
-#wp_movie_ratings ul li div.rating_stars p {
-	display: none;
+#wp_movie_ratings ul li div.rating_stars {
+	font-size: 8px;
+	position: absolute;
+	right: 5px;
+	top: 2px;
 }
 
 #wp_movie_ratings ul li p.description {

@@ -148,7 +148,12 @@ class Movie {
     }
 
     # show movie
-    function show($img_path, $with_review=false) {
+    function show($img_path, $options = array()) {
+
+		# parse options
+		$include_review = (isset($options["include_review"]) ? $options["include_review"] : true);
+		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : true);
+
         if (!is_plugin_page()) {
             # shorten the title
             if (strlen($this->_title) <= $this->_char_limit) $title_short = $this->_title;
@@ -159,28 +164,32 @@ class Movie {
                 # find last space char: " "
                 $last_space_position = strrpos($title_short, " ");
 
-                # cut at last space
+                # cut at the last space
                 $title_short = substr($title_short, 0, $last_space_position) . "...";
             }
         } else $title_short = $this->_title;
 
 
-        ?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a></p><? echo "\n";
+        ?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a> <?php
+
+		echo "<span class=\"rating\"><span class=\"value\">" . $this->_rating . "</span>/<span class=\"best\">10</span></span>\n";
+		echo "</p>\n";
 
         ?><acronym class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></acronym><? echo "\n";
 
-        echo "<div class=\"rating_stars\">\n";
+		# Star ratings (img)
+		if (!$text_ratings) {
+			echo "<div class=\"rating_stars\">\n";
+			# Reverse Polish notation (because of the float: right; in css)
+	        for ($i=1; $i<11; $i++) {
+				if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
+				else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
+			}
+			echo "</div>\n";
+		}
 
-        echo "<p class=\"rating\"><span class=\"value\">" . $this->_rating . "</span> stars out of <span class=\"best\">10</span></p>\n";
-
-        # Reverse Polish notation (because of the float: right; in css)
-        for ($i=1; $i<11; $i++) {
-            if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
-            else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
-        }
-        echo "</div>\n";
-
-        if (($with_review) && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
+		# Review
+        if (($include_review) && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
     }
 }
 

@@ -71,8 +71,20 @@ function wp_movie_ratings_install() {
 
 
 # Show latest movie ratings
-function wp_movie_ratings_show($count=6) {
+# Params:
+#	$count - number of movies to show; if equals -1 it will read the number from the options saved in the database
+#   $options - optional parameters as hash array
+#		'text_ratings' -> text ratings (like 5/10) or images of stars (true/false); if not specified it will read from the options saved in the database
+
+# TODO: change 6 into -1 (to read from db)
+
+function wp_movie_ratings_show($count = 6, $options = array()) {
 	global $wpdb, $table_prefix;
+
+	# parse options
+	# TODO: read it from database
+	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : false);
+	$include_review = (isset($options["include_review"]) ? $options["include_review"] : false);
 
 	# plugin path
 	$siteurl = get_option("siteurl");
@@ -83,9 +95,12 @@ function wp_movie_ratings_show($count=6) {
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
 
-	# senseless
-	if (is_plugin_page()) $movies = $m->get_latest_movies(intval($count));
-	else $movies = $m->get_latest_movies(intval($count));
+	# TODO: remove this senselessness
+	if (is_plugin_page()) {
+		$movies = $m->get_latest_movies(intval($count));
+	} else {
+		$movies = $m->get_latest_movies(intval($count));
+	}
 
 	# love advert
 	echo "<!-- The list of recently watched movies below is a result of WP Movie Ratings wordpress plugin by Paul Goscicki. -->\n";
@@ -97,19 +112,19 @@ function wp_movie_ratings_show($count=6) {
 
 	echo "<div id=\"wp_movie_ratings\">\n";
 	echo "<h2>Movies I've watched recently:</h2>\n";
-	echo "<ul>\n";
+	echo "<ul" . ($text_ratings ? " class=\"text_ratings\"" : "") .  ">\n";
 
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
 		echo "<div class=\"hreview\">\n";
 		echo "<span class=\"version\">0.3</span>\n";
-		$movie->show($plugin_path, true);
+		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings));
 		echo "</div>\n";
 		echo "</li>\n";
 	}
 
-	if (count($movies) == 0) echo "<li>No movies rated yet!</li>\n";
+	if (count($movies) == 0) echo "<li>No movies rated yet! Go and rate some. Now.</li>\n";
 
 	echo "</ul>\n";
 	echo "</div>\n";
@@ -179,25 +194,27 @@ function wp_movie_ratings_management_page() {
 
 </form>
 
-
-<? wp_movie_ratings_show(10) ?>
-
 <?php
-	$m = new Movie();
-	$m->set_database($wpdb, $table_prefix);
+
+wp_movie_ratings_show(20, array("text_ratings" => true, "include_review" => false));
+$m = new Movie();
+$m->set_database($wpdb, $table_prefix);
+
 ?>
 
 <h2>Statistics</h2>
 
 <?php
-	$total = $m->get_watched_movies_count("total");
-	$total_avg = $m->get_watched_movies_count("total-average");
 
-	# division by zero bugfix; TODO: change this code to calculate days from the database, not by divisions
-	$days = ($total_avg == 0 ? 1 : round($total/$total_avg));
+$total = $m->get_watched_movies_count("total");
+$total_avg = $m->get_watched_movies_count("total-average");
 
-	$last_30_days_avg = $m->get_watched_movies_count("last-30-days") / 30;
-	$last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
+# division by zero bugfix
+# TODO: change this code to calculate days from the database, not by divisions
+$days = ($total_avg == 0 ? 1 : round($total/$total_avg));
+
+$last_30_days_avg = $m->get_watched_movies_count("last-30-days") / 30;
+$last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
 
 ?>
 
@@ -213,8 +230,10 @@ function wp_movie_ratings_management_page() {
 (last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
 
 <?php
-	$min_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
-	$max_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
+
+$min_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
+$max_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
+
 ?>
 
 <p>First movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=$min_id;")?></strong>.</p>
@@ -225,9 +244,11 @@ function wp_movie_ratings_management_page() {
 <p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work, though.</p>
 
 <?php
-	$siteurl = get_option("siteurl");
-	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
-	$pluginurl = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
+
+$siteurl = get_option("siteurl");
+if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
+$pluginurl = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
+
 ?>
 <p><a href="javascript:(function(){open('<?= $pluginurl ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
 

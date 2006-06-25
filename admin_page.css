@@ -1,4 +1,4 @@
-#wp_movie_ratings ul li abbr.dtreviewed {
+#wp_movie_ratings ul li acronym.dtreviewed {
 	display: none;
 }
 
@@ -6,6 +6,11 @@
 	display: none;
 }
 
-#wp_movie_ratings ul li div.rating_stars p {
+#wp_movie_ratings ul li p span.rating {
 	display: none;
+}
+
+#wp_movie_ratings ul.text_ratings li p span.rating {
+	display: inline;
+	font-weight: bold;
 }
