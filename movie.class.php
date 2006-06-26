@@ -51,7 +51,7 @@ class Movie {
         $this->_title = $title_matches[1];
 
         if ($this->_title == "") {
-            $msg = '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie.</strong></p></div>';
+            $msg = '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb.</strong></p></div>';
             return $msg;
         }
         else return "";
@@ -149,11 +149,12 @@ class Movie {
     # show movie
     function show($img_path, $options = array()) {
 
-		# parse options
+		# parse arugments
 		$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_text_ratings"));
 		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_include_review"));
+		$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 
-        if (!is_plugin_page()) {
+		if (!is_plugin_page()) {
 			# shorten the title
 			$char_limit = get_option("wp_movie_ratings_char_limit");
 
@@ -170,15 +171,15 @@ class Movie {
             }
         } else $title_short = $this->_title;
 
-
         ?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a> <?php
 
+		# Text rating
 		echo "<span class=\"rating\"><span class=\"value\">" . $this->_rating . "</span>/<span class=\"best\">10</span></span>\n";
 		echo "</p>\n";
 
         ?><acronym class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></acronym><? echo "\n";
 
-		# Star ratings (img)
+		# Star rating (images)
 		if ($text_ratings == "no") {
 			echo "<div class=\"rating_stars\">\n";
 			# Reverse Polish notation (because of the float: right; in css)

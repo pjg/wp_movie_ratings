@@ -70,6 +70,7 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_text_ratings', 'no', 'Display movie ratings as text or as images (stars)', 'no');
 	add_option('wp_movie_ratings_include_review', 'yes', 'Include review when displaying movie ratings?', 'no');
 	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
+	add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
 }
 
 
@@ -89,6 +90,7 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	if ($count == -1) $count = get_option("wp_movie_ratings_count");
 	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
 	$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_include_review"));
+	$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 
 	# plugin path
 	$siteurl = get_option("siteurl");
@@ -107,15 +109,16 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
 
+	# html container
 	echo "<div id=\"wp_movie_ratings\">\n";
-	echo "<h2>Movies I've watched recently:</h2>\n";
-	echo "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") .  ">\n";
+	echo "<h2>" . ($sidebar_mode == "yes" ? "Movie ratings" : "Movies I've watched recently") . ":</h2>\n";
+	echo "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		echo "<div class=\"hreview\">\n";
-		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings));
+		echo "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
+		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode));
 		echo "<span class=\"version\">0.3</span>\n";
 		echo "</div>\n";
 		echo "</li>\n";
@@ -209,7 +212,7 @@ function wp_movie_ratings_management_page() {
 
 <?php
 
-wp_movie_ratings_show(20, array("text_ratings" => true, "include_review" => false));
+wp_movie_ratings_show(20, array("text_ratings" => 'yes', "include_review" => 'no', "sidebar_mode" => 'no'));
 $m = new Movie();
 $m->set_database($wpdb, $table_prefix);
 
@@ -276,11 +279,15 @@ function wp_movie_ratings_options_page() {
 	global $table_prefix, $wpdb;
 
 	# Save options in the database
-	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"]) && isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])) { 
+	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])
+	&& isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
+	&& isset($_POST["wp_movie_ratings_sidebar_mode"]) ) {
+
 		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
 		update_option("wp_movie_ratings_text_ratings", $_POST["wp_movie_ratings_text_ratings"]);
 		update_option("wp_movie_ratings_include_review", $_POST["wp_movie_ratings_include_review"]);
 		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
+		update_option("wp_movie_ratings_sidebar_mode", $_POST["wp_movie_ratings_sidebar_mode"]);
 
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
@@ -289,6 +296,7 @@ function wp_movie_ratings_options_page() {
 	$wp_movie_ratings_text_ratings = get_option("wp_movie_ratings_text_ratings");
 	$wp_movie_ratings_include_review = get_option("wp_movie_ratings_include_review");
 	$wp_movie_ratings_char_limit = get_option("wp_movie_ratings_char_limit");
+	$wp_movie_ratings_sidebar_mode = get_option("wp_movie_ratings_sidebar_mode");
 
 ?>
 
@@ -327,6 +335,16 @@ function wp_movie_ratings_options_page() {
 <tr valign="top"> 
 <th scope="row"><label for="wp_movie_ratings_char_limit">Display that much characters when the movie title is too long to fit:</label></th>
 <td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $wp_movie_ratings_char_limit ?>"/></td> 
+</tr> 
+
+<tr valign="top"> 
+<th scope="row"><label for="wp_movie_ratings_sidebar_mode_yes">Sidebar mode (movie rating is displayed in new line)?</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_sidebar_mode_yes" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_sidebar_mode_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_sidebar_mode_no" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_sidebar_mode_no">no</label>
+</td>
 </tr> 
 
 </table>

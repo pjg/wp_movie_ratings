@@ -1,3 +1,13 @@
+
+TODO:
+- add error handling, when rating a movie without being logged in
+
+
+
+- sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
+
+
+
 2006-06-18
 - fixed division by zero bug in the statistics when there are no movies rated
 - release 1.0.1
