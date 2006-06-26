@@ -45,7 +45,7 @@ class Movie {
 
     # get title from imdb.com
     function get_title() {
-        $req = new HTTPRequest($this->_url);
+        $req = new WP_HTTP_Request($this->_url);
         $imdb = $req->DownloadToString();
         preg_match("/<title>(.+)<\/title>/i", $imdb, $title_matches);
         $this->_title = $title_matches[1];

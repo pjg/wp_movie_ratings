@@ -4,8 +4,10 @@ TODO:
 
 
 
-- sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
 
+Done
+- sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
+- renamed HTTPRequest to WP_HTTP_Request class to avoid conflicts with other HTTPRequest classes from other plugins
 
 
 2006-06-18
