@@ -74,7 +74,17 @@ function wp_movie_ratings_install() {
 }
 
 
-
+# Include stylesheet in the HEAD
+function wp_movie_ratings_stylesheet() {
+	# TODO: implement get_pluginpath() function, as to not repeat this code...
+	$siteurl = get_option("siteurl");
+	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
+	$tmp_array = parse_url($siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/");
+	$plugin_path = $tmp_array["path"];
+	
+	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
+	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
+}
 
 
 # Show latest movie ratings
@@ -104,10 +114,6 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 
 	# love advert
 	echo "<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
-
-	# css file
-	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
-	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
 
 	# html container
 	echo "<div id=\"wp_movie_ratings\">\n";
@@ -364,5 +370,8 @@ register_activation_hook(__FILE__, 'wp_movie_ratings_install');
 add_action('admin_menu', 'wp_movie_ratings_add_management_page');
 add_action('admin_menu', 'wp_movie_ratings_add_options_page');
 
+# CSS inclusion in HEAD
+add_action('wp_head', 'wp_movie_ratings_stylesheet');
+add_action('admin_head', 'wp_movie_ratings_stylesheet');
 
 ?>

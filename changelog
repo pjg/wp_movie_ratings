@@ -1,13 +1,10 @@
 
-TODO:
-- add error handling, when rating a movie without being logged in
-
-
-
-
-Done
 - sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
 - renamed HTTPRequest to WP_HTTP_Request class to avoid conflicts with other HTTPRequest classes from other plugins
+- new options panel which lets you set different display options (like sidebar mode)
+- option to display text ratings as an alternative to the images with stars
+- fixed problems with Internet Explorer (now works even with IE 5.0)
+- css inclusion moved to <head> so generated pages with this plugin can now be XHTML compliant
 
 
 2006-06-18
