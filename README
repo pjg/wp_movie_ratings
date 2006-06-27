@@ -1,5 +1,5 @@
-WP Movie Ratings v1.0.1 (2006-06-18)
-====================================
+WP Movie Ratings v1.1 (2006-06-27)
+==================================
 
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
 its core is a Firefox bookmarklet, which combined with Internet Movie Database
@@ -20,7 +20,6 @@ Requirements
 ----------------------------------
 
 * Wordpress 2.0+
-* PHP 5.0+
 * FTP, SSH or SCP access to your wordpress blog (so you can upload this
   plugin).
 
@@ -30,7 +29,7 @@ Installation
 
 1. Download the plugin.
 
-2. Extract the contents of the .tar.gz file into the Wordpress plugins
+2. Extract the contents of the .tar.gz/.zip file into the Wordpress plugins
    directory (usually wp-content/plugins). Alternatively you can upload
    them using ftp. You should have a new directory there called
    wp_movie_ratings (just along the akismet directory)
@@ -43,14 +42,42 @@ Installation
    menu option there (you’ll find the Firefox bookmarklet there too). Rate at
    least one movie (using the bookmarklet or the administration page).
 
-5. Edit your blog template (it’s probably the best to edit the index.php file)
+5. Go to the Options section in the administration panel and under the Movies
+   tab customize this plugin's options.
+
+6. Edit your blog template (it’s probably the best to edit the index.php file)
    and put this line there:
    
-   wp_movie_ratings_show(6);
-   
-   The argument 6 is the number of recent movie ratings to show.
+   wp_movie_ratings_show();
 
-6. Go to your blog and see the movie ratings!
+7. Go to your blog and see the movie ratings!
+
+
+Upgrading
+----------------------------------
+
+1. Download the newest version of the plugin
+   (http://paulgoscicki.com/files/wp_movie_ratings.tar.gz).
+
+2. Go to the Plugins section of the administration panel and deactivate
+   the WP Movie Ratings plugin. Don't worry as it will NOT delete any movie
+   ratings.
+
+3. Go to the wp_movie_ratings plugins directory and delete all of the plugin
+   files (should be wp-content/plugins/wp_movie_ratings). It will NOT delete
+   any movie ratings. Be aware though, that if you've made any changes to the
+   plugin, you might want to consider a backup.
+
+4. Extract the contents of the .tar.gz/.zip file into the wp_movie_ratings
+   directory (wp-content/plugins/wp_movie_ratings).
+
+5. Go to the Plugins section of the administration panel and activate the
+   WP Movie Ratings plugin (notice that higher version number of the plugin).
+   The deactivation/activation cycle is required because of the new options
+   that need to be written into the wordpress database (during activation).
+
+6. Enjoy life with the newest version of the WP Movie Ratings plugin.
+
 
 
 Copyright (c) 2006 by Paul Goscicki http://paulgoscicki.com/

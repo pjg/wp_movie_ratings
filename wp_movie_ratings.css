@@ -87,6 +87,7 @@
 	position: static;
 	display: block;
 	margin: 3px 0 2px 1px;
+	text-align: left;
 }
 
 
@@ -115,6 +116,7 @@
 	font: 11px arial, sans-serif;
 	letter-spacing: normal;
 	margin: 2px 40px 1px 12px;
+	text-align: left;
 	width: auto;
 }
 
