@@ -71,6 +71,7 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_include_review', 'yes', 'Include review when displaying movie ratings?', 'no');
 	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
 	add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
+	add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
 }
 
 
@@ -81,7 +82,7 @@ function wp_movie_ratings_stylesheet() {
 	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
 	$tmp_array = parse_url($siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/");
 	$plugin_path = $tmp_array["path"];
-	
+
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
 }
@@ -90,9 +91,11 @@ function wp_movie_ratings_stylesheet() {
 # Show latest movie ratings
 # Params:
 #	$count - number of movies to show; if equals -1 it will read the number from the options saved in the database
-#   $options - optional parameters as hash array
-#		'text_ratings' -> text ratings (like 5/10) or images of stars ('yes'/'no'); if not specified it will be read from the options saved in the database
-#       'include_review' -> include review with each movie rating ('yes'/'no'); if not specified it will be read from the options saved in the database
+#   $options - optional parameters as hash array (if not specified, they will be read from the database)
+#		'text_ratings' -> text ratings (like 5/10) or images of stars ('yes'/'no')
+#       'include_review' -> include review with each movie rating ('yes'/'no')
+#	    'sidebar_mode' -> compact view for sidebar mode ('yes'/'no')
+#	    'five_stars_ratings' -> display movie ratings using 5 stars instead of 10 ('yes'/'no')
 function wp_movie_ratings_show($count = -1, $options = array()) {
 	global $wpdb, $table_prefix;
 
@@ -101,6 +104,7 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
 	$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_include_review"));
 	$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
+	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 
 	# plugin path
 	$siteurl = get_option("siteurl");
@@ -124,7 +128,7 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
 		echo "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
-		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode));
+		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings));
 		echo "<span class=\"version\">0.3</span>\n";
 		echo "</div>\n";
 		echo "</li>\n";
@@ -177,15 +181,15 @@ function wp_movie_ratings_management_page() {
 
 <form method="post" action="">
 
-<table class="optiontable"> 
+<table class="optiontable">
 
-<tr valign="top"> 
-<th scope="row"><label for="url">iMDB link:</label></th> 
-<td><input type="text" name="url" id="url" class="text" size="40" /></td> 
-</tr> 
+<tr valign="top">
+<th scope="row"><label for="url">iMDB link:</label></th>
+<td><input type="text" name="url" id="url" class="text" size="40" /></td>
+</tr>
 
-<tr valign="top"> 
-<th scope="row"><label for="rating">Movie rating:</label></th> 
+<tr valign="top">
+<th scope="row"><label for="rating">Movie rating:</label></th>
 <td>
 <select name="rating" id="rating">
 <option value="1">1</option>
@@ -199,16 +203,16 @@ function wp_movie_ratings_management_page() {
 <option value="9">9</option>
 <option value="10">10</option>
 </select>
-</td> 
-</tr> 
+</td>
+</tr>
 
-<tr valign="top"> 
-<th scope="row"><label for="review">Short review:</label></th> 
+<tr valign="top">
+<th scope="row"><label for="review">Short review:</label></th>
 <td>
 <textarea name="review" id="review" rows="3" cols="45">
 </textarea>
-</td> 
-</tr> 
+</td>
+</tr>
 
 </table>
 
@@ -287,13 +291,14 @@ function wp_movie_ratings_options_page() {
 	# Save options in the database
 	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])
 	&& isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
-	&& isset($_POST["wp_movie_ratings_sidebar_mode"]) ) {
+	&& isset($_POST["wp_movie_ratings_sidebar_mode"]) && isset($_POST["wp_movie_ratings_five_stars_ratings"]) ) {
 
 		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
 		update_option("wp_movie_ratings_text_ratings", $_POST["wp_movie_ratings_text_ratings"]);
 		update_option("wp_movie_ratings_include_review", $_POST["wp_movie_ratings_include_review"]);
 		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
 		update_option("wp_movie_ratings_sidebar_mode", $_POST["wp_movie_ratings_sidebar_mode"]);
+		update_option("wp_movie_ratings_five_stars_ratings", $_POST["wp_movie_ratings_five_stars_ratings"]);
 
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
@@ -303,7 +308,7 @@ function wp_movie_ratings_options_page() {
 	$wp_movie_ratings_include_review = get_option("wp_movie_ratings_include_review");
 	$wp_movie_ratings_char_limit = get_option("wp_movie_ratings_char_limit");
 	$wp_movie_ratings_sidebar_mode = get_option("wp_movie_ratings_sidebar_mode");
-
+	$wp_movie_ratings_five_stars_ratings = get_option("wp_movie_ratings_five_stars_ratings");
 ?>
 
 <div class="wrap">
@@ -313,22 +318,22 @@ function wp_movie_ratings_options_page() {
 
 <table class="optiontable">
 
-<tr valign="top"> 
-<th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings (default):</label></th> 
-<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?= $wp_movie_ratings_count ?>"/></td> 
-</tr> 
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings (default):</label></th>
+<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?= $wp_movie_ratings_count ?>"/></td>
+</tr>
 
-<tr valign="top"> 
-<th scope="row"><label for="wp_movie_ratings_text_ratings_yes">Display movie ratings as text?</label></th> 
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_text_ratings_yes">Display movie ratings as text?</label></th>
 <td>
 <input type="radio" value="yes" id="wp_movie_ratings_text_ratings_yes" name="wp_movie_ratings_text_ratings"<?= ($wp_movie_ratings_text_ratings == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_text_ratings_yes">yes</label>
 <input type="radio" value="no" id="wp_movie_ratings_text_ratings_no" name="wp_movie_ratings_text_ratings"<?= ($wp_movie_ratings_text_ratings == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_text_ratings_no">no</label>
 </td>
-</tr> 
+</tr>
 
-<tr valign="top"> 
+<tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_include_review_yes">Display reviews?</label></th>
 <td>
 <input type="radio" value="yes" id="wp_movie_ratings_include_review_yes" name="wp_movie_ratings_include_review"<?= ($wp_movie_ratings_include_review == "yes" ? " checked=\"checked\"" : "") ?> />
@@ -336,14 +341,14 @@ function wp_movie_ratings_options_page() {
 <input type="radio" value="no" id="wp_movie_ratings_include_review_no" name="wp_movie_ratings_include_review"<?= ($wp_movie_ratings_include_review == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_include_review_no">no</label>
 </td>
-</tr> 
+</tr>
 
-<tr valign="top"> 
+<tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_char_limit">Display that much characters when the movie title is too long to fit:</label></th>
-<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $wp_movie_ratings_char_limit ?>"/></td> 
-</tr> 
+<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $wp_movie_ratings_char_limit ?>"/></td>
+</tr>
 
-<tr valign="top"> 
+<tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_sidebar_mode_yes">Sidebar mode (movie rating is displayed in new line)?</label></th>
 <td>
 <input type="radio" value="yes" id="wp_movie_ratings_sidebar_mode_yes" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "yes" ? " checked=\"checked\"" : "") ?> />
@@ -351,7 +356,17 @@ function wp_movie_ratings_options_page() {
 <input type="radio" value="no" id="wp_movie_ratings_sidebar_mode_no" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_sidebar_mode_no">no</label>
 </td>
-</tr> 
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_five_stars_ratings_yes">Display ratings using 5 stars instead of 10?</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_five_stars_ratings_yes" name="wp_movie_ratings_five_stars_ratings"<?= ($wp_movie_ratings_five_stars_ratings == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_five_stars_ratings_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_five_stars_ratings_no" name="wp_movie_ratings_five_stars_ratings"<?= ($wp_movie_ratings_five_stars_ratings == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_five_stars_ratings_no">no</label>
+</td>
+</tr>
 
 </table>
 

@@ -1,18 +1,18 @@
 WP Movie Ratings changelog:
 
 2006-06-27
-- sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings
-- renamed HTTPRequest to WP_HTTP_Request class to avoid conflicts with other HTTPRequest classes from other plugins
-- new options panel which lets you set different display options (like the aforementioned sidebar mode)
-- option to display movie ratings using just text as an alternative to the images with stars
-- fixed CSS problems with Internet Explorer (now works properly even with IE 5.0)
-- css inclusion moved to <head> so that the generated pages that include the output from this plugin can now be XHTML compliant
-- removed nested SQL queries so that the plugin now works with older versions of MySQL
-- release 1.1
+- sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
+- renamed HTTPRequest class to WP_HTTP_Request to avoid conflicts with other HTTPRequest classes from other plugins.
+- new options panel which lets you set different display options (like the aforementioned sidebar mode).
+- option to display movie ratings using just text as an alternative to the images with stars.
+- fixed CSS problems with Internet Explorer (now works properly even with IE 5.0).
+- css inclusion moved to <head> so that the generated pages that include the output from this plugin can now be XHTML compliant.
+- removed nested SQL queries so that the plugin now works with older versions of MySQL.
+- release 1.1.
 
 2006-06-18
-- fixed division by zero bug in the statistics when there are no movies rated
-- release 1.0.1
+- fixed division by zero bug in the statistics when there are no movies rated.
+- release 1.0.1.
 
 2006-06-15
-- release 1.0 (initial release)
+- release 1.0 (initial release).

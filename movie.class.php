@@ -60,9 +60,6 @@ class Movie {
     # save movie rating to the database
     function save() {
 
-        # stare, bieze czas serwera
-        # $watched_on = date("Y-m-d H:i:s");
-
         # 2006-03-05 01:03:44
         $gmt_offset = get_option("gmt_offset");
         $watched_on = gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * $gmt_offset));
@@ -153,6 +150,7 @@ class Movie {
 		$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_text_ratings"));
 		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_include_review"));
 		$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
+		$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 
 		if (!is_plugin_page()) {
 			# shorten the title
@@ -173,20 +171,29 @@ class Movie {
 
         ?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a> <?php
 
-		# Text rating
+		# Text ratings
 		echo "<span class=\"rating\"><span class=\"value\">" . $this->_rating . "</span>/<span class=\"best\">10</span></span>\n";
 		echo "</p>\n";
 
         ?><acronym class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></acronym><? echo "\n";
 
-		# Star rating (images)
+		# Stars ratings using images
 		if ($text_ratings == "no") {
 			echo "<div class=\"rating_stars\">\n";
-			# Reverse Polish notation (because of the float: right; in css)
-	        for ($i=1; $i<11; $i++) {
-				if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
-				else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
+			
+			if ($five_stars_ratings == "yes") {
+				for ($i=1; $i<6; $i++) {
+					if ($this->_rating == ($i*2 - 1)) { ?><img src="<?= $img_path ?>half_star.gif" alt="+" /><? echo "\n"; }
+					else if ($this->_rating >= ($i*2)) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
+					else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
+				}
+			} else {
+				for ($i=1; $i<11; $i++) {
+					if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
+					else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
+				}
 			}
+
 			echo "</div>\n";
 		}
 
