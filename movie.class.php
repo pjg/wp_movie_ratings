@@ -61,8 +61,8 @@ class Movie {
     function save() {
 
         # 2006-03-05 01:03:44
-        $gmt_offset = get_option("gmt_offset");
-        $watched_on = gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * $gmt_offset));
+        $current_time = gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset")));
+		$watched_on = ($this->_watched_on == null ? $current_time : $this->_watched_on);
 
         # insert into db
         $this->_wpdb->hide_errors();
@@ -87,7 +87,7 @@ class Movie {
     # get latest movies
     function get_latest_movies($count) {
         $movies = array();
-        $results = $this->_wpdb->get_results("SELECT title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i') AS watched_on FROM $this->_table ORDER BY id DESC LIMIT " . intval($count));
+        $results = $this->_wpdb->get_results("SELECT title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i') AS watched_on FROM $this->_table ORDER BY watched_on DESC LIMIT " . intval($count));
 
         if ($results) {
             foreach ($results as $r) {

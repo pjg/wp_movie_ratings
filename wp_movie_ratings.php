@@ -61,7 +61,6 @@ function wp_movie_ratings_install() {
 		);";
 
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
-
 		dbDelta($sql);
 	}
 
@@ -161,9 +160,9 @@ function wp_movie_ratings_management_page() {
 	global $table_prefix, $wpdb;
 
 	# Get title of the movie and save its rating in the database
-	if (isset($_POST["url"]) && isset($_POST["rating"])) {
+	if (isset($_POST["url"]) && isset($_POST["rating"]) && isset($_POST["watched_on"])) {
 		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
-		$movie = new Movie($_POST["url"], $_POST["rating"], $review);
+		$movie = new Movie($_POST["url"], $_POST["rating"], $review, null, $_POST["watched_on"]);
 		$msg = $movie->parse_parameters();
 		if ($msg == "") {
 			$msg = $movie->get_title();
@@ -174,7 +173,6 @@ function wp_movie_ratings_management_page() {
 		}
 		echo rawurldecode($msg);
 	}
-
 ?>
 
 <div class="wrap">
@@ -186,7 +184,9 @@ function wp_movie_ratings_management_page() {
 
 <tr valign="top">
 <th scope="row"><label for="url">iMDB link:</label></th>
-<td><input type="text" name="url" id="url" class="text" size="40" /></td>
+<td><input type="text" name="url" id="url" class="text" size="40" />
+<br />
+Must be a valid <a href="http://imdb.com/">imdb.com</a> link.</td>
 </tr>
 
 <tr valign="top">
@@ -213,6 +213,13 @@ function wp_movie_ratings_management_page() {
 <textarea name="review" id="review" rows="3" cols="45">
 </textarea>
 </td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="watched_on">Watched on:</label></th>
+<td><input type="text" name="watched_on" id="watched_on" class="text" size="23" value="<?= gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset"))) ?>" />
+<br />
+Remeber to use correct format when setting custom dates.</td>
 </tr>
 
 </table>
