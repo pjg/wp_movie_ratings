@@ -263,6 +263,8 @@ $last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
 <p>This year: <strong><?= $m->get_watched_movies_count("year") ?></strong>
 (last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
 
+<p>Average movie rating: <strong><?= $wpdb->get_var("SELECT AVG(rating) FROM wp_movie_ratings") ?></strong>.</p>
+
 <?php
 
 $min_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
