@@ -72,6 +72,7 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
 	add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
 	add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
+	add_option('wp_movie_ratings_dialog_title', 'Movies I\'ve watched recently:', 'Dialog title for movie ratings box', 'no');
 }
 
 
@@ -121,7 +122,7 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 
 	# html container
 	echo "<div id=\"wp_movie_ratings\">\n";
-	echo "<h2>" . ($sidebar_mode == "yes" ? "Movie ratings" : "Movies I've watched recently") . ":</h2>\n";
+	echo "<h2>" . stripslashes(get_option("wp_movie_ratings_dialog_title")) . "</h2>\n";
 	echo "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
 	$i = 0; # row alternator
@@ -290,8 +291,9 @@ function wp_movie_ratings_options_page() {
 
 	# Save options in the database
 	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])
-	&& isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
-	&& isset($_POST["wp_movie_ratings_sidebar_mode"]) && isset($_POST["wp_movie_ratings_five_stars_ratings"]) ) {
+ 	 && isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
+ 	 && isset($_POST["wp_movie_ratings_sidebar_mode"]) && isset($_POST["wp_movie_ratings_five_stars_ratings"])
+     && isset($_POST["wp_movie_ratings_dialog_title"]) ) {
 
 		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
 		update_option("wp_movie_ratings_text_ratings", $_POST["wp_movie_ratings_text_ratings"]);
@@ -299,6 +301,7 @@ function wp_movie_ratings_options_page() {
 		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
 		update_option("wp_movie_ratings_sidebar_mode", $_POST["wp_movie_ratings_sidebar_mode"]);
 		update_option("wp_movie_ratings_five_stars_ratings", $_POST["wp_movie_ratings_five_stars_ratings"]);
+		update_option("wp_movie_ratings_dialog_title", $_POST["wp_movie_ratings_dialog_title"]);
 
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
@@ -309,6 +312,7 @@ function wp_movie_ratings_options_page() {
 	$wp_movie_ratings_char_limit = get_option("wp_movie_ratings_char_limit");
 	$wp_movie_ratings_sidebar_mode = get_option("wp_movie_ratings_sidebar_mode");
 	$wp_movie_ratings_five_stars_ratings = get_option("wp_movie_ratings_five_stars_ratings");
+	$wp_movie_ratings_dialog_title = get_option("wp_movie_ratings_dialog_title");
 ?>
 
 <div class="wrap">
@@ -317,6 +321,11 @@ function wp_movie_ratings_options_page() {
 <form method="post">
 
 <table class="optiontable">
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_dialog_title">Dialog title for movie ratings box:</label></th>
+<td><input type="text" name="wp_movie_ratings_dialog_title" id="wp_movie_ratings_dialog_title" class="text" size="50" value="<?= stripslashes($wp_movie_ratings_dialog_title) ?>"/></td>
+</tr>
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings (default):</label></th>
