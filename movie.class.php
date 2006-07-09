@@ -1,6 +1,7 @@
 <?php
 
 class Movie {
+	var $_id;              # 1 (database id for movie rating)
     var $_url;             # http://imdb.com/title/tt0133093/
     var $_url_short;       # 0133093
     var $_title;           # The Matrix (1999)
@@ -10,19 +11,23 @@ class Movie {
 
     var $_wpdb;            # wordpress database handle
     var $_table;           # database table name
+	var $_table_prefix;    # just the wordpress database table prefix
+
 
     # constructor
-    function Movie($url=null, $rating=null, $review=null, $title=null, $watched_on=null) {
+    function Movie($url=null, $rating=null, $review=null, $title=null, $watched_on=null, $id=null) {
         $this->_url = rawurldecode(trim($url));
         $this->_rating = intval($rating);
         $this->_review = trim($review);
         $this->_title = $title;
         $this->_watched_on = $watched_on;
+		$this->_id = $id;
     }
 
     # wordpress' database handler and table prefix
     function set_database($wpdb, $table_prefix) {
         $this->_wpdb = $wpdb;
+		$this->_table_prefix = $table_prefix;
         $this->_table = $table_prefix . "movie_ratings";
     }
 
@@ -83,15 +88,33 @@ class Movie {
             return '<div id="message" class="error fade"><p><strong>Error: ' . rawurlencode(str_replace("''", "'", $this->_title)) . $msg . '.</strong></p></div>';
         }
     }
+	
+
+	# update movie rating data
+	function update_from_post() {
+		$this->_rating = $_POST["rating"];
+		$this->_review = $_POST["review"];
+		$this->_watched_on = $_POST["watched_on"];
+		$this->_wpdb->query("UPDATE $this->_table SET rating=$this->_rating, review='$this->_review', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
+		$this->_wpdb->show_errors();
+
+        if ($this->_wpdb->rows_affected > 0) {
+            # str_replace is to drop the 'magic quotes' (they tend to be here)
+            return '<div id="message" class="updated fade"><p><strong>' . str_replace("''", "'", $this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
+        } else {
+            return '<div id="message" class="error fade"><p><strong>Error: ' . str_replace("''", "'", $this->_title) . ' not updated.</strong></p></div>';
+        }
+	}
+
 
     # get latest movies
     function get_latest_movies($count) {
         $movies = array();
-        $results = $this->_wpdb->get_results("SELECT title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i') AS watched_on FROM $this->_table ORDER BY watched_on DESC LIMIT " . intval($count));
+        $results = $this->_wpdb->get_results("SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i') AS watched_on FROM $this->_table ORDER BY watched_on DESC LIMIT " . intval($count));
 
         if ($results) {
             foreach ($results as $r) {
-                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, $r->review, $r->title, $r->watched_on);
+                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, $r->review, $r->title, $r->watched_on, $r->id);
                 array_push($movies, $movie);
             }
         }
@@ -99,11 +122,34 @@ class Movie {
         return $movies;
     }
 
+
+	# find movie
+	function find_movie_by_id($id) {
+		$results = $this->_wpdb->get_results("SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i:%s') AS watched_on FROM $this->_table WHERE id=$id LIMIT 1;");
+		if ($results) {
+			# only 1 result
+			foreach ($results as $r) {
+				$m = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, $r->review, $r->title, $r->watched_on, $r->id);
+				$m->set_database($this->_wpdb, $this->_table_prefix);
+				return $m;
+			}
+		}
+		else return null;
+	}
+
+
+	# delete movie
+	function delete() {
+		if ($this->_wpdb->query("DELETE FROM $this->_table WHERE id=$this->_id LIMIT 1;")) return '<div id="message" class="updated fade"><p><strong>Movie rating deleted.</strong></p></div>';
+		else return '<div id="message" class="error fade"><p><strong>Error: Something weird happened and I could not delete this movie rating.</strong></p></div>';
+	}
+
+
     # various statistics
     function get_watched_movies_count($range) {
         if (($range == "total-average") || ($range == "first-rated") || ($range == "last-rated")) {
-			$first_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
-			$last_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
+			$first_id = $this->_wpdb->get_var("SELECT id FROM $this->_table ORDER BY watched_on ASC LIMIT 1;");
+			$last_id = $this->_wpdb->get_var("SELECT id FROM $this->_table ORDER BY watched_on DESC LIMIT 1;");
 
 			# division by zero fix
 			$first_id = ($first_id == "" ? 0 : $first_id);
@@ -111,8 +157,8 @@ class Movie {
 		}
 
 		if ($range == "total-average") {
-            $days_first = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$first_id;");
-            $days_last = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$last_id;");
+            $days_first = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM $this->_table WHERE id=$first_id;");
+            $days_last = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM $this->_table WHERE id=$last_id;");
 
             # division by zero fix
             $days_diff = $days_last - $days_first;
@@ -121,10 +167,10 @@ class Movie {
             $query = "SELECT (COUNT(id)/$days) AS count FROM $this->_table ";
         }
 		else if ($range == "first-rated") {
-			$query = "SELECT watched_on FROM wp_movie_ratings WHERE id=$first_id;";
+			$query = "SELECT watched_on FROM $this->_table WHERE id=$first_id;";
 		}
 		else if ($range == "last-rated") {
-			$query = "SELECT watched_on FROM wp_movie_ratings WHERE id=$last_id;";
+			$query = "SELECT watched_on FROM $this->_table WHERE id=$last_id;";
 		}
 		else $query = "SELECT COUNT(id) AS count FROM $this->_table ";
 
@@ -155,6 +201,13 @@ class Movie {
         return $this->_wpdb->get_var($query . $cond);
     }
 
+	
+	# Average movie rating
+	function get_average_movie_rating() {
+		return $this->_wpdb->get_var("SELECT AVG(rating) FROM $this->_table");
+	}
+
+
     # show movie
     function show($img_path, $options = array()) {
 
@@ -181,10 +234,22 @@ class Movie {
             }
         } else $title_short = $this->_title;
 
+		echo "<form method=\"post\" action=\"\">\n";
+		echo "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
+
+		echo "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
+
         ?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a> <?php
 
 		# Text ratings
 		echo "<span class=\"rating\"><span class=\"value\">" . $this->_rating . "</span>/<span class=\"best\">10</span></span>\n";
+
+		# Admin options
+		if (is_plugin_page()) {
+			echo "<input class=\"button\" type=\"submit\" name=\"action\" value=\"edit\" />\n";
+			echo "<input class=\"button\" type=\"submit\" name=\"action\" value=\"delete\" onclick=\"return delete_confirmation()\" />\n";
+		}
+
 		echo "</p>\n";
 
         ?><acronym class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></acronym><? echo "\n";
@@ -192,7 +257,7 @@ class Movie {
 		# Stars ratings using images
 		if ($text_ratings == "no") {
 			echo "<div class=\"rating_stars\">\n";
-			
+
 			if ($five_stars_ratings == "yes") {
 				for ($i=1; $i<6; $i++) {
 					if ($this->_rating == ($i*2 - 1)) { ?><img src="<?= $img_path ?>half_star.gif" alt="+" /><? echo "\n"; }
@@ -211,7 +276,81 @@ class Movie {
 
 		# Review
         if (($include_review == "yes") && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
-    }
-}
 
+		# hReview version
+		echo "<span class=\"version\">0.3</span>\n";
+
+		echo "</div>\n";
+		echo "</form>\n";
+
+    }
+
+
+	# show html form
+	function show_add_edit_form($action) {
+?>
+<form method="post" action="">
+
+<?php if ($action == "Update") echo "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />"; ?>
+
+<table class="optiontable">
+
+<?php if ($action != "Update") { ?>
+<tr valign="top">
+<th scope="row"><label for="url">iMDB link:</label></th>
+<td><input type="text" name="url" id="url" class="text" size="40" value="<?= $this->_url ?>" />
+<br />
+Must be a valid <a href="http://imdb.com/">imdb.com</a> link.</td>
+</tr>
+<?php } else { ?>
+<tr valign="top">
+<th scope="row"><strong>Title:</strong></th>
+<td><a href="<?= $this->_url ?>"><?= $this->_title ?></a></td>
+</tr>
+<?php } ?>
+
+<tr valign="top">
+<th scope="row"><label for="rating">Movie rating:</label></th>
+<td>
+<select name="rating" id="rating">
+<?php
+for($i=1; $i<11; $i++) {
+	echo "<option value=\"$i\"";
+	if (($i == $this->_rating) || (($i==7) && ($this->_rating == null))) echo " selected=\"selected\"";
+	echo ">$i</option>\n";
+}
+?>
+</select>
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="review">Short review:</label></th>
+<td>
+<textarea name="review" id="review" rows="3" cols="45">
+<?= $this->_review ?>
+</textarea>
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="watched_on">Watched on:</label></th>
+<?php $watched_on = ($this->_watched_on == null ? gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset"))) : $this->_watched_on); ?>
+<td><input type="text" name="watched_on" id="watched_on" class="text" size="23" value="<?= $watched_on ?>" />
+<br />
+Remember to use correct date format (<code>YYYY-MM-DD HH:MM:SS</code>) when setting custom dates.</td>
+</tr>
+
+</table>
+
+<p class="submit">
+<?php if ($action == "Update") echo "<input type=\"submit\" name=\"action\" value=\"Delete &raquo;\" onclick=\"return delete_confirmation()\" />\n"; ?>
+<input type="submit" name="action" value="<?= $action ?> movie rating &raquo;" />
+</p>
+
+</form>
+
+<?php
+	}
+}
 ?>

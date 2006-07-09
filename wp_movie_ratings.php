@@ -85,6 +85,9 @@ function wp_movie_ratings_stylesheet() {
 
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
+
+	# JS inclusion
+	if (is_plugin_page()) echo "<script type=\"text/javascript\" src=\"" . $plugin_path . "admin_page.js\"></script>\n";
 }
 
 
@@ -127,10 +130,7 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		echo "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
 		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings));
-		echo "<span class=\"version\">0.3</span>\n";
-		echo "</div>\n";
 		echo "</li>\n";
 	}
 
@@ -140,12 +140,14 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	echo "</div>\n";
 }
 
+
 # Add 'Movies' page to Wordpress' Manage menu
 function wp_movie_ratings_add_management_page() {
     if (function_exists('add_management_page')) {
 		  add_management_page('Movies', 'Movies', 8, basename(__FILE__), 'wp_movie_ratings_management_page');
     }
 }
+
 
 # Add 'Movies' page to Wordpress' Options menu
 function wp_movie_ratings_add_options_page() {
@@ -159,6 +161,7 @@ function wp_movie_ratings_add_options_page() {
 function wp_movie_ratings_management_page() {
 	global $table_prefix, $wpdb;
 
+	# DATABASE -> ADD NEW MOVIE
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["url"]) && isset($_POST["rating"]) && isset($_POST["watched_on"])) {
 		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
@@ -172,63 +175,52 @@ function wp_movie_ratings_management_page() {
 			}
 		}
 		echo rawurldecode($msg);
+		$m = new Movie(); # new 'empty' movie object
 	}
+
+	# DATABASE -> DELETE MOVIE
+	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "delete")) {
+		$m = new Movie();
+		$m->set_database($wpdb, $table_prefix);
+		$movie = $m->find_movie_by_id($_POST["id"]);
+		if ($movie != null)	echo $movie->delete();
+		else echo '<div id="message" class="error fade"><p><strong>Error: No movie to delete.</strong></p></div>';
+
+		$m = new Movie(); # new 'empty' movie object
+	}
+
+	# DATABASE -> UPDATE MOVIE DATA
+	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "update")) {
+		$movie = new Movie();
+		$movie->set_database($wpdb, $table_prefix);
+		$m = $movie->find_movie_by_id($_POST["id"]);
+		if (isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
+	}
+
+	# EDIT MOVIE
+	if (isset($_POST["action"]) && ($_POST["action"] == "edit")) {
+		$movie = new Movie();
+		$movie->set_database($wpdb, $table_prefix);
+		$m = $movie->find_movie_by_id($_POST["id"]);
+		$dialog_title = "Edit";
+		$action = "Update";
+	} else { # ADD MOVIE
+		$dialog_title = "Add new";
+		$action = "Add new";
+		$m = new Movie(); # new 'empty' movie object
+	}
+
+	$dialog_title .= " movie rating.";
 ?>
 
 <div class="wrap">
-<h2>Add new movie rating</h2>
-
-<form method="post" action="">
-
-<table class="optiontable">
-
-<tr valign="top">
-<th scope="row"><label for="url">iMDB link:</label></th>
-<td><input type="text" name="url" id="url" class="text" size="40" />
-<br />
-Must be a valid <a href="http://imdb.com/">imdb.com</a> link.</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="rating">Movie rating:</label></th>
-<td>
-<select name="rating" id="rating">
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7" selected="selected">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option>
-</select>
-</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="review">Short review:</label></th>
-<td>
-<textarea name="review" id="review" rows="3" cols="45">
-</textarea>
-</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="watched_on">Watched on:</label></th>
-<td><input type="text" name="watched_on" id="watched_on" class="text" size="23" value="<?= gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset"))) ?>" />
-<br />
-Remeber to use correct format when setting custom dates.</td>
-</tr>
-
-</table>
-
-<p class="submit"><input type="submit" name="info_update" value="Add new movie rating &raquo;" /></p>
-</form>
+<h2><?= $dialog_title ?></h2>
 
 <?php
+
+$m->show_add_edit_form($action);
 wp_movie_ratings_show(20, array("text_ratings" => 'yes', "include_review" => 'no', "sidebar_mode" => 'no'));
+
 ?>
 
 <h2>Statistics</h2>
@@ -261,7 +253,7 @@ $last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
 <p>This year: <strong><?= $m->get_watched_movies_count("year") ?></strong>
 (last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
 
-<p>Average movie rating: <strong><?= $wpdb->get_var("SELECT AVG(rating) FROM wp_movie_ratings") ?></strong>.</p>
+<p>Average movie rating: <strong><?= $m->get_average_movie_rating() ?></strong>.</p>
 
 <p>First movie rated on: <strong><?= $m->get_watched_movies_count("first-rated") ?></strong>.</p>
 <p>Last movie rated on: <strong><?= $m->get_watched_movies_count("last-rated") ?></strong>.</p>
@@ -394,7 +386,7 @@ register_activation_hook(__FILE__, 'wp_movie_ratings_install');
 add_action('admin_menu', 'wp_movie_ratings_add_management_page');
 add_action('admin_menu', 'wp_movie_ratings_add_options_page');
 
-# CSS inclusion in HEAD
+# CSS/JS inclusion in HEAD
 add_action('wp_head', 'wp_movie_ratings_stylesheet');
 add_action('admin_head', 'wp_movie_ratings_stylesheet');
 
