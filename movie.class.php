@@ -101,20 +101,32 @@ class Movie {
 
     # various statistics
     function get_watched_movies_count($range) {
-        if ($range == "total-average") {
-			$min_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
-			$max_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
+        if (($range == "total-average") || ($range == "first-rated") || ($range == "last-rated")) {
+			$first_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
+			$last_id = $this->_wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
 
-            $days_first = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$min_id;");
-            $days_last = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$max_id;");
+			# division by zero fix
+			$first_id = ($first_id == "" ? 0 : $first_id);
+			$last_id = ($last_id == "" ? 0 : $last_id);
+		}
 
-            # division by zero bugfix
+		if ($range == "total-average") {
+            $days_first = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$first_id;");
+            $days_last = $this->_wpdb->get_var("SELECT TO_DAYS(watched_on) FROM wp_movie_ratings WHERE id=$last_id;");
+
+            # division by zero fix
             $days_diff = $days_last - $days_first;
             $days = ($days_diff == 0 ? 1 : $days_diff);
 
             $query = "SELECT (COUNT(id)/$days) AS count FROM $this->_table ";
         }
-        else $query = "SELECT COUNT(id) AS count FROM $this->_table ";
+		else if ($range == "first-rated") {
+			$query = "SELECT watched_on FROM wp_movie_ratings WHERE id=$first_id;";
+		}
+		else if ($range == "last-rated") {
+			$query = "SELECT watched_on FROM wp_movie_ratings WHERE id=$last_id;";
+		}
+		else $query = "SELECT COUNT(id) AS count FROM $this->_table ";
 
         switch ($range) {
             case "last-30-days" : $tmp_date = mktime(0, 0, 0, date("m"), date("j")-30, date("Y"));

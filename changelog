@@ -3,6 +3,7 @@ WP Movie Ratings changelog:
 - added option to display movie ratings using 5 stars instead of 10.
 - ability to set custom date the film was watched on (instead of assuming the current date) and display movie ratings based on this date instead of id.
 - new statistic: average movie rating for all rated movies.
+- fixed SQL errors when there are no movies rated.
 
 2006-06-27
 - sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.

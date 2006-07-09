@@ -225,20 +225,18 @@ Remeber to use correct format when setting custom dates.</td>
 </table>
 
 <p class="submit"><input type="submit" name="info_update" value="Add new movie rating &raquo;" /></p>
-
 </form>
 
 <?php
-
 wp_movie_ratings_show(20, array("text_ratings" => 'yes', "include_review" => 'no', "sidebar_mode" => 'no'));
-$m = new Movie();
-$m->set_database($wpdb, $table_prefix);
-
 ?>
 
 <h2>Statistics</h2>
 
 <?php
+
+$m = new Movie();
+$m->set_database($wpdb, $table_prefix);
 
 $total = $m->get_watched_movies_count("total");
 $total_avg = $m->get_watched_movies_count("total-average");
@@ -265,15 +263,8 @@ $last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
 
 <p>Average movie rating: <strong><?= $wpdb->get_var("SELECT AVG(rating) FROM wp_movie_ratings") ?></strong>.</p>
 
-<?php
-
-$min_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on ASC LIMIT 1;");
-$max_id = $wpdb->get_var("SELECT id FROM wp_movie_ratings ORDER BY watched_on DESC LIMIT 1;");
-
-?>
-
-<p>First movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=$min_id;")?></strong>.</p>
-<p>Last movie rated on: <strong><?= $wpdb->get_var("SELECT watched_on FROM wp_movie_ratings WHERE id=$max_id;")?></strong>.</p>
+<p>First movie rated on: <strong><?= $m->get_watched_movies_count("first-rated") ?></strong>.</p>
+<p>Last movie rated on: <strong><?= $m->get_watched_movies_count("last-rated") ?></strong>.</p>
 
 <h2>Firefox bookmarklet</h2>
 
