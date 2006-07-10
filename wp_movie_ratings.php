@@ -33,6 +33,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+# Anti-hack
+if (!defined('ABSPATH')) die("No cheating!");
+
 include_once(dirname(__FILE__) . "/wp_http_request.class.php");
 include_once(dirname(__FILE__) . "/movie.class.php");
 
@@ -378,9 +381,8 @@ function wp_movie_ratings_options_page() {
 <?php
 }
 
-
 # Hook for plugin installation
-register_activation_hook(__FILE__, 'wp_movie_ratings_install');
+add_action('activate_' . dirname(plugin_basename(__FILE__)) . '/' . basename(plugin_basename(__FILE__)), 'wp_movie_ratings_install');
 
 # Add actions for admin panel
 add_action('admin_menu', 'wp_movie_ratings_add_management_page');
