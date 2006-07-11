@@ -65,7 +65,7 @@ textarea {
 }
 
 .star-rating li a:hover {
-	background: url(star_rating.gif) left bottom;
+	background: url(star_rating.gif) bottom left;
 	z-index: 1;
 	left: 0;
 }
@@ -156,7 +156,7 @@ textarea {
 	left: 207px;
 }
 
-p small {
+p.help {
 	color: #999;
 	font: 9px verdana, sans-serif;
 }

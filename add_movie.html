@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>Wodpress' movie ratings</title>
+<title>Add new movie rating</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" media="screen" href="add_movie.css" />
 <script type="text/javascript" src="prototype.js"></script>
@@ -14,7 +14,7 @@
 
 <h1>Add new movie rating:</h1>
 
-<p><small>Type imdb link, write optional review and click on a star to rate the movie.</small></p>
+<p class="help">Type imdb link, write optional review and click on a star to rate the movie.</p>
 
 <p>
 <label for="url">imdb link:</label>
@@ -23,7 +23,7 @@
 
 <p>
 <label for="review">Short review:</label>
-<textarea name="review" id="review">
+<textarea name="review" id="review" cols="20" rows="3">
 </textarea>
 </p>
 
@@ -48,7 +48,5 @@
 
 <div id="message" style="display: none"></div>
 
-
 </body>
-
 </html>

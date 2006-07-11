@@ -43,8 +43,16 @@ function add_behaviour() {
 		node.addEventListener('click', function () {
 			var message = $('message')
 			if ($F('url').match(/^http:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}.*$/i)) {
+				var rating = parseInt(this.id.substr(6))
+				// make selected rating 'stuck'
+				$A( $('rating').getElementsByTagName('a') ).each( function(el) {
+					var id = parseInt(el.id.substr(6))
+					if (rating >= id) el.style.background="url(star_rating.gif) bottom left"
+					else el.style.backgroundPosition = "top left"
+				})
+				// execute AJAX call
 				Effect.Fade('message', {duration: 0.4, queue: 'end'})
-				var pars = 'rating=' + this.id.substr(6) + '&url=' + escape(beautify_imdb_uri($F('url'))) + '&review=' + $F('review')
+				var pars = 'rating=' + rating + '&url=' + escape(beautify_imdb_uri($F('url'))) + '&review=' + $F('review')
 				var myAjax = new Ajax.Request('../../../wp-admin/edit.php?page=wp_movie_ratings.php', { method: 'post', parameters: pars, onComplete: show_response })
 			} else {
 				message.setAttribute('class', 'error')
