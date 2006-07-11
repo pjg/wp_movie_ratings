@@ -149,9 +149,16 @@ textarea {
 }
 
 #loading {
-	left: 207px;
+	left: 212px;
 	position: absolute;
 	top: 3px;
+}
+
+#loading p {
+	position: absolute;
+	left: 22px;
+	top: 2px;
+	white-space: nowrap;
 }
 
 p.help {
