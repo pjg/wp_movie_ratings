@@ -69,9 +69,12 @@ class Movie {
         $current_time = gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset")));
 		$watched_on = ($this->_watched_on == null ? $current_time : $this->_watched_on);
 
-        # insert into db
-        $this->_wpdb->hide_errors();
-        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('" . $this->_title . "', '$this->_url_short', $this->_rating, '$this->_review', '$watched_on');");
+        # insert into db (we make sure that special characters are properly escaped, but not double escaped)
+		$title = (get_magic_quotes_runtime() == 0 ? addslashes($this->_title) : $this->_title);
+		$review = (get_magic_quotes_runtime() == 0 ? addslashes($this->_review) : $this->_review);
+
+		$this->_wpdb->hide_errors();
+        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('$title', '$this->_url_short', $this->_rating, '$review', '$watched_on');");
 
         $this->_wpdb->show_errors();
 
