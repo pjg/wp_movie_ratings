@@ -4,12 +4,9 @@ body {
 }
 
 label {
-	font: 12px verdana, sans-serif;
-
+	display: block;
 	font: bold 14px arial, serif;
 	letter-spacing: 0;
-
-	display: block;
 	margin: 12px 0 2px 0;
 }
 
@@ -24,17 +21,17 @@ h1 {
 }
 
 input.text, textarea {
-	padding: 4px 6px;
-	font: 13px verdana, sans-serif;
-	border: 1px solid #666;
 	background: #F9F9F5;
-	width: 400px;
+	border: 1px solid #666;
 	color: #222;
+	font: 13px verdana, sans-serif;
+	padding: 4px 6px;
+	width: 400px;
 }
 
 input.text:focus, textarea:focus {
+	background: #FFE;
 	border-color: #800;
-	background: white;
 }
 
 textarea {
@@ -42,12 +39,12 @@ textarea {
 }
 
 .star-rating {
+	background: url(star_rating.gif) top left repeat-x;
+	height: 20px;
 	list-style: none;
 	margin: 2px 0 5px;
-	width: 200px;
-	height: 20px;
 	position: relative;
-	background: url(star_rating.gif) top left repeat-x;
+	width: 200px;
 }
 
 .star-rating li {
@@ -55,20 +52,20 @@ textarea {
 }
 
 .star-rating li a {
-	display: block;
-	width: 20px;
-	height: 20px;
-	text-decoration: none;
-	z-index: 20;
-	position: absolute;
-	padding: 0;
 	cursor: pointer;
+	display: block;
+	height: 20px;
+	padding: 0;
+	position: absolute;
+	text-decoration: none;
+	width: 20px;
+	z-index: 20;
 }
 
 .star-rating li a:hover {
 	background: url(star_rating.gif) bottom left;
-	z-index: 1;
 	left: 0;
+	z-index: 1;
 }
 
 .star-rating a.one-star {
@@ -152,9 +149,9 @@ textarea {
 }
 
 #loading {
+	left: 207px;
 	position: absolute;
 	top: 3px;
-	left: 207px;
 }
 
 p.help {
