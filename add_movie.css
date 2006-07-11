@@ -62,6 +62,7 @@ textarea {
 	z-index: 20;
 	position: absolute;
 	padding: 0;
+	cursor: pointer;
 }
 
 .star-rating li a:hover {

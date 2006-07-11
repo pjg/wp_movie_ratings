@@ -166,8 +166,9 @@ function wp_movie_ratings_management_page() {
 
 	# DATABASE -> ADD NEW MOVIE
 	# Get title of the movie and save its rating in the database
-	if (isset($_POST["url"]) && isset($_POST["rating"]) && isset($_POST["watched_on"])) {
+	if (isset($_POST["url"]) && isset($_POST["rating"])) {
 		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
+		$watched_on = (isset($_POST["watched_on"]) ? $_POST["watched_on"] : null);
 		$movie = new Movie($_POST["url"], $_POST["rating"], $review, null, $_POST["watched_on"]);
 		$msg = $movie->parse_parameters();
 		if ($msg == "") {
