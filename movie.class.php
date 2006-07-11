@@ -71,13 +71,12 @@ class Movie {
 
         # insert into db
         $this->_wpdb->hide_errors();
-        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('" . addslashes($this->_title) . "', '$this->_url_short', $this->_rating, '$this->_review', '$watched_on');");
+        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('" . $this->_title . "', '$this->_url_short', $this->_rating, '$this->_review', '$watched_on');");
 
         $this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected == 1) {
-            # str_replace is to drop the 'magic quotes' (they tend to be here)
-            return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(str_replace("''", "'", $this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
+            return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(stripslashes($this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
         } else {
             $mysql_error = mysql_error();
             $msg = "";
@@ -85,10 +84,10 @@ class Movie {
             if (strpos($mysql_error, "Duplicate entry") === false) $msg = ' not added. ' . $mysql_error;
             else $msg = ' is already rated';
 
-            return '<div id="message" class="error fade"><p><strong>Error: ' . rawurlencode(str_replace("''", "'", $this->_title)) . $msg . '.</strong></p></div>';
+            return '<div id="message" class="error fade"><p><strong>Error: ' . rawurlencode(stripslashes($this->_title)) . $msg . '.</strong></p></div>';
         }
     }
-	
+
 
 	# update movie rating data
 	function update_from_post() {
@@ -99,10 +98,9 @@ class Movie {
 		$this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
-            # str_replace is to drop the 'magic quotes' (they tend to be here)
-            return '<div id="message" class="updated fade"><p><strong>' . str_replace("''", "'", $this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
+            return '<div id="message" class="updated fade"><p><strong>' . stripslashes($this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
         } else {
-            return '<div id="message" class="error fade"><p><strong>Error: ' . str_replace("''", "'", $this->_title) . ' not updated.</strong></p></div>';
+            return '<div id="message" class="error fade"><p><strong>Error: ' . stripslashes($this->_title) . ' not updated.</strong></p></div>';
         }
 	}
 
@@ -114,7 +112,7 @@ class Movie {
 
         if ($results) {
             foreach ($results as $r) {
-                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, $r->review, $r->title, $r->watched_on, $r->id);
+                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->watched_on, $r->id);
                 array_push($movies, $movie);
             }
         }
@@ -129,7 +127,7 @@ class Movie {
 		if ($results) {
 			# only 1 result
 			foreach ($results as $r) {
-				$m = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, $r->review, $r->title, $r->watched_on, $r->id);
+				$m = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->watched_on, $r->id);
 				$m->set_database($this->_wpdb, $this->_table_prefix);
 				return $m;
 			}
@@ -201,7 +199,7 @@ class Movie {
         return $this->_wpdb->get_var($query . $cond);
     }
 
-	
+
 	# Average movie rating
 	function get_average_movie_rating() {
 		return $this->_wpdb->get_var("SELECT AVG(rating) FROM $this->_table");
