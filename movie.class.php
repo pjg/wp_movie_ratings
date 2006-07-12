@@ -34,13 +34,11 @@ class Movie {
 
     # check if we have a valid imdb.com link
     function parse_parameters() {
-        $msg = "";
-
         if (preg_match("/^http:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $matches)) {
             if (($this->_rating > 0) && ($this->_rating < 11)) {
                 $this->_url_short = $matches[2];
                 $this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
-                return "";
+                $msg = "";
             }
             else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
         }
@@ -57,10 +55,7 @@ class Movie {
         preg_match("/<title>(.+)<\/title>/i", $imdb, $title_matches);
         $this->_title = $title_matches[1];
 
-        if ($this->_title == "") {
-            $msg = '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb.</strong></p></div>';
-            return $msg;
-        }
+        if ($this->_title == "") return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb.</strong></p></div>';
         else return "";
     }
 
@@ -114,36 +109,74 @@ class Movie {
         }
 	}
 
+	# find movie
+	function get_movie_by_id($id) {
+		$arr = $this->get_movies(array("type" => "one", "id" => $id));
+		if (count($arr) == 1) {
+			return $arr[0];
+		} else return null;
+	}
+
 
     # get latest movies
     function get_latest_movies($count) {
-        $movies = array();
-        $results = $this->_wpdb->get_results("SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i') AS watched_on FROM $this->_table ORDER BY watched_on DESC LIMIT " . intval($count));
+		return $this->get_movies(array("type" => "latest", "count" => $count));
+    }
+
+
+	# get all movies
+	function get_all_movies() {
+		return $this->get_movies(array("type" => "all"));
+	}
+
+
+	# get movies
+	# options:
+	#	"type" => "one"/"latest"/"all"
+	#	"count" => 1-n
+	#	"order_by" => "title"/"watched_on"
+	#	"direction" => "ASC"/"DESC"
+    function get_movies($options = array()) {
+		$movies = array();
+
+		# get 20 latest movies is the default
+		$type = (isset($options["type"]) ? $options["type"] : "latest");
+
+		if ($type == "one") {
+			$id = (isset($options["id"]) ? $options["id"] : 1);
+			$count = 1;
+		}
+		
+		if ($type == "latest") {
+			$order_by = (isset($options["order_by"]) ? $options["order_by"] : "watched_on");
+			$direction = (isset($options["direction"]) ? $options["direction"] : "DESC");
+			$count = (isset($options["count"]) ? $options["count"] : 20);
+		}
+
+		if ($type == "all") {
+			$order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
+			$direction = (isset($options["direction"]) ? $options["direction"] : "ASC");
+		}
+
+		# Bulding SQL query
+		$date_format = "%Y-%m-%d %H:%i" . ($type == "one" ? ":%s" : "");
+		$sql  = "SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
+		if ($type == "one") $sql .= " WHERE id=$id ";
+		if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $direction;
+		if (in_array($type, array("latest", "one"))) $sql .= " LIMIT " . intval($count);
+
+        $results = $this->_wpdb->get_results($sql);
 
         if ($results) {
             foreach ($results as $r) {
                 $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->watched_on, $r->id);
+				$movie->set_database($this->_wpdb, $this->_table_prefix);
                 array_push($movies, $movie);
             }
         }
 
         return $movies;
     }
-
-
-	# find movie
-	function find_movie_by_id($id) {
-		$results = $this->_wpdb->get_results("SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '%Y-%m-%d %H:%i:%s') AS watched_on FROM $this->_table WHERE id=$id LIMIT 1;");
-		if ($results) {
-			# only 1 result
-			foreach ($results as $r) {
-				$m = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->watched_on, $r->id);
-				$m->set_database($this->_wpdb, $this->_table_prefix);
-				return $m;
-			}
-		}
-		else return null;
-	}
 
 
 	# delete movie
@@ -210,7 +243,7 @@ class Movie {
     }
 
 
-	# Average movie rating
+	# average movie rating
 	function get_average_movie_rating() {
 		return $this->_wpdb->get_var("SELECT AVG(rating) FROM $this->_table");
 	}
@@ -218,12 +251,15 @@ class Movie {
 
     # show movie
     function show($img_path, $options = array()) {
+		# output
+		$o = "";
 
 		# parse arugments
 		$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_text_ratings"));
 		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_include_review"));
 		$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 		$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
+		$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
 
 		if (!is_plugin_page()) {
 			# shorten the title
@@ -242,55 +278,58 @@ class Movie {
             }
         } else $title_short = $this->_title;
 
-		echo "<form method=\"post\" action=\"\">\n";
-		echo "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
+		$o .= "<form method=\"post\" action=\"\">\n";
+		$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
 
-		echo "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
+		$o .= "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
 
-        ?><p class="item"><a class="url fn" href="<?= $this->_url ?>" title="<?= $this->_title . "\n" ?>Watched and reviewed on <?= $this->_watched_on ?>"><?= $title_short ?></a> <?php
+		$o .= "<p class=\"item\"><a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
+		$o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";
 
 		# Text ratings
-		echo "<span class=\"rating\"><span class=\"value\">" . $this->_rating . "</span>/<span class=\"best\">10</span></span>\n";
+		$o .= "<span class=\"rating\"><span class=\"value\">$this->_rating</span>/<span class=\"best\">10</span></span>\n";
 
 		# Admin options
 		if (is_plugin_page()) {
-			echo "<input class=\"button\" type=\"submit\" name=\"action\" value=\"edit\" />\n";
-			echo "<input class=\"button\" type=\"submit\" name=\"action\" value=\"delete\" onclick=\"return delete_confirmation()\" />\n";
+			$o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"edit\" />\n";
+			$o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"delete\" onclick=\"return delete_confirmation()\" />\n";
 		}
 
-		echo "</p>\n";
+		$o .= "</p>\n";
 
-        ?><acronym class="dtreviewed" title="<?= str_replace(" ", "T", $this->_watched_on) ?>"><?= $this->_watched_on ?></acronym><? echo "\n";
+        $o .= "<acronym class=\"dtreviewed\" title=\"" . str_replace(" ", "T", $this->_watched_on) . "\">$this->_watched_on</acronym>\n";
 
 		# Stars ratings using images
 		if ($text_ratings == "no") {
-			echo "<div class=\"rating_stars\">\n";
+			$o .= "<div class=\"rating_stars\">\n";
 
 			if ($five_stars_ratings == "yes") {
 				for ($i=1; $i<6; $i++) {
-					if ($this->_rating == ($i*2 - 1)) { ?><img src="<?= $img_path ?>half_star.gif" alt="+" /><? echo "\n"; }
-					else if ($this->_rating >= ($i*2)) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
-					else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
+					if ($this->_rating == ($i*2 - 1)) $o .= "<img src=\"" . $img_path . "half_star.gif\" alt=\"+\" />\n";
+					else if ($this->_rating >= ($i*2)) $o .= "<img src=\"" . $img_path . "full_star.gif\" alt=\"*\" />\n";
+					else $o .= "<img src=\"" . $img_path . "empty_star.gif\" alt=\"\" />\n";
 				}
 			} else {
 				for ($i=1; $i<11; $i++) {
-					if ($this->_rating >= $i) { ?><img src="<?= $img_path ?>full_star.gif" alt="*" /><? echo "\n"; }
-					else { ?><img src="<?= $img_path ?>empty_star.gif" alt="" /><? echo "\n"; }
+					if ($this->_rating >= $i) $o .= "<img src=\"" . $img_path . "full_star.gif\" alt=\"*\" />\n";
+					else $o .= "<img src=\"" . $img_path . "empty_star.gif\" alt=\"\" />\n";
 				}
 			}
 
-			echo "</div>\n";
+			$o .= "</div>\n";
 		}
 
 		# Review
-        if (($include_review == "yes") && ($this->_review != "")) echo "<p class=\"description\">" . $this->_review . "</p>\n";
+		if ($page_mode == "yes") $include_review = "no";
+        if (($include_review == "yes") && ($this->_review != "")) $o .= "<p class=\"description\">$this->_review</p>\n";
 
 		# hReview version
-		echo "<span class=\"version\">0.3</span>\n";
+		$o .= "<span class=\"version\">0.3</span>\n";
 
-		echo "</div>\n";
-		echo "</form>\n";
+		$o .= "</div>\n";
+		$o .= "</form>\n";
 
+		return $o;
     }
 
 

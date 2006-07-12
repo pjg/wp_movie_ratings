@@ -91,10 +91,11 @@ function get_plugin_path($type) {
 }
 
 
-# Include stylesheet in the HEAD
-function wp_movie_ratings_stylesheet() {
+# Include CSS/JS in the HEAD of html page
+function wp_movie_ratings_head_inclusion() {
 	$plugin_path = get_plugin_path("relative");
 
+	# CSS inclusion
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
 
@@ -103,7 +104,20 @@ function wp_movie_ratings_stylesheet() {
 }
 
 
-# Show latest movie ratings
+
+# Change [[wp_movie_ratings_page]] into movie ratings list
+function parse_wp_movie_ratings_tags($content = "") {
+	return str_replace("[[wp_movie_ratings_page]]", get_wp_movie_ratings(null, array("page_mode" => "yes")), $content);
+}
+
+
+# Pass-through function
+function wp_movie_ratings_show($count = null, $options = array()) {
+	echo get_wp_movie_ratings($count, $options);
+}
+
+
+# Get latest movie ratings (get HTML code)
 # Params:
 #	$count - number of movies to show; if equals -1 it will read the number from the options saved in the database
 #   $options - optional parameters as hash array (if not specified, they will be read from the database)
@@ -111,39 +125,46 @@ function wp_movie_ratings_stylesheet() {
 #       'include_review' -> include review with each movie rating ('yes'/'no')
 #	    'sidebar_mode' -> compact view for sidebar mode ('yes'/'no')
 #	    'five_stars_ratings' -> display movie ratings using 5 stars instead of 10 ('yes'/'no')
-function wp_movie_ratings_show($count = -1, $options = array()) {
+#       'page_mode' -> display all movie ratings on a separate page (with additional options, etc.)
+function get_wp_movie_ratings($count = null, $options = array()) {
 	global $wpdb, $table_prefix;
 
+	# output
+	$o = "";
+
 	# parse function parameters
-	if ($count == -1) $count = get_option("wp_movie_ratings_count");
+	if ($count == null) $count = get_option("wp_movie_ratings_count");
 	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
 	$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_include_review"));
 	$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
+	$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
 
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
-	$movies = $m->get_latest_movies(intval($count));
+	$movies = ($page_mode == "yes" ? $m->get_all_movies() : $m->get_latest_movies(intval($count)));
 
 	# love advert
-	echo "<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
+	$o .= "<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
 
 	# html container
-	echo "<div id=\"wp_movie_ratings\">\n";
-	echo "<h2>" . stripslashes(get_option("wp_movie_ratings_dialog_title")) . "</h2>\n";
-	echo "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
+	$o .= "<div id=\"wp_movie_ratings\">\n";
+	$o .= "<h2>" . stripslashes(get_option("wp_movie_ratings_dialog_title")) . "</h2>\n";
+	$o .= "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
-		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		$movie->show(get_plugin_path("relative"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings));
-		echo "</li>\n";
+		$o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
+		$o .= $movie->show(get_plugin_path("relative"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "page_mode" => $page_mode));
+		$o .= "</li>\n";
 	}
 
-	if (count($movies) == 0) echo "<li>No movies rated yet! Go and rate some. Now.</li>\n";
+	if (count($movies) == 0) $o .= "<li>No movies rated yet! Go and rate some. Now.</li>\n";
 
-	echo "</ul>\n";
-	echo "</div>\n";
+	$o .= "</ul>\n";
+	$o .= "</div>\n";
+
+	return $o;
 }
 
 
@@ -189,7 +210,7 @@ function wp_movie_ratings_management_page() {
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "delete")) {
 		$m = new Movie();
 		$m->set_database($wpdb, $table_prefix);
-		$movie = $m->find_movie_by_id($_POST["id"]);
+		$movie = $m->get_movie_by_id($_POST["id"]);
 		if ($movie != null)	echo $movie->delete();
 		else echo '<div id="message" class="error fade"><p><strong>Error: No movie to delete.</strong></p></div>';
 
@@ -200,7 +221,7 @@ function wp_movie_ratings_management_page() {
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "update")) {
 		$movie = new Movie();
 		$movie->set_database($wpdb, $table_prefix);
-		$m = $movie->find_movie_by_id($_POST["id"]);
+		$m = $movie->get_movie_by_id($_POST["id"]);
 		if (isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
 	}
 
@@ -208,7 +229,7 @@ function wp_movie_ratings_management_page() {
 	if (isset($_POST["action"]) && ($_POST["action"] == "edit")) {
 		$movie = new Movie();
 		$movie->set_database($wpdb, $table_prefix);
-		$m = $movie->find_movie_by_id($_POST["id"]);
+		$m = $movie->get_movie_by_id($_POST["id"]);
 		$dialog_title = "Edit";
 		$action = "Update";
 	} else { # ADD MOVIE
@@ -226,7 +247,7 @@ function wp_movie_ratings_management_page() {
 <?php
 
 $m->show_add_edit_form($action);
-wp_movie_ratings_show(20, array("text_ratings" => 'yes', "include_review" => 'no', "sidebar_mode" => 'no'));
+wp_movie_ratings_show(20, array("text_ratings" => "yes", "include_review" => "no", "sidebar_mode" => "no"));
 
 ?>
 
@@ -385,7 +406,9 @@ add_action('admin_menu', 'wp_movie_ratings_add_management_page');
 add_action('admin_menu', 'wp_movie_ratings_add_options_page');
 
 # CSS/JS inclusion in HEAD
-add_action('wp_head', 'wp_movie_ratings_stylesheet');
-add_action('admin_head', 'wp_movie_ratings_stylesheet');
+add_action('wp_head', 'wp_movie_ratings_head_inclusion');
+add_action('admin_head', 'wp_movie_ratings_head_inclusion');
+
+add_filter("the_content", "parse_wp_movie_ratings_tags");
 
 ?>
