@@ -9,6 +9,12 @@
 	width: 100%;
 }
 
+#wp_movie_ratings.page_mode {
+	border-width: 0;
+	margin: 5px 0;
+	padding: 0;
+}
+
 
 /* TITLE */
 
@@ -23,6 +29,10 @@
 #wp_movie_ratings ul {
 	margin: 6px 5px 3px 3px;
 	padding: 0;
+}
+
+#wp_movie_ratings.page_mode ul {
+	margin: 0;
 }
 
 
@@ -75,7 +85,7 @@
 	display: none;
 }
 
-#wp_movie_ratings ul.text_ratings li p span.rating {
+#wp_movie_ratings ul.text_ratings li div span.rating, #wp_movie_ratings.page_mode ul.text_ratings li div p span.rating {
 	display: inline;
 	font: bold 11px verdana, sans-serif;
 	position: absolute;
@@ -83,7 +93,7 @@
 	top: 2px;
 }
 
-#wp_movie_ratings ul.text_ratings li div.sidebar_mode p span.rating {
+#wp_movie_ratings ul.text_ratings li div.sidebar_mode span.rating {
 	position: static;
 	display: block;
 	margin: 3px 0 2px 1px;
@@ -93,14 +103,14 @@
 
 /* STARS RATING */
 
-#wp_movie_ratings ul li div.rating_stars {
+#wp_movie_ratings ul div div.rating_stars, #wp_movie_ratings.page_mode ul li div div.rating_stars {
 	font-size: 8px;
 	position: absolute;
 	right: 5px;
 	top: 2px;
 }
 
-#wp_movie_ratings ul li div.sidebar_mode div.rating_stars {
+#wp_movie_ratings ul div.sidebar_mode div.rating_stars {
 	display: block;
 	margin: 4px 0 2px 1px;
 	position: static;
@@ -126,4 +136,18 @@
 
 #wp_movie_ratings ul li p.description a {
 	font: 11px arial, sans-serif;
+}
+
+
+/* LINK LOVE */
+
+#link_love {
+	color: #AAA;
+	font: 9px verdana, sans-serif;
+	margin-top: 15px;
+	text-align: right;
+}
+
+#link_love a {
+	font: 9px verdana, sans-serif;
 }

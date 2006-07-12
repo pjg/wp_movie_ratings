@@ -278,8 +278,11 @@ class Movie {
             }
         } else $title_short = $this->_title;
 
-		$o .= "<form method=\"post\" action=\"\">\n";
-		$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
+		# Admin options
+		if (is_plugin_page()) {
+			$o .= "<form method=\"post\" action=\"\">\n";
+			$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />";
+		}
 
 		$o .= "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
 
@@ -289,7 +292,6 @@ class Movie {
 		# Text ratings
 		$o .= "<span class=\"rating\"><span class=\"value\">$this->_rating</span>/<span class=\"best\">10</span></span>\n";
 
-		# Admin options
 		if (is_plugin_page()) {
 			$o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"edit\" />\n";
 			$o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"delete\" onclick=\"return delete_confirmation()\" />\n";
@@ -327,7 +329,8 @@ class Movie {
 		$o .= "<span class=\"version\">0.3</span>\n";
 
 		$o .= "</div>\n";
-		$o .= "</form>\n";
+
+		if (is_plugin_page()) $o .= "</form>\n";
 
 		return $o;
     }

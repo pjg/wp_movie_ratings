@@ -11,6 +11,7 @@ WP Movie Ratings changelog:
 - fixed hardcoded wordpress table names which could have resulted in errors during installation and usage (no longer, hopefully).
 - fixed plugin activation problems on Windows machines.
 - magic quotes/strip slashes fixes.
+- added separate page listing all movies (just create a new wordpress page and add this tag there: [[wp_movie_ratings_page]]).
 
 2006-06-27
 - sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
