@@ -78,13 +78,22 @@ function wp_movie_ratings_install() {
 }
 
 
-# Include stylesheet in the HEAD
-function wp_movie_ratings_stylesheet() {
-	# TODO: implement get_pluginpath() function, as to not repeat this code...
+# Get web server plugin path -> "relative" or "absolute"
+function get_plugin_path($type) {
 	$siteurl = get_option("siteurl");
 	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
-	$tmp_array = parse_url($siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/");
-	$plugin_path = $tmp_array["path"];
+	$path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
+	if ($type == "absolute") return $path;
+	else {
+		$tmp_array = parse_url($path);
+		return $tmp_array["path"];
+	}
+}
+
+
+# Include stylesheet in the HEAD
+function wp_movie_ratings_stylesheet() {
+	$plugin_path = get_plugin_path("relative");
 
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
@@ -112,12 +121,6 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 
-	# plugin path
-	$siteurl = get_option("siteurl");
-	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
-	$tmp_array = parse_url($siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/");
-	$plugin_path = $tmp_array["path"];
-
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
 	$movies = $m->get_latest_movies(intval($count));
@@ -133,7 +136,7 @@ function wp_movie_ratings_show($count = -1, $options = array()) {
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		echo "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		$movie->show($plugin_path, array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings));
+		$movie->show(get_plugin_path("relative"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings));
 		echo "</li>\n";
 	}
 
@@ -265,15 +268,7 @@ $last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
 <h2>Firefox bookmarklet</h2>
 
 <p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work, though.</p>
-
-<?php
-
-$siteurl = get_option("siteurl");
-if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
-$pluginurl = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
-
-?>
-<p><a href="javascript:(function(){open('<?= $pluginurl ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
+<p><a href="javascript:(function(){open('<?= get_plugin_path("absolute") ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
 
 </div>
 

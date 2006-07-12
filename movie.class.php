@@ -31,6 +31,7 @@ class Movie {
         $this->_table = $table_prefix . "movie_ratings";
     }
 
+
     # check if we have a valid imdb.com link
     function parse_parameters() {
         $msg = "";
@@ -48,6 +49,7 @@ class Movie {
         return $msg;
     }
 
+
     # get title from imdb.com
     function get_title() {
         $req = new WP_HTTP_Request($this->_url);
@@ -62,12 +64,17 @@ class Movie {
         else return "";
     }
 
+	
+	# get current time using Wordpress' time offset
+	function get_current_time() {
+		# 2006-03-05 01:03:44
+		return gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset")));
+	}
+
+
     # save movie rating to the database
     function save() {
-
-        # 2006-03-05 01:03:44
-        $current_time = gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset")));
-		$watched_on = ($this->_watched_on == null ? $current_time : $this->_watched_on);
+		$watched_on = ($this->_watched_on == null ? $this->get_current_time() : $this->_watched_on);
 
         # insert into db (we make sure that special characters are properly escaped, but not double escaped)
 		$title = (get_magic_quotes_runtime() == 0 ? addslashes($this->_title) : $this->_title);
@@ -336,7 +343,7 @@ for($i=1; $i<11; $i++) {
 
 <tr valign="top">
 <th scope="row"><label for="watched_on">Watched on:</label></th>
-<?php $watched_on = ($this->_watched_on == null ? gmstrftime("%Y-%m-%d %H:%M:%S", time() + (3600 * get_option("gmt_offset"))) : $this->_watched_on); ?>
+<?php $watched_on = ($this->_watched_on == null ? $this->get_current_time() : $this->_watched_on); ?>
 <td><input type="text" name="watched_on" id="watched_on" class="text" size="23" value="<?= $watched_on ?>" />
 <br />
 Remember to use correct date format (<code>YYYY-MM-DD HH:MM:SS</code>) when setting custom dates.</td>
