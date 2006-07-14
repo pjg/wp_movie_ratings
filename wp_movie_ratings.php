@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP Movie Ratings
-Version: 1.1
+Version: 1.2
 Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
@@ -172,6 +172,49 @@ function get_wp_movie_ratings($count = null, $options = array()) {
 }
 
 
+# Statistics for watched movies
+# TODO: change echo() to $o .= and output brief statistics when in page_mode
+function wp_movie_ratings_show_statistics($type = "brief") {
+	global $wpdb, $table_prefix;
+
+	$m = new Movie();
+	$m->set_database($wpdb, $table_prefix);
+
+	$total = $m->get_watched_movies_count("total");
+	$total_avg = $m->get_watched_movies_count("total-average");
+
+	# division by zero bugfix
+	# TODO: change this code to calculate days from the database, not by divisions
+	$days = ($total_avg == 0 ? 1 : round($total/$total_avg));
+
+	$last_30_days_avg = $m->get_watched_movies_count("last-30-days") / 30;
+	$last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
+
+	if ($type == "detailed") echo "<h2>Statistics</h2>\n";
+?>
+
+<p>Total number of rated movies: <strong><?= $total ?></strong>
+(average of <strong><?= $total_avg ?></strong> movies per day; <strong><?= $days ?></strong> days of movie ratings).</p>
+
+<p>Average of <strong><? printf("%.4f", $last_30_days_avg); ?></strong> movies per day for the past <strong>30</strong> days (<strong><? printf("%.4f", $last_7_days_avg); ?></strong> for the past <strong>7</strong> days).</p>
+
+<p>Average movie rating: <strong><?= $m->get_average_movie_rating() ?></strong>.</p>
+
+<?php if ($type == "detailed") { ?>
+
+<p>This month: <strong><?= $m->get_watched_movies_count("month") ?></strong>
+(last month: <strong><?= $m->get_watched_movies_count("last-month") ?></strong>).</p>
+
+<p>This year: <strong><?= $m->get_watched_movies_count("year") ?></strong>
+(last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
+
+<p>First movie rated on: <strong><?= $m->get_watched_movies_count("first-rated") ?></strong>.</p>
+<p>Last movie rated on: <strong><?= $m->get_watched_movies_count("last-rated") ?></strong>.</p>
+
+<?php }
+}
+
+
 # Add 'Movies' page to Wordpress' Manage menu
 function wp_movie_ratings_add_management_page() {
     if (function_exists('add_management_page')) {
@@ -252,43 +295,9 @@ function wp_movie_ratings_management_page() {
 
 $m->show_add_edit_form($action);
 wp_movie_ratings_show(20, array("text_ratings" => "yes", "include_review" => "no", "sidebar_mode" => "no"));
+wp_movie_ratings_show_statistics("detailed");
 
 ?>
-
-<h2>Statistics</h2>
-
-<?php
-
-$m = new Movie();
-$m->set_database($wpdb, $table_prefix);
-
-$total = $m->get_watched_movies_count("total");
-$total_avg = $m->get_watched_movies_count("total-average");
-
-# division by zero bugfix
-# TODO: change this code to calculate days from the database, not by divisions
-$days = ($total_avg == 0 ? 1 : round($total/$total_avg));
-
-$last_30_days_avg = $m->get_watched_movies_count("last-30-days") / 30;
-$last_7_days_avg = $m->get_watched_movies_count("last-7-days") / 7;
-
-?>
-
-<p>Total number of rated movies: <strong><?= $total ?></strong>
-(average of <strong><?= $total_avg ?></strong> movies per day; <strong><?= $days ?></strong> days of movie ratings).</p>
-
-<p>Average of <strong><? printf("%.4f", $last_30_days_avg); ?></strong> movies per day for the past <strong>30</strong> days (<strong><? printf("%.4f", $last_7_days_avg); ?></strong> for the past <strong>7</strong> days).</p>
-
-<p>This month: <strong><?= $m->get_watched_movies_count("month") ?></strong>
-(last month: <strong><?= $m->get_watched_movies_count("last-month") ?></strong>).</p>
-
-<p>This year: <strong><?= $m->get_watched_movies_count("year") ?></strong>
-(last year: <strong><?= $m->get_watched_movies_count("last-year") ?></strong>).</p>
-
-<p>Average movie rating: <strong><?= $m->get_average_movie_rating() ?></strong>.</p>
-
-<p>First movie rated on: <strong><?= $m->get_watched_movies_count("first-rated") ?></strong>.</p>
-<p>Last movie rated on: <strong><?= $m->get_watched_movies_count("last-rated") ?></strong>.</p>
 
 <h2>Firefox bookmarklet</h2>
 

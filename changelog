@@ -1,7 +1,7 @@
 WP Movie Ratings changelog:
 ===========================
 
-2006-07-
+2006-07-14
 - you can now edit and delete your movie ratings.
 - added option to customize the dialogue title for movie ratings box via Wordpress options panel.
 - added option to display movie ratings using 5 stars instead of 10.
@@ -12,6 +12,7 @@ WP Movie Ratings changelog:
 - fixed plugin activation problems on Windows machines.
 - magic quotes/strip slashes fixes.
 - added separate page listing all movies (just create a new wordpress page and add this tag there: [[wp_movie_ratings_page]]).
+- release 1.2.
 
 2006-06-27
 - sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings.
