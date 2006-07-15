@@ -150,7 +150,7 @@ function get_wp_movie_ratings($count = null, $options = array()) {
 	$o .= "<div id=\"wp_movie_ratings\"" . ($page_mode == "yes" ? " class=\"page_mode\"" : "") . ">\n";
 	if ($page_mode != "yes") $o .= "<h2>" . stripslashes(get_option("wp_movie_ratings_dialog_title")) . "</h2>\n";
 
-	$o .= "<ul" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
+	$o .= "<ul id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
 	$i = 0; # row alternator
 	foreach($movies as $movie) {

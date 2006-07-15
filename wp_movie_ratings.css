@@ -26,54 +26,64 @@
 
 /* LIST */
 
-#wp_movie_ratings ul {
+#wp_movie_ratings #reviews {
+	background-color: transparent;
 	margin: 6px 5px 3px 3px;
 	padding: 0;
 }
 
-#wp_movie_ratings.page_mode ul {
+#wp_movie_ratings.page_mode #reviews {
 	margin: 0;
 }
 
 
 /* LIST ELEMENTS */
 
-#wp_movie_ratings ul li {
+#wp_movie_ratings #reviews li {
 	background-color: #F2FDFB;
 	list-style: none;
+	margin: 0;
 	padding: 2px 4px 5px 5px;
 	position: relative;
 }
 
-#wp_movie_ratings ul li.odd {
+#wp_movie_ratings #reviews li.odd {
 	background-color: #FDFDF2;
 }
 
-#wp_movie_ratings ul li:hover {
+#wp_movie_ratings #reviews li:hover {
 	background-color: #E7FDE7;
+}
+
+#wp_movie_ratings #reviews li div.hreview {
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
 }
 
 
 /* hReview TAGS */
 
-#wp_movie_ratings ul li span.version {
+#wp_movie_ratings #reviews li span.version {
 	display: none;
 }
 
-#wp_movie_ratings ul li acronym.dtreviewed {
+#wp_movie_ratings #reviews li acronym.dtreviewed {
 	display: none;
 }
 
 
 /* MOVIE TITLES */
 
-#wp_movie_ratings ul li p.item {
+#wp_movie_ratings #reviews li div.hreview p.item {
+	background-color: transparent;
 	margin: 0;
 	padding: 0;
+	position: static;
 	text-align: left;
 }
 
-#wp_movie_ratings ul li p a {
+#wp_movie_ratings #reviews li p a {
 	font: 11px verdana, sans-serif;
 	margin-right: 2px;
 }
@@ -81,11 +91,11 @@
 
 /* TEXT RATING */
 
-#wp_movie_ratings ul li p span.rating {
+#wp_movie_ratings #reviews li p span.rating {
 	display: none;
 }
 
-#wp_movie_ratings ul.text_ratings li div span.rating, #wp_movie_ratings.page_mode ul.text_ratings li div p span.rating {
+#wp_movie_ratings #reviews.text_ratings li div span.rating, #wp_movie_ratings.page_mode #reviews.text_ratings li div p span.rating {
 	display: inline;
 	font: bold 11px verdana, sans-serif;
 	position: absolute;
@@ -93,7 +103,7 @@
 	top: 2px;
 }
 
-#wp_movie_ratings ul.text_ratings li div.sidebar_mode span.rating {
+#wp_movie_ratings #reviews.text_ratings li div.sidebar_mode span.rating {
 	position: static;
 	display: block;
 	margin: 3px 0 2px 1px;
@@ -103,23 +113,37 @@
 
 /* STARS RATING */
 
-#wp_movie_ratings ul div div.rating_stars, #wp_movie_ratings.page_mode ul li div div.rating_stars {
+#wp_movie_ratings #reviews div div.rating_stars, #wp_movie_ratings.page_mode #reviews li div div.rating_stars {
+	background-color: transparent;
+	display: block;
 	font-size: 8px;
+	margin: 0;
+	padding: 0;
 	position: absolute;
 	right: 5px;
 	top: 2px;
 }
 
-#wp_movie_ratings ul div.sidebar_mode div.rating_stars {
+#wp_movie_ratings #reviews div.sidebar_mode div.rating_stars {
 	display: block;
 	margin: 4px 0 2px 1px;
 	position: static;
 }
 
+#wp_movie_ratings #reviews div.rating_stars img {
+	border: none;
+	display: inline;
+	float: none;
+	margin: 1px 0 0;
+	max-width: none;
+	max-height: none;
+	padding: 0;
+	position: static;
+}
 
 /* REVIEW */
 
-#wp_movie_ratings ul li p.description {
+#wp_movie_ratings #reviews li p.description {
 	background-color: transparent;
 	border: none;
 	color: #555;
@@ -130,11 +154,11 @@
 	width: auto;
 }
 
-#wp_movie_ratings ul li div.sidebar_mode p.description {
+#wp_movie_ratings #reviews li div.sidebar_mode p.description {
 	margin: 2px 2px 1px 1px;
 }
 
-#wp_movie_ratings ul li p.description a {
+#wp_movie_ratings #reviews li p.description a {
 	font: 11px arial, sans-serif;
 }
 
@@ -142,6 +166,7 @@
 /* LINK LOVE */
 
 #link_love {
+	background-color: transparent;
 	color: #AAA;
 	font: 9px verdana, sans-serif;
 	margin-top: 15px;
