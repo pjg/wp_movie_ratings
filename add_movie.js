@@ -93,30 +93,36 @@ function show_response(originalRequest) {
 	var message = $('message')
 	var response = unescape(originalRequest.responseText)
  	var matches = response.match(/<div id="message" class="(.+?)">(.*?)<\/div>/i)
-
-	// Valid response
-	if (matches.length == 3) {
-		message.setAttribute('class', matches[1])
-		message.innerHTML = matches[2]
-	} else {
-		// Unknown error
+	
+	// Not logged in
+	if (!matches) {
 		message.setAttribute('class', 'error')
-		message.innerHTML = '<p><strong>Unrecognized AJAX response.</strong></p>'
+		message.innerHTML = '<p><strong>Error: cannot add movie rating. Not logged in.</strong></p>'
+	} else {
+		// Valid response
+		if (matches.length == 3) {
+			message.setAttribute('class', matches[1])
+			message.innerHTML = matches[2]
+		} else {
+			// Unknown error
+			message.setAttribute('class', 'error')
+			message.innerHTML = '<p><strong>Error: unrecognized AJAX response.</strong></p>'
+		}
 	}
 
 	// Show message
 	Effect.Appear('message', {duration: 0.4, queue: 'end'})
 	
 	// Close the pop-up window on successful update
-	if (matches[1] == 'updated fade') {
+	if (matches && (matches[1] == 'updated fade')) {
 		// Close the window (after a little over 1s delay, so you can actually read the message)
-		setTimeout("close_window()", 1300);
+		setTimeout("close_window()", 1200);
 	}
 }
 
 // Empty effects queue and close the window
 function close_window() {
-	// We clear the effects because the browser crashes if you issue a window.close when effects are still running
+	// We clear the effects queue because the browser crashes if you issue a window.close when effects are still running
 	Effect.Queues.get('global').each(function (e) { e.cancel(); })
 	window.close()
 }

@@ -268,7 +268,7 @@ function wp_movie_ratings_management_page() {
 		$m->set_database($wpdb, $table_prefix);
 		$movie = $m->get_movie_by_id($_POST["id"]);
 		if ($movie != null)	echo $movie->delete();
-		else echo '<div id="message" class="error fade"><p><strong>Error: No movie to delete.</strong></p></div>';
+		else echo '<div id="message" class="error fade"><p><strong>Error: no movie to delete.</strong></p></div>';
 
 		$m = new Movie(); # new 'empty' movie object
 	}

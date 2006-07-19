@@ -182,7 +182,7 @@ class Movie {
 	# delete movie
 	function delete() {
 		if ($this->_wpdb->query("DELETE FROM $this->_table WHERE id=$this->_id LIMIT 1;")) return '<div id="message" class="updated fade"><p><strong>Movie rating deleted.</strong></p></div>';
-		else return '<div id="message" class="error fade"><p><strong>Error: Something weird happened and I could not delete this movie rating.</strong></p></div>';
+		else return '<div id="message" class="error fade"><p><strong>Error: something weird happened and I could not delete this movie rating.</strong></p></div>';
 	}
 
 
