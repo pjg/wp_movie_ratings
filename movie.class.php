@@ -120,7 +120,12 @@ class Movie {
 
 	# send ping to pingerati.net
 	function send_ping() {
-		weblog_ping("reviews.pingerati.net" . "/ping/");
+		# GET
+		$req = new WP_HTTP_Request("http://reviews.pingerati.net/ping/" . preg_replace("/http[s]*:\/\//", "", trailingslashit(get_option("home"))));
+        $req->DownloadToString();
+
+		# Below will send POST
+		# weblog_ping("reviews.pingerati.net" . "/ping/");
 	}
 
 
