@@ -81,6 +81,10 @@ class Movie {
         $this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected == 1) {
+
+			# Send pingerati ping
+			$this->send_ping();
+
             return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(stripslashes($this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
         } else {
             $mysql_error = mysql_error();
@@ -103,11 +107,22 @@ class Movie {
 		$this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
+
+			# Send pingerati ping
+			$this->send_ping();
+
             return '<div id="message" class="updated fade"><p><strong>' . stripslashes($this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
         } else {
             return '<div id="message" class="error fade"><p><strong>Error: ' . stripslashes($this->_title) . ' not updated.</strong></p></div>';
         }
 	}
+
+
+	# send ping to pingerati.net
+	function send_ping() {
+		weblog_ping("reviews.pingerati.net" . "/ping/");
+	}
+
 
 	# find movie
 	function get_movie_by_id($id) {

@@ -6,6 +6,7 @@ WP Movie Ratings changelog:
 - plugin options now feature additional descriptions explaining what each option means.
 - basic statistics included in page mode.
 - added error message when rating a movie using bookmarklet without being logged in.
+- added pingerati.net pinging when adding/changing movie rating.
 
 2006-07-14
 - you can now edit and delete your movie ratings.
