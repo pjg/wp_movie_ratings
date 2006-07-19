@@ -284,7 +284,7 @@ class Movie {
 			$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />";
 		}
 
-		$o .= "<div class=\"hreview" . ($sidebar_mode == "yes" ? " sidebar_mode" : "") . "\">\n";
+		$o .= "<div class=\"hreview\">\n";
 
 		$o .= "<p class=\"item\"><a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
 		$o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";

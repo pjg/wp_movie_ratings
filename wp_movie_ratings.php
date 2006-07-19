@@ -147,8 +147,15 @@ function get_wp_movie_ratings($count = null, $options = array()) {
 	$o .= "<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
 
 	# html container
-	$o .= "<div id=\"wp_movie_ratings\"" . ($page_mode == "yes" ? " class=\"page_mode\"" : "") . ">\n";
-	if ($page_mode != "yes") $o .= "<h2>" . stripslashes(get_option("wp_movie_ratings_dialog_title")) . "</h2>\n";
+	$classes = ($page_mode == "yes" ? "page_mode " : "");
+	$classes .= ($sidebar_mode == "yes" ? "sidebar_mode " : "");
+	if (strlen($classes) > 0) $classes = substr($classes, 0, strlen($classes)-1); # drop last space
+
+	$o .= "<div id=\"wp_movie_ratings\"" . (strlen($classes) > 0 ? " class=\"$classes\"" : "") . ">\n";
+
+	# dialog title
+	$dialog_title = stripslashes(get_option("wp_movie_ratings_dialog_title"));
+	if (($page_mode != "yes") && (strlen($dialog_title) > 0)) $o .= "<h2 id=\"reviews_title\">$dialog_title</h2>\n";
 
 	$o .= "<ul id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
@@ -326,7 +333,7 @@ function wp_movie_ratings_options_page() {
 		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
 		update_option("wp_movie_ratings_sidebar_mode", $_POST["wp_movie_ratings_sidebar_mode"]);
 		update_option("wp_movie_ratings_five_stars_ratings", $_POST["wp_movie_ratings_five_stars_ratings"]);
-		update_option("wp_movie_ratings_dialog_title", $_POST["wp_movie_ratings_dialog_title"]);
+		update_option("wp_movie_ratings_dialog_title", stripslashes($_POST["wp_movie_ratings_dialog_title"]));
 
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
