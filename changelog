@@ -4,7 +4,7 @@ WP Movie Ratings changelog:
 2006-08-
 - lots of CSS fixes to make the plugin compatible with more Wordpress themes.
 - plugin options now feature additional descriptions explaining what each option means.
-- 
+- basic statistics included in page mode.
 
 2006-07-14
 - you can now edit and delete your movie ratings.
