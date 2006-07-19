@@ -350,27 +350,32 @@ function wp_movie_ratings_options_page() {
 <div class="wrap">
 <h2>WP Movie Ratings options</h2>
 
-<form method="post">
+<form method="post" action="">
 
 <table class="optiontable">
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_dialog_title">Dialog title for movie ratings box:</label></th>
-<td><input type="text" name="wp_movie_ratings_dialog_title" id="wp_movie_ratings_dialog_title" class="text" size="50" value="<?= stripslashes($wp_movie_ratings_dialog_title) ?>"/></td>
+<th scope="row"><label for="wp_movie_ratings_dialog_title">Title for movie ratings box:</label></th>
+<td><input type="text" name="wp_movie_ratings_dialog_title" id="wp_movie_ratings_dialog_title" class="text" size="50" value="<?= stripslashes($wp_movie_ratings_dialog_title) ?>"/><br />
+Leave empty if you don't want any custom title.
+</td>
 </tr>
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings (default):</label></th>
-<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?= $wp_movie_ratings_count ?>"/></td>
+<th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings:</label></th>
+<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?= $wp_movie_ratings_count ?>"/><br />
+Display that many latest movie ratings.
+</td>
 </tr>
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_text_ratings_yes">Display movie ratings as text?</label></th>
+<th scope="row"><label for="wp_movie_ratings_text_ratings_yes">Text movie ratings?</label></th>
 <td>
 <input type="radio" value="yes" id="wp_movie_ratings_text_ratings_yes" name="wp_movie_ratings_text_ratings"<?= ($wp_movie_ratings_text_ratings == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_text_ratings_yes">yes</label>
 <input type="radio" value="no" id="wp_movie_ratings_text_ratings_no" name="wp_movie_ratings_text_ratings"<?= ($wp_movie_ratings_text_ratings == "no" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_text_ratings_no">no</label>
+<label for="wp_movie_ratings_text_ratings_no">no</label><br />
+Display text ratings (ie: <strong>5/10</strong>) instead of images.
 </td>
 </tr>
 
@@ -385,27 +390,31 @@ function wp_movie_ratings_options_page() {
 </tr>
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_char_limit">Display that much characters when the movie title is too long to fit:</label></th>
-<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $wp_movie_ratings_char_limit ?>"/></td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_sidebar_mode_yes">Sidebar mode (movie rating is displayed in new line)?</label></th>
-<td>
-<input type="radio" value="yes" id="wp_movie_ratings_sidebar_mode_yes" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "yes" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_sidebar_mode_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_sidebar_mode_no" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "no" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_sidebar_mode_no">no</label>
+<th scope="row"><label for="wp_movie_ratings_char_limit">Cut movie title at:</label></th>
+<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $wp_movie_ratings_char_limit ?>"/> character.<br />
+Display that many characters when the movie title is too long to fit.
 </td>
 </tr>
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_five_stars_ratings_yes">Display ratings using 5 stars instead of 10?</label></th>
+<th scope="row"><label for="wp_movie_ratings_sidebar_mode_yes">Sidebar mode:</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_sidebar_mode_yes" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_sidebar_mode_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_sidebar_mode_no" name="wp_movie_ratings_sidebar_mode"<?= ($wp_movie_ratings_sidebar_mode == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_sidebar_mode_no">no</label><br />
+Movie rating will be displayed in a new line.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_five_stars_ratings_yes">5 stars ratings?</label></th>
 <td>
 <input type="radio" value="yes" id="wp_movie_ratings_five_stars_ratings_yes" name="wp_movie_ratings_five_stars_ratings"<?= ($wp_movie_ratings_five_stars_ratings == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_five_stars_ratings_yes">yes</label>
 <input type="radio" value="no" id="wp_movie_ratings_five_stars_ratings_no" name="wp_movie_ratings_five_stars_ratings"<?= ($wp_movie_ratings_five_stars_ratings == "no" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_five_stars_ratings_no">no</label>
+<label for="wp_movie_ratings_five_stars_ratings_no">no</label><br />
+Display ratings using 5 stars instead of 10.
 </td>
 </tr>
 
@@ -414,6 +423,8 @@ function wp_movie_ratings_options_page() {
 <p class="submit"><input type="submit" name="submit" value="Update Options &raquo;" /></p>
 
 </form>
+
+</div>
 
 <?php
 }
