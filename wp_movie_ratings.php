@@ -278,7 +278,7 @@ function wp_movie_ratings_management_page() {
 		$movie = new Movie();
 		$movie->set_database($wpdb, $table_prefix);
 		$m = $movie->get_movie_by_id($_POST["id"]);
-		if (isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
+		if (isset($_POST["title"]) && isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
 	}
 
 	# EDIT MOVIE
@@ -359,7 +359,7 @@ function wp_movie_ratings_options_page() {
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_dialog_title">Title for movie ratings box:</label></th>
 <td><input type="text" name="wp_movie_ratings_dialog_title" id="wp_movie_ratings_dialog_title" class="text" size="50" value="<?= stripslashes($wp_movie_ratings_dialog_title) ?>"/><br />
-Leave empty if you don't want any custom title.
+Leave empty if you don't want any title at all.
 </td>
 </tr>
 
