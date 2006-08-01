@@ -93,7 +93,7 @@ function get_plugin_path($type) {
 
 # Include CSS/JS in the HEAD of html page
 function wp_movie_ratings_head_inclusion() {
-	$plugin_path = get_plugin_path("relative");
+	$plugin_path = get_plugin_path("absolute");
 
 	# CSS inclusion
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
