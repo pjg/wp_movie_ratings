@@ -101,10 +101,11 @@ class Movie {
 
 	# update movie rating data
 	function update_from_post() {
+		$this->_title = $_POST["title"];
 		$this->_rating = $_POST["rating"];
 		$this->_review = $_POST["review"];
 		$this->_watched_on = $_POST["watched_on"];
-		$this->_wpdb->query("UPDATE $this->_table SET rating=$this->_rating, review='$this->_review', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
+		$this->_wpdb->query("UPDATE $this->_table SET title='$this->_title', rating=$this->_rating, review='$this->_review', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
 		$this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
@@ -380,8 +381,11 @@ Must be a valid <a href="http://imdb.com/">imdb.com</a> link.</td>
 </tr>
 <?php } else { ?>
 <tr valign="top">
-<th scope="row"><strong>Title:</strong></th>
-<td><a href="<?= $this->_url ?>"><?= $this->_title ?></a></td>
+<th scope="row"><label for="title">Title:</label></th>
+<td><input type="text" name="title" id="title" class="text" size="46" value="<?= $this->_title ?>" />
+<br />
+You <em>really</em> should not be editing the title.
+</td>
 </tr>
 <?php } ?>
 
@@ -406,6 +410,8 @@ for($i=1; $i<11; $i++) {
 <textarea name="review" id="review" rows="3" cols="45">
 <?= $this->_review ?>
 </textarea>
+<br />
+HTML code is allowed in the review.
 </td>
 </tr>
 
