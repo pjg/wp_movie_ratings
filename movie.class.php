@@ -24,6 +24,7 @@ class Movie {
 		$this->_id = $id;
     }
 
+
     # wordpress' database handler and table prefix
     function set_database($wpdb, $table_prefix) {
         $this->_wpdb = $wpdb;
@@ -309,9 +310,14 @@ class Movie {
 		$o .= "<p class=\"item\"><a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
 		$o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";
 
-		# Text ratings
-		$o .= "<span class=\"rating\"><span class=\"value\">$this->_rating</span>/<span class=\"best\">10</span></span>\n";
+		# Text rating
+		$o .= "<span class=\"rating\"><span class=\"value\">";
+		$o .= ($five_stars_ratings == "yes" ? ($this->_rating / 2) : $this->_rating);
+		$o .= "</span>/<span class=\"best\">";
+		$o .= ($five_stars_ratings == "yes" ? "5" : "10");
+		$o .= "</span></span>\n";
 
+		# Admin options
 		if (is_plugin_page()) {
 			$o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"edit\" />\n";
 			$o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"delete\" onclick=\"return delete_confirmation()\" />\n";
@@ -321,7 +327,7 @@ class Movie {
 
         $o .= "<acronym class=\"dtreviewed\" title=\"" . str_replace(" ", "T", $this->_watched_on) . "\">$this->_watched_on</acronym>\n";
 
-		# Stars ratings using images
+		# Stars rating using images
 		if ($text_ratings == "no") {
 			$o .= "<div class=\"rating_stars\">\n";
 
