@@ -100,7 +100,7 @@ function wp_movie_ratings_head_inclusion() {
 	echo (is_plugin_page() ? "admin_page" : basename(__FILE__, ".php")) . ".css" . "\" />\n";
 
 	# JS inclusion
-	if (is_plugin_page()) echo "<script type=\"text/javascript\" src=\"" . $plugin_path . "admin_page.js\"></script>\n";
+	echo "<script type=\"text/javascript\" src=\"" . $plugin_path . "wp_movie_ratings.js\"></script>\n";
 }
 
 

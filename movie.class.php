@@ -308,7 +308,13 @@ class Movie {
 
 		$o .= "<div class=\"hreview\">\n";
 
-		$o .= "<p class=\"item\"><a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
+		$o .= "<p class=\"item\">";
+
+		# Toggle review for page mode
+		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<a href=\"#\" onclick=\"toggle_review('review" . $this->_id . "'); return false\">#</a>";
+		
+		# Movie title
+		$o .= "<a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
 		$o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";
 
 		# Text rating
@@ -349,8 +355,11 @@ class Movie {
 		}
 
 		# Review
-		if ($page_mode == "yes") $include_review = "no";
-        if (($include_review == "yes") && ($this->_review != "")) $o .= "<p class=\"description\">$this->_review</p>\n";
+        if (($include_review == "yes") && ($this->_review != "")) { 
+			$o .= "<p class=\"description\" id=\"review" . $this->_id . "\"";
+			if ($page_mode == "yes") $o .= " style=\"display: none\"";
+			$o .= ">$this->_review</p>\n";
+		}
 
 		# hReview version
 		$o .= "<span class=\"version\">0.3</span>\n";
