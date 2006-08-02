@@ -144,7 +144,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$movies = ($page_mode == "yes" ? $m->get_all_movies() : $m->get_latest_movies(intval($count)));
 
 	# love advert
-	$o .= "<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
+	$o .= "\n<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
 
 	# html container
 	$classes = ($page_mode == "yes" ? "page_mode " : "");

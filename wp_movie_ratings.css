@@ -67,6 +67,7 @@
 
 #wp_movie_ratings.page_mode #reviews li {
 	padding: 2px 4px 5px 5px;
+	position: relative;
 }
 
 #wp_movie_ratings #reviews li.odd {
@@ -114,6 +115,9 @@
 	padding: 0;
 }
 
+#wp_movie_ratings.page_mode #reviews li div.hreview p.item {
+	margin-left: 14px;
+}
 
 /* TEXT RATING */
 
@@ -185,10 +189,21 @@
 	margin: 2px 2px 1px 1px;
 }
 
+#wp_movie_ratings.page_mode #reviews li div.hreview p.description {
+	margin: 2px 2px 1px 18px;
+}
+
 #wp_movie_ratings #reviews li p.description a {
 	font: 11px arial, sans-serif;
 }
 
+#wp_movie_ratings.page_mode #reviews li p.item img {
+	position: absolute;
+	top: 4px !important;
+	top: 5px;
+	left: 5px !important;
+	left: 4px;
+}
 
 /* LINK LOVE */
 

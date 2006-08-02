@@ -311,7 +311,7 @@ class Movie {
 		$o .= "<p class=\"item\">";
 
 		# Toggle review for page mode
-		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<a href=\"#\" onclick=\"toggle_review('review" . $this->_id . "'); return false\">#</a>";
+		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<a href=\"#\" onclick=\"toggle_review('review" . $this->_id . "'); return false\" title=\"Show the review\"><img src=\"$img_path" . "plus.gif\" alt=\"Show the review\"/></a>";
 		
 		# Movie title
 		$o .= "<a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
