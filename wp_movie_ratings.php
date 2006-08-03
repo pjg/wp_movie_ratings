@@ -166,7 +166,10 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 		# drop everything after '#' (including '#')
 		if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
 
-		# create appropriate links
+		# clear link from my stuff
+		$link = preg_replace("/(&|\?)*sort=(title|rating|watched_on)&(ascending|descending)/", "", $link);
+
+		# create appropriate sorting links
 		$link_t = $link_r = $link_w = $link;
 
 		if (strpos($link, "?")) {
@@ -179,11 +182,15 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 			$link_w .= "?";
 		}
 
-		$link_t .= "sort=title&amp;ascending";
-		$link_r .= "sort=rating&amp;descending";
-		$link_w .= "sort=watched_on&amp;descending";
+		$link_t .= "sort=title&amp;" . ((($order_by == "title") && ($direction == "ASC")) ? "descending" : "ascending");
+		$link_r .= "sort=rating&amp;" . ((($order_by == "rating") && ($direction == "DESC")) ? "ascending" : "descending");
+		$link_w .= "sort=watched_on&amp;" . ((($order_by == "watched_on") && ($direction == "DESC")) ? "ascending" : "descending");
 
-		$o .= "<p id=\"sort_options\">Sort list by: <a href=\"$link_t\">title</a> | <a href=\"$link_r\">rating</a> | <a href=\"$link_w\">view date</a></p>\n";
+		$o .= "<p id=\"sort_options\">Sort list by: \n";
+		$o .= "<a href=\"$link_t\">title" . ($order_by == "title" ? " <span class=\"bullet\">&" . ($direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
+		$o .= "<a href=\"$link_r\">rating" . ($order_by == "rating" ? " <span class=\"bullet\">&" . ($direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
+		$o .= "<a href=\"$link_w\">view date" . ($order_by == "watched_on" ? " <span class=\"bullet\">&" . ($direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a>\n";
+		$o .= "</p>\n";
 	}
 
 	# dialog title

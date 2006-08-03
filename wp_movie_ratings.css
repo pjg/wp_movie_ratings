@@ -242,3 +242,10 @@
 #link_love a {
 	font: 9px verdana, sans-serif;
 }
+
+
+/* MISC */
+
+span.bullet {
+	vertical-align: text-top;
+}
