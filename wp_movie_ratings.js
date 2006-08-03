@@ -6,16 +6,20 @@ function delete_confirmation() {
 
 // Toggle display of movie reviews in page mode
 function toggle_review(id) {
-	r = document.getElementById(id)
-	if (r) {
+	var review = document.getElementById(id)
+	var img_array = review.parentNode.getElementsByTagName("img")
+	var img = img_array[0]
+
+	if (review && img) {
 		// Show review
-		if (r.style.display == "none") r.style.display = "block"
-			else r.style.display = "none"
+		if (review.style.display == "none") {
+			review.style.display = "block"
+			img.alt = "Hide the review"
+			img.src = img.src.replace(/plus/, 'minus')
+		} else { // Hide review
+			review.style.display = "none"
+			img.alt = "Show the review"
+			img.src = img.src.replace(/minus/, 'plus')
 		}
-
-		// Change image & alt description
-		r.parentNode.childNodes[1].childNodes[0].firstChild.alt = "Hide the review"
-
-		// Change title on anchor
-
+	}
 }
