@@ -147,8 +147,8 @@ class Movie {
 
 
 	# get all movies
-	function get_all_movies() {
-		return $this->get_movies(array("type" => "all"));
+	function get_all_movies($order_by = "title", $direction = "ascending") {
+		return $this->get_movies(array("type" => "all", "order_by" => $order_by, "direction" => $direction));
 	}
 
 

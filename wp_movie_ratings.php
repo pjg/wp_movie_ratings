@@ -139,9 +139,15 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 	$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
 
+	# parse query parameters for page mode (sorting options)
+	if ($page_mode == "yes") {
+		if (isset($_GET["sort"])) $order_by = $_GET["sort"]; else $order_by = "title";
+		if (isset($_GET["descending"])) $direction = "DESC"; else $direction = "ASC";
+	}
+
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
-	$movies = ($page_mode == "yes" ? $m->get_all_movies() : $m->get_latest_movies(intval($count)));
+	$movies = ($page_mode == "yes" ? $m->get_all_movies($order_by, $direction) : $m->get_latest_movies(intval($count)));
 
 	# love advert
 	$o .= "\n<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
@@ -152,6 +158,33 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	if (strlen($classes) > 0) $classes = substr($classes, 0, strlen($classes)-1); # drop last space
 
 	$o .= "<div id=\"wp_movie_ratings\"" . (strlen($classes) > 0 ? " class=\"$classes\"" : "") . ">\n";
+
+	# sorting options for page mode
+	if ($page_mode == "yes") {
+		$link = $_SERVER["REQUEST_URI"];
+
+		# drop everything after '#' (including '#')
+		if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
+
+		# create appropriate links
+		$link_t = $link_r = $link_w = $link;
+
+		if (strpos($link, "?")) {
+			$link_t .= "&amp;";
+			$link_r .= "&amp;";
+			$link_w .= "&amp;";
+		} else {
+			$link_t	.= "?";
+			$link_r .= "?";
+			$link_w .= "?";
+		}
+
+		$link_t .= "sort=title&amp;ascending";
+		$link_r .= "sort=rating&amp;descending";
+		$link_w .= "sort=watched_on&amp;descending";
+
+		$o .= "<p id=\"sort_options\">Sort list by: <a href=\"$link_t\">title</a> | <a href=\"$link_r\">rating</a> | <a href=\"$link_w\">view date</a></p>\n";
+	}
 
 	# dialog title
 	$dialog_title = stripslashes(get_option("wp_movie_ratings_dialog_title"));

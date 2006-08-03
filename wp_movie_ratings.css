@@ -33,6 +33,17 @@
 }
 
 
+/* SORT OPTIONS */
+
+#wp_movie_ratings p#sort_options {
+	font: 10px verdana, sans-serif;
+	line-height: 100%;
+	margin: 10px 4px 7px 0;
+	padding: 0;
+	text-align: right;
+}
+
+
 /* LIST */
 
 #wp_movie_ratings #reviews {
