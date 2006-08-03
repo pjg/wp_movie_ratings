@@ -110,7 +110,7 @@ class Movie {
 
         if ($this->_wpdb->rows_affected > 0) {
 
-			# Send pingerati ping
+			# Send ping to pingerati.net
 			$this->send_ping();
 
             return '<div id="message" class="updated fade"><p><strong>' . stripslashes($this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
@@ -120,7 +120,7 @@ class Movie {
 	}
 
 
-	# send ping to pingerati.net
+	# send ping to pingerati.net (with blog's homepage as argument)
 	function send_ping() {
 		# GET
 		$req = new WP_HTTP_Request("http://reviews.pingerati.net/ping/" . preg_replace("/http[s]*:\/\//", "", trailingslashit(get_option("home"))));
@@ -373,7 +373,8 @@ class Movie {
 
 
 	# show html form
-	function show_add_edit_form($action, $five_stars_ratings) {
+	function show_add_edit_form($action) {
+		$five_stars_ratings = get_option("wp_movie_ratings_five_stars_ratings");
 ?>
 <form method="post" action="">
 

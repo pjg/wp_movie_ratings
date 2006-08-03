@@ -106,7 +106,7 @@ function wp_movie_ratings_head_inclusion() {
 
 # Change [[wp_movie_ratings_page]] into movie ratings list
 function parse_wp_movie_ratings_tags($content = "") {
-	return str_replace("[[wp_movie_ratings_page]]", wp_movie_ratings_get(null, array("page_mode" => "yes")) . wp_movie_ratings_get_statistics("brief"), $content);
+	return str_replace("[[wp_movie_ratings_page]]", wp_movie_ratings_get(null, array("page_mode" => "yes")), $content); // . wp_movie_ratings_get_statistics("brief")
 }
 
 
@@ -302,7 +302,7 @@ function wp_movie_ratings_management_page() {
 
 <?php
 
-$m->show_add_edit_form($action, get_option("wp_movie_ratings_five_stars_ratings"));
+$m->show_add_edit_form($action);
 wp_movie_ratings_show(20, array("text_ratings" => "yes", "include_review" => "no", "sidebar_mode" => "no"));
 wp_movie_ratings_show_statistics("detailed");
 
