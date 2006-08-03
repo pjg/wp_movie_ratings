@@ -373,7 +373,7 @@ class Movie {
 
 
 	# show html form
-	function show_add_edit_form($action) {
+	function show_add_edit_form($action, $five_stars_ratings) {
 ?>
 <form method="post" action="">
 
@@ -406,7 +406,7 @@ You <em>really</em> should not be editing the title.
 for($i=1; $i<11; $i++) {
 	echo "<option value=\"$i\"";
 	if (($i == $this->_rating) || (($i==7) && ($this->_rating == null))) echo " selected=\"selected\"";
-	echo ">$i</option>\n";
+	echo ">" . ($five_stars_ratings == "yes" ? ($i/2) : $i) . "</option>\n";
 }
 ?>
 </select>

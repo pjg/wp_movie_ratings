@@ -302,7 +302,7 @@ function wp_movie_ratings_management_page() {
 
 <?php
 
-$m->show_add_edit_form($action);
+$m->show_add_edit_form($action, get_option("wp_movie_ratings_five_stars_ratings"));
 wp_movie_ratings_show(20, array("text_ratings" => "yes", "include_review" => "no", "sidebar_mode" => "no"));
 wp_movie_ratings_show_statistics("detailed");
 
