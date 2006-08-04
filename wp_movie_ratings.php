@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP Movie Ratings
-Version: 1.2
+Version: 1.3
 Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
@@ -106,7 +106,7 @@ function wp_movie_ratings_head_inclusion() {
 
 # Change [[wp_movie_ratings_page]] into movie ratings list
 function parse_wp_movie_ratings_tags($content = "") {
-	# get rid of the unnecessary <p> tag, which made the page non XHTML compliant
+	# get rid of the unnecessary <p> tag, which makes the movie ratings page non XHTML compliant
 	$tmp = preg_replace("/<p>(\[\[wp_movie_ratings_page\]\])[\s]*<\/p>/", "$1", $content);
 	# parse the movie ratings tag
 	$tmp = str_replace("[[wp_movie_ratings_page]]", wp_movie_ratings_get(null, array("page_mode" => "yes")), $tmp); // . wp_movie_ratings_get_statistics("brief")
