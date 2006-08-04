@@ -76,6 +76,9 @@ class Movie {
 		$title = (get_magic_quotes_runtime() == 0 ? addslashes($this->_title) : $this->_title);
 		$review = (get_magic_quotes_runtime() == 0 ? addslashes($this->_review) : $this->_review);
 
+		# encode &amp; separately for review (which allows HTML code) (this is important when adding movies via admin panel)
+		$review = str_replace(" & ", " &amp; ", $review);
+
 		$this->_wpdb->hide_errors();
         $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('$title', '$this->_url_short', $this->_rating, '$review', '$watched_on');");
 
@@ -101,9 +104,9 @@ class Movie {
 
 	# update movie rating data
 	function update_from_post() {
-		$this->_title = $_POST["title"];
+		$this->_title = htmlspecialchars($_POST["title"]);
 		$this->_rating = $_POST["rating"];
-		$this->_review = $_POST["review"];
+		$this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
 		$this->_watched_on = $_POST["watched_on"];
 		$this->_wpdb->query("UPDATE $this->_table SET title='$this->_title', rating=$this->_rating, review='$this->_review', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
 		$this->_wpdb->show_errors();
