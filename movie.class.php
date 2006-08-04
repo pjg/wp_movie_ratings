@@ -187,7 +187,8 @@ class Movie {
 		$date_format = "%Y-%m-%d %H:%i" . ($type == "one" ? ":%s" : "");
 		$sql  = "SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
 		if ($type == "one") $sql .= " WHERE id=$id ";
-		if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $direction;
+		# default second sort is by date -> important when sorting by rating, so we get the newest movies with same rating first
+		if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $direction . ", watched_on DESC ";
 		if (in_array($type, array("latest", "one"))) $sql .= " LIMIT " . intval($count);
 
         $results = $this->_wpdb->get_results($sql);
