@@ -49,21 +49,29 @@ function wp_movie_ratings_install() {
 	# only special users can install plugins
 	if ($user_level < 8) { return; }
 
-	# create/update movie ratings table
-	$sql = "CREATE TABLE " . $table_name . " (
-		id int(11) NOT NULL auto_increment,
-		title varchar(255) NOT NULL default '',
-		imdb_url_short varchar(10) NOT NULL default '',
-		rating tinyint(2) unsigned NOT NULL default '0',
-		review text,
-		replacement_url varchar(255) default '',
-		watched_on datetime NOT NULL default '0000-00-00 00:00:00',
-		PRIMARY KEY (id),
-		UNIQUE KEY (imdb_url_short)
-	);";
+	# INSTALLAION -> Create the movie ratings table (first install)
+	if ($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+		$sql = "CREATE TABLE " . $table_name . " (
+			id int(11) NOT NULL auto_increment,
+			title varchar(255) NOT NULL default '',
+			imdb_url_short varchar(10) NOT NULL default '',
+			rating tinyint(2) unsigned NOT NULL default '0',
+			review text,
+			replacement_url varchar(255) default '',
+			watched_on datetime NOT NULL default '0000-00-00 00:00:00',
+			PRIMARY KEY (id),
+			UNIQUE KEY (imdb_url_short)
+		);";
 
-	require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
-	dbDelta($sql);
+		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+		dbDelta($sql);
+
+	# UPGRADE -> Add column not present in versions 1.0 - 1.3
+	} else {
+		// ALTER TABLE $table_name ADD COLUMN replacement_url varchar(255) default ''
+
+
+	}
 
 	# plugin options
 	add_option('wp_movie_ratings_count', 6, 'Number of displayed movie ratings (default)', 'no');

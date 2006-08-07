@@ -48,6 +48,7 @@
 
 #wp_movie_ratings #reviews {
 	background: transparent;
+	list-style: none;
 	padding: 0;
 	margin: 6px 5px 3px 3px;
 }
@@ -67,12 +68,15 @@
 	background: #F2FDFB;
 	border: none;
 	font: 11px verdana, sans-serif;
-	height: auto;
 	line-height: 100%;
 	list-style: none;
 	margin: 0;
 	padding: 2px 4px 5px 5px;
 	position: relative;
+}
+
+#wp_movie_ratings #reviews li:before, #wp_movie_ratings #reviews li:after {
+	content: '';
 }
 
 #wp_movie_ratings.sidebar_mode #reviews li {
@@ -204,6 +208,7 @@
 #wp_movie_ratings.page_mode #reviews li p.item img {
 	border: none;
 	cursor: pointer;
+	display: block;
 	margin: 0;
 	padding: 0;
 	position: absolute;
