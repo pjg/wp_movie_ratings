@@ -307,7 +307,7 @@ class Movie {
 		# Admin options
 		if (is_plugin_page()) {
 			$o .= "<form method=\"post\" action=\"\">\n";
-			$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />";
+			$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
 		}
 
 		$o .= "<div class=\"hreview\">\n";
@@ -320,6 +320,14 @@ class Movie {
 		# Movie title
 		$o .= "<a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
 		$o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";
+
+		# Edit link
+		if (!is_plugin_page()) {
+			$user = wp_get_current_user();
+			if ($user->ID && ($user->user_level >= 8)) {
+				$o .= "<a class=\"edit\" href=\"" . get_settings('siteurl') . "/wp-admin/edit.php?page=wp_movie_ratings.php&amp;action=edit&amp;id=" . $this->_id . "\">e</a>\n";
+			}
+		}
 
 		# Text rating
 		$o .= "<span class=\"rating\"><span class=\"value\">";

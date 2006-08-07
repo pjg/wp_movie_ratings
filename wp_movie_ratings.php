@@ -326,10 +326,10 @@ function wp_movie_ratings_management_page() {
 	}
 
 	# EDIT MOVIE
-	if (isset($_POST["action"]) && ($_POST["action"] == "edit")) {
+	if ((isset($_POST["action"]) && ($_POST["action"] == "edit")) || (isset($_GET["action"]) && ($_GET["action"] == "edit"))) {
 		$movie = new Movie();
 		$movie->set_database($wpdb, $table_prefix);
-		$m = $movie->get_movie_by_id($_POST["id"]);
+		$m = $movie->get_movie_by_id( (isset($_POST["id"]) ? $_POST["id"] : (isset($_GET["id"]) ? $_GET["id"] : 0) ));
 		$dialog_title = "Edit";
 		$action = "Update";
 	} else { # ADD MOVIE

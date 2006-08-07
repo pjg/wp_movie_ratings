@@ -136,6 +136,9 @@
 	margin-left: 18px;
 }
 
+#wp_movie_ratings #reviews li div.hreview p.item a.edit {
+	font-size: 9px;
+}
 
 /* TEXT RATING */
 
