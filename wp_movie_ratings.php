@@ -71,6 +71,7 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_count', 6, 'Number of displayed movie ratings (default)', 'no');
 	add_option('wp_movie_ratings_text_ratings', 'no', 'Display movie ratings as text or as images (stars)', 'no');
 	add_option('wp_movie_ratings_include_review', 'yes', 'Include review when displaying movie ratings?', 'no');
+	add_option('wp_movie_ratings_expand_review', 'no', 'Initialy show expanded reviews when in page mode?', 'no');
 	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
 	add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
 	add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
@@ -369,6 +370,7 @@ function get_plugin_options() {
 	$options["count"] = get_option("wp_movie_ratings_count");
 	$options["text_ratings"] = get_option("wp_movie_ratings_text_ratings");
 	$options["include_review"] = get_option("wp_movie_ratings_include_review");
+	$options["expand_review"] = get_option("wp_movie_ratings_expand_review");
 	$options["char_limit"] = get_option("wp_movie_ratings_char_limit");
 	$options["sidebar_mode"] = get_option("wp_movie_ratings_sidebar_mode");
 	$options["five_stars_ratings"] = get_option("wp_movie_ratings_five_stars_ratings");
@@ -377,21 +379,20 @@ function get_plugin_options() {
 }
 
 
-
-
 # WP Movie Ratings options page
 function wp_movie_ratings_options_page() {
 	global $table_prefix, $wpdb;
 
 	# Save options in the database
 	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])
- 	 && isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
+ 	 && isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_expand_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
  	 && isset($_POST["wp_movie_ratings_sidebar_mode"]) && isset($_POST["wp_movie_ratings_five_stars_ratings"])
      && isset($_POST["wp_movie_ratings_dialog_title"]) ) {
 
 		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
 		update_option("wp_movie_ratings_text_ratings", $_POST["wp_movie_ratings_text_ratings"]);
 		update_option("wp_movie_ratings_include_review", $_POST["wp_movie_ratings_include_review"]);
+		update_option("wp_movie_ratings_expand_review", $_POST["wp_movie_ratings_expand_review"]);
 		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
 		update_option("wp_movie_ratings_sidebar_mode", $_POST["wp_movie_ratings_sidebar_mode"]);
 		update_option("wp_movie_ratings_five_stars_ratings", $_POST["wp_movie_ratings_five_stars_ratings"]);
@@ -442,6 +443,17 @@ Display text ratings (ie: <strong>5/10</strong>) instead of images.
 <label for="wp_movie_ratings_include_review_yes">yes</label>
 <input type="radio" value="no" id="wp_movie_ratings_include_review_no" name="wp_movie_ratings_include_review"<?= ($plugin_options["include_review"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_include_review_no">no</label>
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_expand_review_yes">Expand reviews in page mode?</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_expand_review_yes" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_expand_review_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_expand_review_no" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_expand_review_no">no</label><br />
+Initialy show expanded reviews when in page mode.
 </td>
 </tr>
 

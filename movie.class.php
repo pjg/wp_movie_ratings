@@ -281,8 +281,9 @@ class Movie {
 		$o = "";
 
 		# parse arugments
-		$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_text_ratings"));
-		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_include_review"));
+		$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_include_review"));
+		$expand_review = (isset($options["expand_review"]) ? $options["expand_review"] : get_option("wp_movie_ratings_expand_review"));
+		$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
 		$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 		$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 		$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
@@ -315,7 +316,7 @@ class Movie {
 		$o .= "<p class=\"item\">";
 
 		# Toggle review for page mode
-		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<img  onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . "plus.gif\" alt=\"Show the review\"/>";
+		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . ($expand_review == "yes" ? "minus" : "plus") . ".gif\" alt=\"Show the review\"/>";
 		
 		# Movie title
 		$o .= "<a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
@@ -369,7 +370,7 @@ class Movie {
 		# Review
         if (($include_review == "yes") && ($this->_review != "")) { 
 			$o .= "<p class=\"description\" id=\"review" . $this->_id . "\"";
-			if ($page_mode == "yes") $o .= " style=\"display: none\"";
+			if ($page_mode == "yes") $o .= " style=\"display: " . ($expand_review == "yes" ?	"block" : "none") . "\"";
 			$o .= ">$this->_review</p>\n";
 		}
 
@@ -384,7 +385,7 @@ class Movie {
     }
 
 
-	# show html form
+	# Show html form
 	function show_add_edit_form($action) {
 		$five_stars_ratings = get_option("wp_movie_ratings_five_stars_ratings");
 ?>
