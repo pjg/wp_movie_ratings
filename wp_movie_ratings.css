@@ -124,6 +124,7 @@
 }
 
 #wp_movie_ratings #reviews li p a.url {
+	border: none;
 	display: inline;
 	font: 11px verdana, sans-serif;
 	height: auto;
@@ -137,7 +138,12 @@
 }
 
 #wp_movie_ratings #reviews li div.hreview p.item a.edit {
-	font-size: 9px;
+	border: none;
+	display: inline;
+	font: 9px verdana, sans-serif;
+	height: auto;
+	margin: 0;
+	padding: 0;
 }
 
 /* TEXT RATING */

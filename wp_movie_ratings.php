@@ -49,23 +49,21 @@ function wp_movie_ratings_install() {
 	# only special users can install plugins
 	if ($user_level < 8) { return; }
 
-	# create movie ratings table
-	if ($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+	# create/update movie ratings table
+	$sql = "CREATE TABLE ".$table_name." (
+		id int(11) unsigned NOT NULL auto_increment,
+		title varchar(255) NOT NULL default '',
+		imdb_url_short varchar(10) NOT NULL default '',
+		rating tinyint(2) unsigned NOT NULL default '0',
+		review text,
+		replacement_url varchar(255) default '',
+		watched_on datetime NOT NULL default '0000-00-00 00:00:00',
+		PRIMARY KEY (id),
+		UNIQUE KEY (imdb_url_short)
+	);";
 
-		$sql = "CREATE TABLE ".$table_name." (
-			id int(11) unsigned NOT NULL auto_increment,
-			title varchar(255) NOT NULL default '',
-			imdb_url_short varchar(10) NOT NULL default '',
-			rating tinyint(2) unsigned NOT NULL default '0',
-			review text,
-			watched_on datetime NOT NULL default '0000-00-00 00:00:00',
-			PRIMARY KEY (id),
-			UNIQUE KEY (imdb_url_short)
-		);";
-
-		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
-		dbDelta($sql);
-	}
+	require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+	dbDelta($sql);
 
 	# plugin options
 	add_option('wp_movie_ratings_count', 6, 'Number of displayed movie ratings (default)', 'no');
@@ -127,6 +125,7 @@ function wp_movie_ratings_show($count = null, $options = array()) {
 #   $options - optional parameters as hash array (if not specified, they will be read from the database)
 #		'text_ratings' -> text ratings (like 5/10) or images of stars ('yes'/'no')
 #       'include_review' -> include review with each movie rating ('yes'/'no')
+#		'expand_review' -> initially display expanded reviews when in page mode
 #	    'sidebar_mode' -> compact view for sidebar mode ('yes'/'no')
 #	    'five_stars_ratings' -> display movie ratings using 5 stars instead of 10 ('yes'/'no')
 #       'page_mode' -> display all movie ratings on a separate page (with additional options, etc.)
@@ -140,6 +139,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	if ($count == null) $count = get_option("wp_movie_ratings_count");
 	$text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
 	$include_review = (isset($options["include_review"]) ? $options["include_review"] : get_option("wp_movie_ratings_include_review"));
+	$expand_review = (isset($options["expand_review"]) ? $options["expand_review"] : get_option("wp_movie_ratings_expand_review"));
 	$sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
 	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 	$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
@@ -293,8 +293,9 @@ function wp_movie_ratings_management_page() {
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["url"]) && isset($_POST["rating"])) {
 		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
+		$replacement_url = (isset($_POST["replacement_url"]) ? $_POST["replacement_url"] : "");
 		$watched_on = (isset($_POST["watched_on"]) ? $_POST["watched_on"] : null);
-		$movie = new Movie($_POST["url"], $_POST["rating"], $review, null, $_POST["watched_on"]);
+		$movie = new Movie($_POST["url"], $_POST["rating"], $review, null, $replacement_url, $_POST["watched_on"]);
 		$msg = $movie->parse_parameters();
 		if ($msg == "") {
 			$msg = $movie->get_title();
@@ -323,7 +324,7 @@ function wp_movie_ratings_management_page() {
 		$movie = new Movie();
 		$movie->set_database($wpdb, $table_prefix);
 		$m = $movie->get_movie_by_id($_POST["id"]);
-		if (isset($_POST["title"]) && isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
+		if (isset($_POST["title"]) && isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["replacement_url"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
 	}
 
 	# EDIT MOVIE

@@ -1,25 +1,27 @@
 <?php
 
 class Movie {
-	var $_id;              # 1 (database id for movie rating)
-    var $_url;             # http://imdb.com/title/tt0133093/
-    var $_url_short;       # 0133093
-    var $_title;           # The Matrix (1999)
-    var $_rating;          # 10
-    var $_review;          # Truly a masterpiece.
-    var $_watched_on;      # 2006-03-01 23:15
-
-    var $_wpdb;            # wordpress database handle
-    var $_table;           # database table name
-	var $_table_prefix;    # just the wordpress database table prefix
+	var $_id;               # 1 (database id for movie rating)
+    var $_url;              # http://imdb.com/title/tt0133093/
+    var $_url_short;        # 0133093
+	var $_replacement_url;  # http://www.rottentomatoes.com/m/1086960-the_matrix/
+    var $_title;            # The Matrix (1999)
+    var $_rating;           # 10
+    var $_review;           # Truly a masterpiece.
+    var $_watched_on;       # 2006-03-01 23:15
+						   
+    var $_wpdb;             # wordpress database handle
+    var $_table;            # database table name
+	var $_table_prefix;     # just the wordpress database table prefix
 
 
     # constructor
-    function Movie($url=null, $rating=null, $review=null, $title=null, $watched_on=null, $id=null) {
+    function Movie($url=null, $rating=null, $review=null, $title=null, $replacement_url=null, $watched_on=null, $id=null) {
         $this->_url = rawurldecode(trim($url));
         $this->_rating = intval($rating);
         $this->_review = trim($review);
         $this->_title = $title;
+		$this->_replacement_url = rawurldecode(trim($replacement_url));
         $this->_watched_on = $watched_on;
 		$this->_id = $id;
     }
@@ -79,8 +81,11 @@ class Movie {
 		# encode &amp; separately for review (which allows HTML code) (this is important when adding movies via admin panel)
 		$review = str_replace(" & ", " &amp; ", $review);
 
+		# encode &amp; in replacement url
+		$replacement_url = str_replace("&", "&amp;", $this->_replacement_url);
+
 		$this->_wpdb->hide_errors();
-        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, watched_on) VALUES ('$title', '$this->_url_short', $this->_rating, '$review', '$watched_on');");
+        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, replacement_url, watched_on) VALUES ('$title', '$this->_url_short', $this->_rating, '$review', '$replacement_url', '$watched_on');");
 
         $this->_wpdb->show_errors();
 
@@ -107,8 +112,9 @@ class Movie {
 		$this->_title = htmlspecialchars($_POST["title"]);
 		$this->_rating = $_POST["rating"];
 		$this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
+		$this->_replacement_url = trim(str_replace("&", "&amp;", $_POST["replacement_url"]));
 		$this->_watched_on = $_POST["watched_on"];
-		$this->_wpdb->query("UPDATE $this->_table SET title='$this->_title', rating=$this->_rating, review='$this->_review', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
+		$this->_wpdb->query("UPDATE $this->_table SET title='$this->_title', rating=$this->_rating, review='$this->_review', replacement_url='$this->_replacement_url', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
 		$this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
@@ -185,7 +191,7 @@ class Movie {
 
 		# Bulding SQL query
 		$date_format = "%Y-%m-%d %H:%i" . ($type == "one" ? ":%s" : "");
-		$sql  = "SELECT id, title, imdb_url_short, rating, review, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
+		$sql  = "SELECT id, title, imdb_url_short, rating, review, replacement_url, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
 		if ($type == "one") $sql .= " WHERE id=$id ";
 		# default second sort is by date -> important when sorting by rating, so we get the newest movies with same rating first
 		if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $direction . ", watched_on DESC ";
@@ -195,7 +201,7 @@ class Movie {
 
         if ($results) {
             foreach ($results as $r) {
-                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->watched_on, $r->id);
+                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->replacement_url, $r->watched_on, $r->id);
 				$movie->set_database($this->_wpdb, $this->_table_prefix);
                 array_push($movies, $movie);
             }
@@ -319,7 +325,9 @@ class Movie {
 		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . ($expand_review == "yes" ? "minus" : "plus") . ".gif\" alt=\"Show the review\"/>";
 		
 		# Movie title
-		$o .= "<a class=\"url fn\" href=\"$this->_url\" title=\"$this->_title\n";
+		$o .= "<a class=\"url fn\" href=\"";
+		$o .= (strlen($this->_replacement_url) > 0 ? $this->_replacement_url : $this->_url);
+		$o .= "\" title=\"$this->_title\n";
 		$o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";
 
 		# Edit link
@@ -435,6 +443,15 @@ for($i=1; $i<11; $i++) {
 </textarea>
 <br />
 HTML code is allowed in the review.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="replacement_url">Replacement link:</label></th>
+<td>
+<input type="text" name="replacement_url" id="replacement_url" class="text" size="40" value="<?= $this->_replacement_url ?>" />
+<br />
+Type additional movie link if you don't want to display <a href="http://imdb.com/">imdb</a> links.
 </td>
 </tr>
 
