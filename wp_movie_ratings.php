@@ -50,8 +50,8 @@ function wp_movie_ratings_install() {
 	if ($user_level < 8) { return; }
 
 	# create/update movie ratings table
-	$sql = "CREATE TABLE ".$table_name." (
-		id int(11) unsigned NOT NULL auto_increment,
+	$sql = "CREATE TABLE " . $table_name . " (
+		id int(11) NOT NULL auto_increment,
 		title varchar(255) NOT NULL default '',
 		imdb_url_short varchar(10) NOT NULL default '',
 		rating tinyint(2) unsigned NOT NULL default '0',
