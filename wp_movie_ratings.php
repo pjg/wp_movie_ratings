@@ -68,9 +68,15 @@ function wp_movie_ratings_install() {
 
 	# UPGRADE -> Add column not present in versions 1.0 - 1.3
 	} else {
-		// ALTER TABLE $table_name ADD COLUMN replacement_url varchar(255) default ''
+		$found = false;
+		$new_column = "replacement_url";
+		$table_fields = $wpdb->get_results("DESCRIBE $table_name;");
+		
+		foreach($table_fields as $table_field) {
+			if ($table_field->Field == $new_column) $found = true;
+		}
 
-
+		if (!$found) $wpdb->query("ALTER TABLE $table_name ADD COLUMN $new_column varchar(255) default '';");
 	}
 
 	# plugin options
