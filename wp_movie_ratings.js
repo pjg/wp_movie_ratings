@@ -15,10 +15,14 @@ function toggle_review(id) {
 		if (review.style.display == "none") {
 			review.style.display = "block"
 			img.alt = "Hide the review"
+			img.width = 9
+			img.height = 21
 			img.src = img.src.replace(/plus/, 'minus')
 		} else { // Hide review
 			review.style.display = "none"
 			img.alt = "Show the review"
+			img.width = 9
+			img.height = 9
 			img.src = img.src.replace(/minus/, 'plus')
 		}
 	}
