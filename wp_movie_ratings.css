@@ -51,6 +51,7 @@
 	list-style: none;
 	padding: 0;
 	margin: 6px 5px 3px 3px;
+	text-indent: 0;
 }
 
 #wp_movie_ratings.page_mode #reviews {
@@ -73,6 +74,7 @@
 	margin: 0;
 	padding: 2px 4px 5px 5px;
 	position: relative;
+	text-indent: 0;
 }
 
 #wp_movie_ratings #reviews li:before, #wp_movie_ratings #reviews li:after {
