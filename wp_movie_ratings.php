@@ -119,8 +119,8 @@ function wp_movie_ratings_head_inclusion() {
 
 # Change [[wp_movie_ratings_page]] into movie ratings list
 function parse_wp_movie_ratings_tags($content = "") {
-	# get rid of the unnecessary <p> tag, which makes the movie ratings page non XHTML compliant
-	$tmp = preg_replace("/<p>(\[\[wp_movie_ratings_page\]\])[\s]*<\/p>/", "$1", $content);
+	# get rid of the unnecessary p/pre/div/h1/h2/h3 tags, which make the movie ratings page non XHTML compliant
+	$tmp = preg_replace("/<(p|pre|div|h1|h2|h3)[\s]*(class=\".*?\")*>(\[\[wp_movie_ratings_page\]\])[\s]*<\/(p|pre|div|h1|h2|h3)>/", "$3", $content);
 	# parse the movie ratings tag
 	$tmp = str_replace("[[wp_movie_ratings_page]]", wp_movie_ratings_get(null, array("page_mode" => "yes")), $tmp); // . wp_movie_ratings_get_statistics("brief")
 	return $tmp;
