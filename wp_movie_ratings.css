@@ -41,6 +41,7 @@
     margin: 10px 4px 7px 0;
     padding: 0;
     text-align: right;
+	width: 100%;
 }
 
 
@@ -75,6 +76,7 @@
     padding: 2px 4px 5px 5px;
     position: relative;
     text-indent: 0;
+	width: 100%;
 }
 
 #wp_movie_ratings #reviews li:before, #wp_movie_ratings #reviews li:after {
@@ -194,6 +196,7 @@
 }
 
 #wp_movie_ratings #reviews div.rating_stars img {
+	background: transparent;
     border: none;
     display: inline;
     float: none;
@@ -208,7 +211,8 @@
 /* REVIEW */
 
 #wp_movie_ratings.page_mode #reviews li p.item img {
-    border: none;
+	background: transparent;
+	border: none;
     cursor: pointer;
     display: block;
     margin: 0;
@@ -260,8 +264,9 @@
     background: transparent;
     color: #AAA;
     font: 9px verdana, sans-serif;
-    margin-top: 15px;
+    margin-top: 13px;
     text-align: right;
+	width: 100%;
 }
 
 #link_love a {

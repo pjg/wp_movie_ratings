@@ -322,8 +322,18 @@ class Movie {
 		$o .= "<p class=\"item\">";
 
 		# Toggle review for page mode
-		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) $o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . ($expand_review == "yes" ? "minus" : "plus") . ".gif\" alt=\"Show the review\"/>";
-		
+		if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) {
+			
+			#$o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . ($expand_review == "yes" ? "minus" : "plus") . ".gif\" alt=\"Show the review\"/>";
+
+			# Plus sign (action: expand review)
+			$o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . "plus.gif\" alt=\"Show the review\"" . ($expand_review == "yes" ? " style=\"display: none\"" : "") . " />";
+
+			# Minus sign (action: collapse review)
+			$o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . "minus.gif\" alt=\"Hide the review\"" . ($expand_review == "no" ? " style=\"display: none\"" : "") . " />";
+
+		}
+
 		# Movie title
 		$o .= "<a class=\"url fn\" href=\"";
 		$o .= (strlen($this->_replacement_url) > 0 ? $this->_replacement_url : $this->_url);
@@ -374,7 +384,7 @@ class Movie {
 
 			$o .= "</div>\n";
 		}
-
+		
 		# Review
         if (($include_review == "yes") && ($this->_review != "")) { 
 			$o .= "<p class=\"description\" id=\"review" . $this->_id . "\"";

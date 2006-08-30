@@ -8,30 +8,30 @@ function delete_confirmation() {
 function toggle_review(id) {
 	var review = document.getElementById(id)
 	var img_array = review.parentNode.getElementsByTagName('img')
-	var img = img_array[0]
+	var img_plus = img_array[0]
+	var img_minus = img_array[1]
 
-	if (review && img) {
-		// Show review
+	if (review && img_plus && img_minus) {
+		// Show the review
 		if (review.style.display == 'none') {
 			if (review.style.setProperty) { 
 				review.style.setProperty('display', 'block', 'important')
 			} else {
 				review.style.display = 'block'
 			}
-			img.alt = 'Hide the review'
-			img.width = 9
-			img.height = 21
-			img.src = img.src.replace(/plus/, 'minus')
-		} else { // Hide review
+
+			img_plus.style.display = 'none'
+			img_minus.style.display = 'block'
+
+		} else { // Hide the review
 			if (review.style.setProperty) {
 				review.style.setProperty('display', 'none', 'important')
 			} else {
 				review.style.display = 'none'
 			}
-			img.alt = 'Show the review'
-			img.width = 9
-			img.height = 9
-			img.src = img.src.replace(/minus/, 'plus')
+
+			img_minus.style.display = 'none'
+			img_plus.style.display = 'block'
 		}
 	}
 }
