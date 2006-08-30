@@ -72,11 +72,12 @@
     font: 11px verdana, sans-serif;
     line-height: 100%;
     list-style: none;
+	height: auto;
     margin: 0;
     padding: 2px 4px 5px 5px;
     position: relative;
     text-indent: 0;
-	width: 100%;
+	width: auto;
 }
 
 #wp_movie_ratings #reviews li:before, #wp_movie_ratings #reviews li:after {
@@ -136,7 +137,7 @@
     display: inline;
     font: 11px verdana, sans-serif;
     height: auto;
-    margin: 0 2px 0 0;
+    margin: 0 1px 0 0;
     padding: 0;
 }
 
@@ -231,11 +232,12 @@
     color: #555;
     display: block;
     font: 11px arial, sans-serif;
+	height: auto;
     left: auto;
     letter-spacing: normal;
-    margin: 2px 40px 1px 12px !important;
-    margin: 2px 40px 1px 12px;
-    padding: 0;
+    margin: 2px 40px 0 12px !important;
+    margin: 2px 40px 0 12px;
+    padding: 0 0 1px 0;
     position: static;
     right: auto;
     text-align: left;
@@ -244,13 +246,13 @@
 }
 
 #wp_movie_ratings.sidebar_mode #reviews li div p.description {
-    margin: 2px 2px 1px 1px !important;
-    margin: 2px 2px 1px 1px;
+    margin: 2px 2px 0 1px !important;
+    margin: 2px 2px 0 1px;
 }
 
 #wp_movie_ratings.page_mode #reviews li div.hreview p.description {
-    margin: 3px 2px 1px 23px !important;
-    margin: 3px 2px 1px 23px;
+    margin: 3px 2px 0 23px !important;
+    margin: 3px 2px 0 23px;
 }
 
 #wp_movie_ratings #reviews li p.description a {
