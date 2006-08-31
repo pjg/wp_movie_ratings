@@ -30,6 +30,7 @@
     font: bold 12px verdana, sans-serif;
     margin: 6px 0 11px;
     padding: 0;
+	text-align: left;
 }
 
 
@@ -182,6 +183,7 @@
     padding: 0;
 }
 
+
 /* TEXT RATING */
 
 #wp_movie_ratings #reviews li p span.rating {
@@ -289,17 +291,34 @@
 
 /* LINK LOVE */
 
-#link_love {
+#wp_movie_ratings #link_love {
     background: transparent;
     color: #AAA;
     font: 9px verdana, sans-serif;
-    margin-top: 13px;
+    margin: 13px 0 0 0;
     text-align: right;
 	width: 100%;
 }
 
-#link_love a {
+#wp_movie_ratings #link_love a {
     font: 9px verdana, sans-serif;
+}
+
+
+/* PAGE URL */
+
+#wp_movie_ratings #page_url {
+    background: transparent;
+    color: #AAA;
+    font: 9px verdana, sans-serif;
+	margin: 7px 0 4px 0;
+    text-align: right;
+	width: 100%;
+}
+
+#wp_movie_ratings #page_url a {
+	margin-right: 7px;
+	font: 11px verdana, sans-serif;
 }
 
 
