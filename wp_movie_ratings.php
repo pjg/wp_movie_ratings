@@ -83,7 +83,9 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_count', 6, 'Number of displayed movie ratings (default)', 'no');
 	add_option('wp_movie_ratings_text_ratings', 'no', 'Display movie ratings as text or as images (stars)', 'no');
 	add_option('wp_movie_ratings_include_review', 'yes', 'Include review when displaying movie ratings?', 'no');
-	add_option('wp_movie_ratings_expand_review', 'no', 'Initialy show expanded reviews when in page mode?', 'no');
+	add_option('wp_movie_ratings_expand_review', 'no', 'Initially show expanded reviews when in page mode?', 'no');
+	add_option('wp_movie_ratings_order_by', 'title', 'Default movies order when in page mode', 'no');
+	add_option('wp_movie_ratings_order_direction', 'ASC', 'Default movies order direction when in page mode', 'no');
 	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
 	add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
 	add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
@@ -158,15 +160,17 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 	$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
 
-	# parse query parameters for page mode (sorting options)
+	# parse query parameters for page mode (sorting options) (title/rating/watched_on && ASC/DESC)
 	if ($page_mode == "yes") {
-		if (isset($_GET["sort"])) $order_by = $_GET["sort"]; else $order_by = "title";
-		if (isset($_GET["descending"])) $direction = "DESC"; else $direction = "ASC";
+		if (isset($_GET["sort"])) $order_by = $_GET["sort"]; else $order_by = get_option("wp_movie_ratings_order_by");
+		if (isset($_GET["descending"])) $order_direction = "DESC";
+		else if (isset($_GET["ascending"])) $order_direction = "ASC";
+		else $order_direction = get_option("wp_movie_ratings_order_direction");
 	}
 
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
-	$movies = ($page_mode == "yes" ? $m->get_all_movies($order_by, $direction) : $m->get_latest_movies(intval($count)));
+	$movies = ($page_mode == "yes" ? $m->get_all_movies($order_by, $order_direction) : $m->get_latest_movies(intval($count)));
 
 	# love advert
 	$o .= "\n<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
@@ -180,6 +184,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 	# sorting options for page mode
 	if ($page_mode == "yes") {
+
 		$link = $_SERVER["REQUEST_URI"];
 
 		# drop everything after '#' (including '#')
@@ -201,14 +206,14 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 			$link_w .= "?";
 		}
 
-		$link_t .= "sort=title&amp;" . ((($order_by == "title") && ($direction == "ASC")) ? "descending" : "ascending");
-		$link_r .= "sort=rating&amp;" . ((($order_by == "rating") && ($direction == "DESC")) ? "ascending" : "descending");
-		$link_w .= "sort=watched_on&amp;" . ((($order_by == "watched_on") && ($direction == "DESC")) ? "ascending" : "descending");
+		$link_t .= "sort=title&amp;" . ((($order_by == "title") && ($order_direction == "ASC")) ? "descending" : "ascending");
+		$link_r .= "sort=rating&amp;" . ((($order_by == "rating") && ($order_direction == "DESC")) ? "ascending" : "descending");
+		$link_w .= "sort=watched_on&amp;" . ((($order_by == "watched_on") && ($order_direction == "DESC")) ? "ascending" : "descending");
 
 		$o .= "<p id=\"sort_options\">Sort list by: \n";
-		$o .= "<a href=\"$link_t\">title" . ($order_by == "title" ? " <span class=\"bullet\">&" . ($direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
-		$o .= "<a href=\"$link_r\">rating" . ($order_by == "rating" ? " <span class=\"bullet\">&" . ($direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
-		$o .= "<a href=\"$link_w\">view date" . ($order_by == "watched_on" ? " <span class=\"bullet\">&" . ($direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a>\n";
+		$o .= "<a href=\"$link_t\">title" . ($order_by == "title" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
+		$o .= "<a href=\"$link_r\">rating" . ($order_by == "rating" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
+		$o .= "<a href=\"$link_w\">view date" . ($order_by == "watched_on" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a>\n";
 		$o .= "</p>\n";
 	}
 
@@ -221,7 +226,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$i = 0; # row alternator
 	foreach($movies as $movie) {
 		$o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		$o .= $movie->show(get_plugin_path("relative"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "page_mode" => $page_mode));
+		$o .= $movie->show(get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "page_mode" => $page_mode));
 		$o .= "</li>\n";
 	}
 
@@ -386,6 +391,8 @@ function get_plugin_options() {
 	$options["text_ratings"] = get_option("wp_movie_ratings_text_ratings");
 	$options["include_review"] = get_option("wp_movie_ratings_include_review");
 	$options["expand_review"] = get_option("wp_movie_ratings_expand_review");
+	$options["order_by"] = get_option("wp_movie_ratings_order_by");
+	$options["order_direction"] = get_option("wp_movie_ratings_order_direction");
 	$options["char_limit"] = get_option("wp_movie_ratings_char_limit");
 	$options["sidebar_mode"] = get_option("wp_movie_ratings_sidebar_mode");
 	$options["five_stars_ratings"] = get_option("wp_movie_ratings_five_stars_ratings");
@@ -399,15 +406,13 @@ function wp_movie_ratings_options_page() {
 	global $table_prefix, $wpdb;
 
 	# Save options in the database
-	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])
- 	 && isset($_POST["wp_movie_ratings_include_review"]) && isset($_POST["wp_movie_ratings_expand_review"]) && isset($_POST["wp_movie_ratings_char_limit"])
- 	 && isset($_POST["wp_movie_ratings_sidebar_mode"]) && isset($_POST["wp_movie_ratings_five_stars_ratings"])
-     && isset($_POST["wp_movie_ratings_dialog_title"]) ) {
-
+	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])) {
 		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
 		update_option("wp_movie_ratings_text_ratings", $_POST["wp_movie_ratings_text_ratings"]);
 		update_option("wp_movie_ratings_include_review", $_POST["wp_movie_ratings_include_review"]);
 		update_option("wp_movie_ratings_expand_review", $_POST["wp_movie_ratings_expand_review"]);
+		update_option("wp_movie_ratings_order_by", $_POST["wp_movie_ratings_order_by"]);
+		update_option("wp_movie_ratings_order_direction", $_POST["wp_movie_ratings_order_direction"]);
 		update_option("wp_movie_ratings_char_limit", $_POST["wp_movie_ratings_char_limit"]);
 		update_option("wp_movie_ratings_sidebar_mode", $_POST["wp_movie_ratings_sidebar_mode"]);
 		update_option("wp_movie_ratings_five_stars_ratings", $_POST["wp_movie_ratings_five_stars_ratings"]);
@@ -468,7 +473,23 @@ Display text ratings (ie: <strong>5/10</strong>) instead of images.
 <label for="wp_movie_ratings_expand_review_yes">yes</label>
 <input type="radio" value="no" id="wp_movie_ratings_expand_review_no" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_expand_review_no">no</label><br />
-Initialy show expanded reviews when in page mode.
+Initially show expanded reviews when in page mode.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_order_by">Sort movies by</label></th>
+<td>
+<select name="wp_movie_ratings_order_by" id="wp_movie_ratings_order_by">
+<option value="title"<?= ($plugin_options["order_by"] == "title" ? "selected=\"selected\"" : ""); ?>>title</option>
+<option value="rating"<?= ($plugin_options["order_by"] == "rating" ? "selected=\"selected\"" : ""); ?>>rating</option>
+<option value="watched_on"<?= ($plugin_options["order_by"] == "watched_on" ? "selected=\"selected\"" : ""); ?>>view date</option>
+</select>
+<select name="wp_movie_ratings_order_direction" id="wp_movie_ratings_order_direction">
+<option value="ASC"<?= ($plugin_options["order_direction"] == "ASC" ? "selected=\"selected\"" : ""); ?>>ascending</option>
+<option value="DESC"<?= ($plugin_options["order_direction"] == "DESC" ? "selected=\"selected\"" : ""); ?>>descending</option>
+</select>
+when in page mode.
 </td>
 </tr>
 
@@ -523,6 +544,7 @@ add_action('admin_menu', 'wp_movie_ratings_add_options_page');
 add_action('wp_head', 'wp_movie_ratings_head_inclusion');
 add_action('admin_head', 'wp_movie_ratings_head_inclusion');
 
+# Filter [[wp_movie_ratings_page]] tag in page mode
 add_filter("the_content", "parse_wp_movie_ratings_tags");
 
 ?>
