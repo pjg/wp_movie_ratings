@@ -108,6 +108,33 @@
 }
 
 
+/* SEPARATOR */
+
+#wp_movie_ratings #reviews li.separator {
+    background: transparent;
+}
+
+#wp_movie_ratings #reviews li.separator:hover {
+    background-color: transparent;
+}
+
+#wp_movie_ratings #reviews li.separator h3 {
+	border-bottom: 1px solid #C9CFB6;
+    display: block;
+	float: none;
+	font-family: "Lucida Grande", Tahoma, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	font-style: normal;
+	padding: 0 0 2px 0;
+	margin: 35px 0 2px -2px;
+}
+
+#wp_movie_ratings #reviews li.separator h3.first {
+	margin-top: 0;
+}
+
+
 /* hReview TAGS */
 
 #wp_movie_ratings #reviews li span.version {

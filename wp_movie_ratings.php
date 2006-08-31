@@ -223,14 +223,31 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 	$o .= "<ul id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
-	$i = 0; # row alternator
-	foreach($movies as $movie) {
-		$o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-		$o .= $movie->show(get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "page_mode" => $page_mode));
-		$o .= "</li>\n";
-	}
-
 	if (count($movies) == 0) $o .= "<li>No movies rated yet! Go and rate some. Now.</li>\n";
+	else {
+		$i = 0; # row alternator
+		$separator = ""; # used when sorting by view date when in page mode
+		$separator_last = "";
+		
+		foreach($movies as $movie) {
+			if (($page_mode == "yes") && ($order_by == "watched_on")) {
+				$separator = substr($movie->_watched_on, 0, 7);
+				if (($i == 0) || ($separator != $separator_last)) {
+					$o .= "<li class=\"separator\">";
+					$o .= "<h3" . ($i == 0 ? " class=\"first\"" : "") . ">";
+					$o .= date("F, Y", mktime(1, 1, 0, substr($separator, 5, 2), 1, substr($separator, 0, 4)));
+					$o .= "</h3></li>\n";
+				}
+				$separator_last = $separator;
+			}
+
+			$o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
+			$o .= $movie->show(get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "page_mode" => $page_mode));
+			# $o .= $movie->_watched_on; 2006-08-07 22:18
+			 
+			$o .= "</li>\n";
+		}
+	}
 
 	$o .= "</ul>\n";
 
