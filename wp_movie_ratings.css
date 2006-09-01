@@ -94,6 +94,10 @@
     position: relative;
 }
 
+#wp_movie_ratings.page_mode #reviews li.separator {
+	padding: 2px 0 5px 0;
+}
+
 #wp_movie_ratings #reviews li.odd {
     background: #FDFDF2;
 }
@@ -128,7 +132,7 @@
 	font-weight: bold;
 	font-style: normal;
 	padding: 0 0 2px 0;
-	margin: 35px 0 2px -2px;
+	margin: 35px 0 2px 0;
 }
 
 #wp_movie_ratings #reviews li.separator h3.first {
@@ -203,6 +207,14 @@
     display: block;
     margin: 3px 0 2px 1px;
     text-align: left;
+}
+
+#wp_movie_ratings #reviews li p span.half_light {
+	color: #A83D5D;
+}
+
+#wp_movie_ratings #reviews li p span.highlight {
+	color: #BC2857;
 }
 
 

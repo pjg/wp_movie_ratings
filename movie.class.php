@@ -292,6 +292,7 @@ class Movie {
         $text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
         $sidebar_mode = (isset($options["sidebar_mode"]) ? $options["sidebar_mode"] : get_option("wp_movie_ratings_sidebar_mode"));
         $five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
+		$highlight = (isset($options["highlight"]) ? $options["highlight"] : get_option("wp_movie_ratings_highlight"));
         $page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
 
         if (!is_plugin_page()) {
@@ -349,7 +350,7 @@ class Movie {
         }
 
         # Text rating
-        $o .= "<span class=\"rating\"><span class=\"value\">";
+        $o .= "<span class=\"rating" . ($this->_rating == 9 ? " half_light" : "") . ($this->_rating == 10 ? " highlight" : "") . "\"><span class=\"value\">";
         $o .= ($five_stars_ratings == "yes" ? ($this->_rating / 2) : $this->_rating);
         $o .= "</span>/<span class=\"best\">";
         $o .= ($five_stars_ratings == "yes" ? "5" : "10");
@@ -371,14 +372,30 @@ class Movie {
 
             if ($five_stars_ratings == "yes") {
                 for ($i=1; $i<6; $i++) {
-                    if ($this->_rating == ($i*2 - 1)) $o .= "<img src=\"" . $img_path . "half_star.gif\" alt=\"+\" />\n";
-                    else if ($this->_rating >= ($i*2)) $o .= "<img src=\"" . $img_path . "full_star.gif\" alt=\"*\" />\n";
-                    else $o .= "<img src=\"" . $img_path . "empty_star.gif\" alt=\"\" />\n";
+                    if ($this->_rating == ($i*2 - 1)) {
+						$img_name = "half_star" . ($highlight == "yes" ? ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
+						$img_alt = "+";
+					}
+                    else if ($this->_rating >= ($i*2)) {
+						$img_name = "full_star" . ($highlight == "yes" ? ($this->_rating == 10 ? "_highlight" : "") . ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
+						$img_alt = "*";
+					}
+                    else { 
+						$img_name = "empty_star.gif";
+						$img_alt = "";
+					}
+					$o .= "<img src=\"$img_path" . "$img_name\" alt=\"$img_alt\" />\n";
                 }
             } else {
                 for ($i=1; $i<11; $i++) {
-                    if ($this->_rating >= $i) $o .= "<img src=\"" . $img_path . "full_star.gif\" alt=\"*\" />\n";
-                    else $o .= "<img src=\"" . $img_path . "empty_star.gif\" alt=\"\" />\n";
+                    if ($this->_rating >= $i) {
+						$img_name = "full_star" . ($highlight == "yes" ? ($this->_rating == 10 ? "_highlight" : "") . ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
+						$img_alt = "*";
+					} else {
+						$img_name = "empty_star.gif";
+						$img_alt = "";
+					}
+					$o .= "<img src=\"$img_path" . "$img_name\" alt=\"$img_alt\" />\n";
                 }
             }
 
