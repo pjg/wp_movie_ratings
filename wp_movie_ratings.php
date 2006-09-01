@@ -456,6 +456,8 @@ function wp_movie_ratings_options_page() {
 
 <form method="post" action="">
 
+<fieldset class="options">
+<legend>General options</legend>
 <table class="optiontable">
 
 <tr valign="top">
@@ -464,6 +466,29 @@ function wp_movie_ratings_options_page() {
 Leave empty if you don't want any title at all.
 </td>
 </tr>
+
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_char_limit">Cut movie title at:</label></th>
+<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $plugin_options["char_limit"] ?>"/> character.<br />
+Display that many characters when the movie title is too long to fit.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_page_url">Movie ratings page url:</label></th>
+<td><input type="text" name="wp_movie_ratings_page_url" id="wp_movie_ratings_page_url" class="text" size="50" value="<?= stripslashes($plugin_options["page_url"]) ?>"/><br />
+If you enter the link (absolute) to the page listing all movie ratings it will create a link from movie ratings box to full archive.
+</td>
+</tr>
+
+</table>
+</fieldset>
+
+
+<fieldset class="options">
+<legend>Display options</legend>
+<table class="optiontable">
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings:</label></th>
@@ -490,40 +515,6 @@ Display text ratings (ie: <strong>5/10</strong>) instead of images.
 <label for="wp_movie_ratings_include_review_yes">yes</label>
 <input type="radio" value="no" id="wp_movie_ratings_include_review_no" name="wp_movie_ratings_include_review"<?= ($plugin_options["include_review"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_include_review_no">no</label>
-</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_expand_review_yes">Expand reviews in page mode?</label></th>
-<td>
-<input type="radio" value="yes" id="wp_movie_ratings_expand_review_yes" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_expand_review_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_expand_review_no" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "no" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_expand_review_no">no</label><br />
-Initially show expanded reviews when in page mode.
-</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_order_by">Sort movies by</label></th>
-<td>
-<select name="wp_movie_ratings_order_by" id="wp_movie_ratings_order_by">
-<option value="title"<?= ($plugin_options["order_by"] == "title" ? "selected=\"selected\"" : ""); ?>>title</option>
-<option value="rating"<?= ($plugin_options["order_by"] == "rating" ? "selected=\"selected\"" : ""); ?>>rating</option>
-<option value="watched_on"<?= ($plugin_options["order_by"] == "watched_on" ? "selected=\"selected\"" : ""); ?>>view date</option>
-</select>
-<select name="wp_movie_ratings_order_direction" id="wp_movie_ratings_order_direction">
-<option value="ASC"<?= ($plugin_options["order_direction"] == "ASC" ? "selected=\"selected\"" : ""); ?>>ascending</option>
-<option value="DESC"<?= ($plugin_options["order_direction"] == "DESC" ? "selected=\"selected\"" : ""); ?>>descending</option>
-</select>
-when in page mode.
-</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_char_limit">Cut movie title at:</label></th>
-<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $plugin_options["char_limit"] ?>"/> character.<br />
-Display that many characters when the movie title is too long to fit.
 </td>
 </tr>
 
@@ -560,15 +551,43 @@ Will highlight movies rated 9 and 10 (4,5 and 5 for five stars mode).
 </td>
 </tr>
 
+</table>
+</fieldset>
+
+
+<fieldset class="options">
+<legend>Page mode options</legend>
+<table class="optiontable">
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_page_url">Movie ratings page url:</label></th>
-<td><input type="text" name="wp_movie_ratings_page_url" id="wp_movie_ratings_page_url" class="text" size="50" value="<?= stripslashes($plugin_options["page_url"]) ?>"/><br />
-If you enter the link (absolute) to the page listing all movie ratings it will create a link from movie ratings box to full archive.
+<th scope="row"><label for="wp_movie_ratings_expand_review_yes">Expand reviews in page mode?</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_expand_review_yes" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_expand_review_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_expand_review_no" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_expand_review_no">no</label><br />
+Initially show expanded reviews when in page mode.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_order_by">Sort movies by</label></th>
+<td>
+<select name="wp_movie_ratings_order_by" id="wp_movie_ratings_order_by">
+<option value="title"<?= ($plugin_options["order_by"] == "title" ? "selected=\"selected\"" : ""); ?>>title</option>
+<option value="rating"<?= ($plugin_options["order_by"] == "rating" ? "selected=\"selected\"" : ""); ?>>rating</option>
+<option value="watched_on"<?= ($plugin_options["order_by"] == "watched_on" ? "selected=\"selected\"" : ""); ?>>view date</option>
+</select>
+<select name="wp_movie_ratings_order_direction" id="wp_movie_ratings_order_direction">
+<option value="ASC"<?= ($plugin_options["order_direction"] == "ASC" ? "selected=\"selected\"" : ""); ?>>ascending</option>
+<option value="DESC"<?= ($plugin_options["order_direction"] == "DESC" ? "selected=\"selected\"" : ""); ?>>descending</option>
+</select>
+when in page mode.
 </td>
 </tr>
 
 </table>
+</fieldset>
 
 <p class="submit"><input type="submit" name="submit" value="Update Options &raquo;" /></p>
 
