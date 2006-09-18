@@ -92,7 +92,7 @@ class Movie {
         if ($this->_wpdb->rows_affected == 1) {
 
             # Send pingerati ping
-            $this->send_ping();
+            if (get_option("wp_movie_ratings_ping_pingerati") == "yes") $this->send_ping();
 
             return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(stripslashes($this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
         } else {
@@ -120,7 +120,7 @@ class Movie {
         if ($this->_wpdb->rows_affected > 0) {
 
             # Send ping to pingerati.net
-            $this->send_ping();
+            if (get_option("wp_movie_ratings_ping_pingerati") == "yes") $this->send_ping();
 
             return '<div id="message" class="updated fade"><p><strong>' . stripslashes($this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
         } else {

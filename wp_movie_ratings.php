@@ -92,6 +92,7 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_highlight', 'yes', 'Highlight top rated movies?', 'no');
 	add_option('wp_movie_ratings_dialog_title', 'Movies I\'ve watched recently:', 'Dialog title for movie ratings box', 'no');
 	add_option('wp_movie_ratings_page_url', '', 'Movie ratings page url', 'no');
+	add_option('wp_movie_ratings_ping_pingerati', 'yes', 'Ping pingerati.net with movie reviews', 'no');
 }
 
 
@@ -423,6 +424,7 @@ function get_plugin_options() {
 	$options["highlight"] = get_option("wp_movie_ratings_highlight");
 	$options["dialog_title"] = get_option("wp_movie_ratings_dialog_title");
 	$options["page_url"] = get_option("wp_movie_ratings_page_url");
+	$options["ping_pingerati"] = get_option("wp_movie_ratings_ping_pingerati");
 	return $options;
 }
 
@@ -445,6 +447,7 @@ function wp_movie_ratings_options_page() {
 		update_option("wp_movie_ratings_highlight", $_POST["wp_movie_ratings_highlight"]);
 		update_option("wp_movie_ratings_dialog_title", stripslashes($_POST["wp_movie_ratings_dialog_title"]));
 		update_option("wp_movie_ratings_page_url", stripslashes($_POST["wp_movie_ratings_page_url"]));
+		update_option("wp_movie_ratings_ping_pingerati", $_POST["wp_movie_ratings_ping_pingerati"]);
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
 
@@ -479,6 +482,17 @@ Display that many characters when the movie title is too long to fit.
 <th scope="row"><label for="wp_movie_ratings_page_url">Movie ratings page url:</label></th>
 <td><input type="text" name="wp_movie_ratings_page_url" id="wp_movie_ratings_page_url" class="text" size="50" value="<?= stripslashes($plugin_options["page_url"]) ?>"/><br />
 If you enter the link (absolute) to the page listing all movie ratings it will create a link from movie ratings box to full archive.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_ping_pingerati_yes">Ping pingerati?</label></th>
+<td>
+<input type="radio" value="yes" id="wp_movie_ratings_ping_pingerati_yes" name="wp_movie_ratings_ping_pingerati"<?= ($plugin_options["ping_pingerati"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_ping_pingerati_yes">yes</label>
+<input type="radio" value="no" id="wp_movie_ratings_ping_pingerati_no" name="wp_movie_ratings_ping_pingerati"<?= ($plugin_options["ping_pingerati"] == "no" ? " checked=\"checked\"" : "") ?> />
+<label for="wp_movie_ratings_ping_pingerati_no">no</label><br />
+Will ping <a href="http://pingerati.net/">pingerati.net</a> for every new movie review you make.
 </td>
 </tr>
 
