@@ -131,8 +131,13 @@ class Movie {
 
     # send ping to pingerati.net (with blog's homepage as argument)
     function send_ping() {
-        # GET
-        $req = new WP_HTTP_Request("http://reviews.pingerati.net/ping/" . preg_replace("/http[s]*:\/\//", "", trailingslashit(get_option("home"))));
+        
+		# Decide whether ping with movies page address or just blog home address
+		$page_url = get_option("wp_movie_ratings_page_url");
+		$link = preg_replace("/http[s]*:\/\//", "", trailingslashit((strlen($page_url) > 0 ? $page_url : get_option("home"))));
+
+		# GET
+        $req = new WP_HTTP_Request("http://reviews.pingerati.net/ping/" . $link);
         $req->DownloadToString();
 
         # Below will send POST
