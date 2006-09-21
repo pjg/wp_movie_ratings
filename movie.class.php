@@ -161,8 +161,8 @@ class Movie {
 
 
     # get all movies
-    function get_all_movies($order_by = "title", $direction = "ascending") {
-        return $this->get_movies(array("type" => "all", "order_by" => $order_by, "direction" => $direction));
+    function get_all_movies($order_by = "title", $direction = "ascending", $start = null, $limit = null) {
+        return $this->get_movies(array("type" => "all", "order_by" => $order_by, "direction" => $direction, "start" => $start, "limit" => $limit));
     }
 
 
@@ -172,6 +172,8 @@ class Movie {
     #   "count" => 1-n
     #   "order_by" => "title"/"watched_on"
     #   "direction" => "ASC"/"DESC"
+	#   "start" => pagination start
+	#   "limit" => number of movies per page
     function get_movies($options = array()) {
         $movies = array();
 
@@ -192,15 +194,23 @@ class Movie {
         if ($type == "all") {
             $order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
             $direction = (isset($options["direction"]) ? $options["direction"] : "ASC");
-        }
+			$start = intval((isset($options["start"]) && $options["start"] != null) ? $options["start"] : 0);
+			$limit = intval((isset($options["limit"]) && $options["limit"] != null) ? $options["limit"] : get_option("wp_movie_ratings_pagination_limit"));		
+		}
 
         # Bulding SQL query
         $date_format = "%Y-%m-%d %H:%i" . ($type == "one" ? ":%s" : "");
         $sql  = "SELECT id, title, imdb_url_short, rating, review, replacement_url, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
         if ($type == "one") $sql .= " WHERE id=$id ";
-        # default second sort is by date -> important when sorting by rating, so we get the newest movies with same rating first
+        
+		# default second sort is by date -> important when sorting by rating, so we get the newest movies with same rating first
         if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $direction . ", watched_on DESC ";
+
+		# limit for latest movies
         if (in_array($type, array("latest", "one"))) $sql .= " LIMIT " . intval($count);
+
+		# pagination
+		if ($type == "all") $sql .= " LIMIT $start, $limit;";
 
         $results = $this->_wpdb->get_results($sql);
 
@@ -329,15 +339,11 @@ class Movie {
 
         # Toggle review for page mode
         if (($page_mode == "yes") && ($include_review == "yes") && ($this->_review != "")) {
-
-            #$o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . ($expand_review == "yes" ? "minus" : "plus") . ".gif\" alt=\"Show the review\"/>";
-
             # Plus sign (action: expand review)
             $o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . "plus.gif\" alt=\"Show the review\"" . ($expand_review == "yes" ? " style=\"display: none\"" : "") . " />";
 
             # Minus sign (action: collapse review)
             $o .= "<img onclick=\"toggle_review('review" . $this->_id . "'); return false\" src=\"$img_path" . "minus.gif\" alt=\"Hide the review\"" . ($expand_review == "no" ? " style=\"display: none\"" : "") . " />";
-
         }
 
         # Movie title

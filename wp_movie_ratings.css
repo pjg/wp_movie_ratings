@@ -301,6 +301,47 @@
 }
 
 
+/* PAGINATION */
+
+#wp_movie_ratings #pagination p {
+	margin: 11px 0 5px 4px;
+}
+
+#wp_movie_ratings #pagination p em {
+	background: transparent;
+	border: 1px solid #DDD;
+	color: #DDD;
+	font: normal 10px verdana, sans-serif;
+	padding: 1px 4px;
+	margin: 0;
+}
+
+#wp_movie_ratings #pagination p em#current {
+	background: #528CD4;
+	border: 1px solid #528CD4;
+	color: white;
+	font: bold 10px verdana, sans-serif;
+	padding: 1px 5px 1px 4px;
+	margin: 0;
+}
+
+#wp_movie_ratings #pagination p a {
+	background: transparent;
+	border: 1px solid #528CD4;
+	color: #528CD4;
+	font: normal 10px verdana, sans-serif;	
+	padding: 1px 4px;
+	margin: 0;
+}
+
+#wp_movie_ratings #pagination p a:hover {
+	border-color: #333;
+	color: #333;
+	margin: 0;
+	text-decoration: none;
+}
+
+
 /* LINK LOVE */
 
 #wp_movie_ratings #link_love {

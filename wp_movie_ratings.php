@@ -86,13 +86,14 @@ function wp_movie_ratings_install() {
 	add_option('wp_movie_ratings_expand_review', 'no', 'Initially show expanded reviews when in page mode?', 'no');
 	add_option('wp_movie_ratings_order_by', 'title', 'Default movies order when in page mode', 'no');
 	add_option('wp_movie_ratings_order_direction', 'ASC', 'Default movies order direction when in page mode', 'no');
-	add_option('wp_movie_ratings_char_limit', 44, 'Display that much characters when the movie title is too long to fit', 'no');
+	add_option('wp_movie_ratings_char_limit', 44, 'Display that many characters when the movie title is too long to fit', 'no');
 	add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
 	add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
 	add_option('wp_movie_ratings_highlight', 'yes', 'Highlight top rated movies?', 'no');
 	add_option('wp_movie_ratings_dialog_title', 'Movies I\'ve watched recently:', 'Dialog title for movie ratings box', 'no');
 	add_option('wp_movie_ratings_page_url', '', 'Movie ratings page url', 'no');
 	add_option('wp_movie_ratings_ping_pingerati', 'yes', 'Ping pingerati.net with movie reviews', 'no');
+	add_option('wp_movie_ratings_pagination_limit', 100, 'Display that many movies per page when using pagination in page mode', 'no');
 }
 
 
@@ -109,7 +110,7 @@ function get_plugin_path($type) {
 }
 
 
-# Include CSS/JS in the HEAD of html page
+# Include CSS/JS in the HEAD of the html page
 function wp_movie_ratings_head_inclusion() {
 	$plugin_path = get_plugin_path("absolute");
 
@@ -172,11 +173,19 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 		if (isset($_GET["descending"])) $order_direction = "DESC";
 		else if (isset($_GET["ascending"])) $order_direction = "ASC";
 		else $order_direction = get_option("wp_movie_ratings_order_direction");
+
+		# pagination logic
+		$current_page = (isset($_GET["movies_page"]) ? $_GET["movies_page"] : 1);
+		$limit = get_option("wp_movie_ratings_pagination_limit");
+		$start = ($current_page - 1) * $limit;
 	}
 
 	$m = new Movie();
 	$m->set_database($wpdb, $table_prefix);
-	$movies = ($page_mode == "yes" ? $m->get_all_movies($order_by, $order_direction) : $m->get_latest_movies(intval($count)));
+
+	if ($page_mode == "yes") {
+		$movies = $m->get_all_movies($order_by, $order_direction, $start, $limit);
+	} else $movies = $m->get_latest_movies(intval($count));
 
 	# love advert
 	$o .= "\n<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
@@ -198,19 +207,14 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 		# clear link from my stuff
 		$link = preg_replace("/(&|\?)*sort=(title|rating|watched_on)&(ascending|descending)/", "", $link);
+		$link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
+
+		# put ? or &amp; at the end of the link depending on the situation
+		if (strpos($link, "?")) $link .= "&amp;";
+		else $link .= "?";
 
 		# create appropriate sorting links
 		$link_t = $link_r = $link_w = $link;
-
-		if (strpos($link, "?")) {
-			$link_t .= "&amp;";
-			$link_r .= "&amp;";
-			$link_w .= "&amp;";
-		} else {
-			$link_t	.= "?";
-			$link_r .= "?";
-			$link_w .= "?";
-		}
 
 		$link_t .= "sort=title&amp;" . ((($order_by == "title") && ($order_direction == "ASC")) ? "descending" : "ascending");
 		$link_r .= "sort=rating&amp;" . ((($order_by == "rating") && ($order_direction == "DESC")) ? "ascending" : "descending");
@@ -257,6 +261,58 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	}
 
 	$o .= "</ul>\n";
+
+
+	# Pagination
+	if ($page_mode == "yes") {
+		$total_movies = $m->get_watched_movies_count("total");
+		$total_pages = ceil($total_movies / $limit);
+
+		# display only if $limit is less than $total, so the pagination makes sense
+		if ($limit < $total_movies) {
+
+			$link = $_SERVER["REQUEST_URI"];
+
+			# drop everything after '#' (including '#')
+			if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
+
+			# cleanup of my sh*t
+			$link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
+			
+			# put ? or &amp; at the end of the link depending on the situation
+			if (strpos($link, "?")) $link .= "&amp;";
+			else $link .= "?";
+
+
+			$o .= "<div id=\"pagination\"><p>";
+
+			# prev button
+			if ($current_page > 1) $o .= "<a href=\"" . $link . "movies_page=" . ($current_page - 1) . "\">"; else $o .= "<em>";
+			$o .= "&larr; previous";
+			if ($current_page > 1) $o .= "</a> "; else $o .= "</em> ";
+			$o .= "\n";
+
+			# pages
+			for ($i = 1; $i <= $total_pages; $i++) {
+				if ($current_page != $i) $o .= "<a href=\"" . $link . "movies_page=" . $i . "\">"; else $o .= "<em id=\"current\">";
+				$o .= $i;
+				if ($current_page != $i) $o .= "</a> "; else $o .= "</em> ";
+				$o .= "\n";
+			}
+			
+			# next button
+			if ($current_page < $total_pages) $o .= "<a href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em>";
+			$o .= "next &rarr;";
+			if ($current_page < $total_pages) $o .= "</a>"; else $o .= "</em>";
+			$o .= "\n";
+
+
+			$o .= "</p></div>\n";
+		}
+	}
+
+
+
 
 	# Please do not remove the love ad. Thank you :)
 	if ($page_mode == "yes") $o .= "<p id=\"link_love\">List generated by <a href=\"http://paulgoscicki.com/projects/wp-movie-ratings/\">WP Movie Ratings</a>.</p>\n";
@@ -425,6 +481,7 @@ function get_plugin_options() {
 	$options["dialog_title"] = get_option("wp_movie_ratings_dialog_title");
 	$options["page_url"] = get_option("wp_movie_ratings_page_url");
 	$options["ping_pingerati"] = get_option("wp_movie_ratings_ping_pingerati");
+	$options["pagination_limit"] = get_option("wp_movie_ratings_pagination_limit");
 	return $options;
 }
 
@@ -448,6 +505,7 @@ function wp_movie_ratings_options_page() {
 		update_option("wp_movie_ratings_dialog_title", stripslashes($_POST["wp_movie_ratings_dialog_title"]));
 		update_option("wp_movie_ratings_page_url", stripslashes($_POST["wp_movie_ratings_page_url"]));
 		update_option("wp_movie_ratings_ping_pingerati", $_POST["wp_movie_ratings_ping_pingerati"]);
+		update_option("wp_movie_ratings_pagination_limit", $_POST["wp_movie_ratings_pagination_limit"]);
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
 
@@ -469,7 +527,6 @@ function wp_movie_ratings_options_page() {
 Leave empty if you don't want any title at all.
 </td>
 </tr>
-
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_char_limit">Cut movie title at:</label></th>
@@ -585,7 +642,7 @@ Initially show expanded reviews when in page mode.
 </tr>
 
 <tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_order_by">Sort movies by</label></th>
+<th scope="row"><label for="wp_movie_ratings_order_by">Sort movies by:</label></th>
 <td>
 <select name="wp_movie_ratings_order_by" id="wp_movie_ratings_order_by">
 <option value="title"<?= ($plugin_options["order_by"] == "title" ? "selected=\"selected\"" : ""); ?>>title</option>
@@ -597,6 +654,13 @@ Initially show expanded reviews when in page mode.
 <option value="DESC"<?= ($plugin_options["order_direction"] == "DESC" ? "selected=\"selected\"" : ""); ?>>descending</option>
 </select>
 when in page mode.
+</td>
+</tr>
+
+<tr valign="top">
+<th scope="row"><label for="wp_movie_ratings_pagination_limit">Max movies per page:</label></th>
+<td><input type="text" name="wp_movie_ratings_pagination_limit" id="wp_movie_ratings_pagination_limit" class="text" size="2" value="<?= $plugin_options["pagination_limit"] ?>"/><br />
+Display that many movies per page when in page mode (otherwise paginate the page).
 </td>
 </tr>
 
