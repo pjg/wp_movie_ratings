@@ -107,14 +107,21 @@ class Movie {
     }
 
 
-    # update movie rating data
+    # update movie data
     function update_from_post() {
+		# parse imdb url
+		$this->_url = rawurldecode(trim($_POST["url"]));
+		$this->_rating = intval($_POST["rating"]);
+		$msg = $this->parse_parameters();
+		
+		# stop if wrong imdb url
+		if (strlen($msg) > 0) return $msg;
+
         $this->_title = htmlspecialchars($_POST["title"]);
-        $this->_rating = $_POST["rating"];
         $this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
         $this->_replacement_url = trim(str_replace("&", "&amp;", $_POST["replacement_url"]));
         $this->_watched_on = $_POST["watched_on"];
-        $this->_wpdb->query("UPDATE $this->_table SET title='$this->_title', rating=$this->_rating, review='$this->_review', replacement_url='$this->_replacement_url', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
+        $this->_wpdb->query("UPDATE $this->_table SET imdb_url_short='$this->_url_short', title='$this->_title', rating=$this->_rating, review='$this->_review', replacement_url='$this->_replacement_url', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
         $this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
@@ -131,7 +138,6 @@ class Movie {
 
     # send ping to pingerati.net (with blog's homepage as argument)
     function send_ping() {
-        
 		# Decide whether ping with movies page address or just blog home address
 		$page_url = get_option("wp_movie_ratings_page_url");
 		$link = preg_replace("/http[s]*:\/\//", "", trailingslashit((strlen($page_url) > 0 ? $page_url : get_option("home"))));
@@ -139,9 +145,6 @@ class Movie {
 		# GET
         $req = new WP_HTTP_Request("http://reviews.pingerati.net/ping/" . $link);
         $req->DownloadToString();
-
-        # Below will send POST
-        # weblog_ping("reviews.pingerati.net" . "/ping/");
     }
 
 
@@ -441,14 +444,15 @@ class Movie {
 
 <table class="optiontable">
 
-<?php if ($action != "Update") { ?>
+<?php  ?>
 <tr valign="top">
 <th scope="row"><label for="url">iMDB link:</label></th>
 <td><input type="text" name="url" id="url" class="text" size="40" value="<?= $this->_url ?>" />
 <br />
 Must be a valid <a href="http://imdb.com/">imdb.com</a> link.</td>
 </tr>
-<?php } else { ?>
+
+<?php if ($action == "Update") { ?>
 <tr valign="top">
 <th scope="row"><label for="title">Title:</label></th>
 <td><input type="text" name="title" id="title" class="text" size="46" value="<?= $this->_title ?>" />

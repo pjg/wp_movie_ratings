@@ -391,7 +391,7 @@ function wp_movie_ratings_management_page() {
 
 	# DATABASE -> ADD NEW MOVIE
 	# Get title of the movie and save its rating in the database
-	if (isset($_POST["url"]) && isset($_POST["rating"])) {
+	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 3) == "add")) {
 		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
 		$replacement_url = (isset($_POST["replacement_url"]) ? $_POST["replacement_url"] : "");
 		$watched_on = (isset($_POST["watched_on"]) ? $_POST["watched_on"] : null);
@@ -424,7 +424,7 @@ function wp_movie_ratings_management_page() {
 		$movie = new Movie();
 		$movie->set_database($wpdb, $table_prefix);
 		$m = $movie->get_movie_by_id($_POST["id"]);
-		if (isset($_POST["title"]) && isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["replacement_url"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
+		if (isset($_POST["url"]) && isset($_POST["title"]) && isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["replacement_url"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
 	}
 
 	# EDIT MOVIE
