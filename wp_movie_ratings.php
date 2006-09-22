@@ -287,7 +287,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 			$o .= "<div id=\"pagination\"><p>";
 
 			# prev button
-			if ($current_page > 1) $o .= "<a href=\"" . $link . "movies_page=" . ($current_page - 1) . "\">"; else $o .= "<em>";
+			if ($current_page > 1) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page - 1) . "\">"; else $o .= "<em>";
 			$o .= "&larr; previous";
 			if ($current_page > 1) $o .= "</a> "; else $o .= "</em> ";
 			$o .= "\n";
@@ -301,7 +301,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 			}
 			
 			# next button
-			if ($current_page < $total_pages) $o .= "<a href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em>";
+			if ($current_page < $total_pages) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em>";
 			$o .= "next &rarr;";
 			if ($current_page < $total_pages) $o .= "</a>"; else $o .= "</em>";
 			$o .= "\n";

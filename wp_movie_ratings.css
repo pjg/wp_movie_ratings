@@ -304,6 +304,8 @@
 /* PAGINATION */
 
 #wp_movie_ratings #pagination p {
+	font-size: 4px;
+	line-height: 500%;
 	margin: 11px 0 5px 4px;
 }
 
@@ -312,7 +314,8 @@
 	border: 1px solid #DDD;
 	color: #DDD;
 	font: normal 10px verdana, sans-serif;
-	padding: 1px 4px;
+	padding: 1px 4px 2px !important;
+	padding-bottom: 1px;
 	margin: 0;
 }
 
@@ -321,7 +324,7 @@
 	border: 1px solid #528CD4;
 	color: white;
 	font: bold 10px verdana, sans-serif;
-	padding: 1px 5px 1px 4px;
+	padding: 1px 5px 2px 4px;
 	margin: 0;
 }
 
@@ -330,8 +333,13 @@
 	border: 1px solid #528CD4;
 	color: #528CD4;
 	font: normal 10px verdana, sans-serif;	
-	padding: 1px 4px;
+	padding: 1px 4px 2px;
 	margin: 0;
+}
+
+#wp_movie_ratings #pagination p a.next_prev {
+	padding-bottom: 2px !important;
+	padding-bottom: 1px;
 }
 
 #wp_movie_ratings #pagination p a:hover {
