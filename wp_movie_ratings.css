@@ -51,8 +51,8 @@
 #wp_movie_ratings #reviews {
     background: transparent;
     list-style: none;
-    padding: 0;
     margin: 6px 5px 3px 3px;
+    padding: 0;
     text-indent: 0;
 }
 
@@ -131,8 +131,8 @@
 	font-size: 14px;
 	font-weight: bold;
 	font-style: normal;
-	padding: 0 0 2px 0;
 	margin: 35px 0 2px 0;
+	padding: 0 0 2px 0;
 }
 
 #wp_movie_ratings #reviews li.separator h3.first {
@@ -306,17 +306,17 @@
 #wp_movie_ratings #pagination p {
 	font-size: 4px;
 	line-height: 500%;
-	margin: 11px 0 5px 4px;
+	margin: 20px 0 5px 4px;
 }
 
-#wp_movie_ratings #pagination p em {
+#wp_movie_ratings #pagination p em.next_prev {
 	background: transparent;
 	border: 1px solid #DDD;
 	color: #DDD;
 	font: normal 10px verdana, sans-serif;
+	margin: 0;
 	padding: 1px 4px 2px !important;
 	padding-bottom: 1px;
-	margin: 0;
 }
 
 #wp_movie_ratings #pagination p em#current {
@@ -324,22 +324,24 @@
 	border: 1px solid #528CD4;
 	color: white;
 	font: bold 10px verdana, sans-serif;
-	padding: 1px 5px 2px 4px;
 	margin: 0;
+	padding: 1px 5px 2px 4px;
 }
 
 #wp_movie_ratings #pagination p a {
 	background: transparent;
 	border: 1px solid #528CD4;
 	color: #528CD4;
-	font: normal 10px verdana, sans-serif;	
-	padding: 1px 4px 2px;
+	font: normal 10px verdana, sans-serif;
 	margin: 0;
+	padding: 1px 4px 2px;
+	text-decoration: none;
 }
 
 #wp_movie_ratings #pagination p a.next_prev {
 	padding-bottom: 2px !important;
 	padding-bottom: 1px;
+	text-decoration: none;
 }
 
 #wp_movie_ratings #pagination p a:hover {
@@ -378,8 +380,8 @@
 }
 
 #wp_movie_ratings #page_url a {
-	margin-right: 7px;
 	font: 11px verdana, sans-serif;
+	margin-right: 7px;
 }
 
 
