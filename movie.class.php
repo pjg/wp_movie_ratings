@@ -72,22 +72,24 @@ class Movie {
 
     # save movie rating to the database
     function save() {
-        $watched_on = ($this->_watched_on == null ? $this->get_current_time() : $this->_watched_on);
 
-        # insert into db (we make sure that special characters are properly escaped, but not double escaped)
-        #$title = (get_magic_quotes_runtime() == 0 ? addslashes($this->_title) : $this->_title);
-		$title = mysql_real_escape_string($this->title);
+		$this->_title = real_unescape_string($this->_title);
+		$title_screen = real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
+		$title_db = real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
 
-        $review = (get_magic_quotes_runtime() == 0 ? addslashes($this->_review) : $this->_review);
-
-        # encode &amp; separately for review (which allows HTML code) (this is important when adding movies via admin panel)
-        $review = str_replace(" & ", " &amp; ", $review);
+		# encode &amp; separately for review (which allows HTML code) (this is important when adding movies via admin panel)
+		# and it fucking suxx
+		$this->_review = str_replace(" & ", " &amp; ", real_unescape_string($this->_review));
+		$review_db = real_escape_string($this->_review, array("output" => "database"));
 
         # encode &amp; in replacement url
-        $replacement_url = str_replace("&", "&amp;", $this->_replacement_url);
+        $replacement_url = str_replace("&amp;", "&", $this->_replacement_url); # so we a 'common base'
+        $replacement_url = str_replace("&", "&amp;", $replacement_url); # encode all '&'
+
+		$watched_on = ($this->_watched_on == null ? $this->get_current_time() : $this->_watched_on);
 
         $this->_wpdb->hide_errors();
-        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, replacement_url, watched_on) VALUES ('$title', '$this->_url_short', $this->_rating, '$review', '$replacement_url', '$watched_on');");
+        $this->_wpdb->query("INSERT INTO $this->_table (title, imdb_url_short, rating, review, replacement_url, watched_on) VALUES ('$title_db', '$this->_url_short', $this->_rating, '$review_db', '$replacement_url', '$watched_on');");
 
         $this->_wpdb->show_errors();
 
@@ -112,19 +114,28 @@ class Movie {
     # update movie data
     function update_from_post() {
 		# parse imdb url
-		$this->_url = rawurldecode(trim($_POST["url"]));
+		$this->_url = UTF8RawURLDecode(trim($_POST["url"]));
 		$this->_rating = intval($_POST["rating"]);
 		$msg = $this->parse_parameters();
 	
 		# stop if wrong imdb url
 		if (strlen($msg) > 0) return $msg;
 
-		$this->_title = real_decode_string($_POST["title"]);
-        $this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
-        $this->_replacement_url = rawurldecode(trim($_POST["replacement_url"]));
-        $this->_watched_on = $_POST["watched_on"];
-		
-        $this->_wpdb->query("UPDATE $this->_table SET imdb_url_short='$this->_url_short', title='" . mysql_real_escape_string($this->_title) . "', rating=$this->_rating, review='$this->_review', replacement_url='$this->_replacement_url', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
+		$this->_title = real_unescape_string($_POST["title"]);
+		$title_screen = real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
+		$title_db = real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
+
+		# str_replace here is so fucking wrong... (no idea how to do it better, though)
+		$this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
+		$review_db = real_escape_string($this->_review, array("output" => "database"));
+
+        $this->_replacement_url = UTF8RawURLDecode(trim($_POST["replacement_url"]));
+        $this->_watched_on = real_unescape_string($_POST["watched_on"]);
+		$watched_on_db = real_escape_string($this->_watched_on, array("output" => "database"));
+
+		$sql = "UPDATE $this->_table SET imdb_url_short='$this->_url_short', title='$title_db', rating=$this->_rating, review='$review_db', replacement_url='$this->_replacement_url', watched_on='$watched_on_db' WHERE id=$this->_id LIMIT 1";
+
+        $this->_wpdb->query($sql);
         $this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
@@ -132,9 +143,9 @@ class Movie {
             # Send ping to pingerati.net
             if (get_option("wp_movie_ratings_ping_pingerati") == "yes") $this->send_ping();
 
-            return '<div id="message" class="updated fade"><p><strong>' . stripslashes($this->_title) . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
+            return '<div id="message" class="updated fade"><p><strong>' . $title_screen . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
         } else {
-            return '<div id="message" class="error fade"><p><strong>Error: ' . stripslashes($this->_title) . ' not updated.</strong></p></div>';
+            return '<div id="message" class="error fade"><p><strong>Error: ' . $title_screen . ' not updated.</strong></p></div>';
         }
     }
 
@@ -222,7 +233,7 @@ class Movie {
 
         if ($results) {
             foreach ($results as $r) {
-                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, stripslashes($r->review), stripslashes($r->title), $r->replacement_url, $r->watched_on, $r->id);
+                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, real_unescape_string($r->review), real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
                 $movie->set_database($this->_wpdb, $this->_table_prefix);
                 array_push($movies, $movie);
             }

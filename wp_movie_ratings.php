@@ -112,6 +112,7 @@ function get_plugin_path($type) {
 
 # PHP decode javascript's escape() encoded string
 function UTF8RawURLDecode($source) {
+//	echo $source;
 	$decodedStr = '';
 	$pos = 0;
 	$len = strlen($source);
@@ -143,48 +144,12 @@ function UTF8RawURLDecode($source) {
 }
 
 
-# Parse and properly encode user input value
-# The idea here is to have a string safe to put both into the database (without any additional escaping/encoding)
-# and on the screen -> with all HTML characters and escape characters encoded as HTML entities
-function encode_user_value($v, $encode_html_characters = false) {
-	# work your way through different PHP configurations and strip automatic character escaping
-	if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) {
-		if (ini_get("get_magic_quotes_sybase") == 1) $v = str_replace("''", "'", $v);
-		else $v = stripslashes($v);
-	}
-
-	# convert dangerous characters into html entities
-	$v = str_replace('&', "&amp;", $v);   # ampersand
-	$v = str_replace('"', "&quot;", $v);  # double quote
-	$v = str_replace("'", "&#039;", $v);  # single quote
-	$v = str_replace("\\", "&#092;", $v); # backslash (one)
-
-	# htmlspecialchars
-	if ($encode_html_characters) {
-		$v = str_replace('<', '&lt;', $v);
-		$v = str_replace('>', '&gt;', $v);
-	}
-
-	return $v;
-}
-
-
-function screen_escape($v) {
-	return real_escape_string($v, array("encode_html" => true, "output" => "screen"));
-}
-
-function mysql_escape_nohtml($v) {
-	return real_escape_string($v, array("strip_html" => true, "output" => "database"));
-}
-
-function mysql_escape($v) {
-	return real_escape_string($v, array("output" => "database"));
-}
-
-
 # Custom encoding/escaping
 function real_escape_string($v, $options = array()) {
-	if (isset($options["strip_html"]) && $options["strip_html"]) $v = strip_tags($v);
+	if (isset($options["strip_html"]) && $options["strip_html"]) {
+		$v = strip_tags($v);
+	}
+
 	if (isset($options["encode_html"]) && $options["encode_html"]) {
 		$v = str_replace('&', "&amp;", $v);   # ampersand
 		$v = str_replace('"', "&quot;", $v);  # double quote
@@ -194,8 +159,14 @@ function real_escape_string($v, $options = array()) {
 		$v = str_replace('>', '&gt;', $v);
 	}
 
-	if (isset($options["output"]) && $options["output"] == "database") return mysql_real_escape_string($v);
-	else return $v;
+	if (isset($options["output"]) && $options["output"] == "database") {
+		# first remove default escaping
+		if (get_magic_quotes_gpc()) $v = stripslashes($v);
+		# then apply better mysql escaping
+		$v = mysql_real_escape_string($v);
+	}
+
+	return $v;
 }
 
 
@@ -492,9 +463,9 @@ function wp_movie_ratings_management_page() {
 	# DATABASE -> ADD NEW MOVIE
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 3) == "add")) {
-		$review = (isset($_POST["review"]) ? $_POST["review"] : "");
-		$replacement_url = (isset($_POST["replacement_url"]) ? $_POST["replacement_url"] : "");
-		$watched_on = (isset($_POST["watched_on"]) ? $_POST["watched_on"] : null);
+		$review = (isset($_POST["review"]) ? UTF8RawURLDecode($_POST["review"]) : "");
+		$replacement_url = (isset($_POST["replacement_url"]) ? UTF8RawURLDecode($_POST["replacement_url"]) : "");
+		$watched_on = (isset($_POST["watched_on"]) ? UTF8RawURLDecode($_POST["watched_on"]) : null);
 		$movie = new Movie($_POST["url"], $_POST["rating"], $review, null, $replacement_url, $_POST["watched_on"]);
 		$msg = $movie->parse_parameters();
 		if ($msg == "") {
@@ -504,7 +475,7 @@ function wp_movie_ratings_management_page() {
 				$msg = $movie->save();
 			}
 		}
-		echo rawurldecode($msg);
+		echo UTF8RawURLDecode($msg);
 		$m = new Movie(); # new 'empty' movie object
 	}
 

@@ -24,6 +24,38 @@ function addEvent(obj, evType, fn) {
 	}
 }
 
+// escape() that works well with ALL Unicode characters
+// http://www.kanolife.com/escape/2006/03/escape-and-unescape-javascript.html
+function unicode_escape (pstrString) {
+  if (pstrString == "") {
+    return "";
+  }
+  var iPos = 0;
+  var strOut = "";
+  var strChar;
+  var strString = escape(pstrString);
+  while (iPos < strString.length) {
+    strChar = strString.substr(iPos, 1);
+    if (strChar == "%") {
+      strNextChar = strString.substr(iPos + 1, 1);
+      if (strNextChar == "u") {
+        strOut += strString.substr(iPos, 6);
+        iPos += 6; 
+      }
+      else {
+        strOut += "%u00" + 
+                  strString.substr(iPos + 1, 2);
+        iPos += 3;
+      }
+    }
+    else {
+      strOut += strChar;
+      iPos++;
+    }
+  }
+  return strOut;
+}
+
 // Clear query parameters in imdb links (added by imdb.com while searching for titles there)
 function beautify_imdb_uri(url) {
 	var i = url.indexOf('?')
@@ -52,7 +84,7 @@ function add_behaviour() {
 				})
 				// execute AJAX call
 				Effect.Fade('message', {duration: 0.4, queue: 'end'})
-				var pars = 'action=add&rating=' + rating + '&url=' + escape(beautify_imdb_uri($F('url'))) + '&review=' + escape($F('review').replace(/&/g, "&amp;"))
+				var pars = 'action=add&rating=' + rating + '&url=' + escape(beautify_imdb_uri($F('url'))) + '&review=' + unicode_escape($F('review'))
 				var myAjax = new Ajax.Request('../../../wp-admin/edit.php?page=wp_movie_ratings.php', { method: 'post', parameters: pars, onComplete: show_response })
 			} else {
 				message.setAttribute('class', 'error')
@@ -69,7 +101,7 @@ function initial_focus() {
 	// focus window
 	if (window.focus) window.focus()
 
-	// focus input -> review, if we have imdb link already, or url in another case
+	// focus input -> review, if we have imdb link already or url in another case
 	var url = $('url')
 	var review = $('review')
 	if (url.value.match(/imdb\.com/)) review.focus()
