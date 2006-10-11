@@ -110,6 +110,106 @@ function get_plugin_path($type) {
 }
 
 
+# PHP decode javascript's escape() encoded string
+function UTF8RawURLDecode($source) {
+	$decodedStr = '';
+	$pos = 0;
+	$len = strlen($source);
+	while ($pos < $len) {
+		$charAt = substr($source, $pos, 1);
+		if ($charAt == '%')	{
+			$pos++;
+			$charAt = substr($source, $pos, 1);
+			if ($charAt == 'u') { 
+				# we have a unicode character
+				$pos++;
+				$unicodeHexVal = substr($source, $pos, 4);
+				$unicode = hexdec($unicodeHexVal);
+				$entity = "&#" . $unicode . ';';
+				$decodedStr .= utf8_encode($entity);
+				$pos += 4;
+			} else {
+				# we have an escaped ascii character
+				$hexVal = substr($source, $pos, 2);
+				$decodedStr .= chr(hexdec($hexVal));
+				$pos += 2;
+			}
+		} else {
+			$decodedStr .= $charAt;
+			$pos++;
+		}
+	}
+	return $decodedStr;
+}
+
+
+# Parse and properly encode user input value
+# The idea here is to have a string safe to put both into the database (without any additional escaping/encoding)
+# and on the screen -> with all HTML characters and escape characters encoded as HTML entities
+function encode_user_value($v, $encode_html_characters = false) {
+	# work your way through different PHP configurations and strip automatic character escaping
+	if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) {
+		if (ini_get("get_magic_quotes_sybase") == 1) $v = str_replace("''", "'", $v);
+		else $v = stripslashes($v);
+	}
+
+	# convert dangerous characters into html entities
+	$v = str_replace('&', "&amp;", $v);   # ampersand
+	$v = str_replace('"', "&quot;", $v);  # double quote
+	$v = str_replace("'", "&#039;", $v);  # single quote
+	$v = str_replace("\\", "&#092;", $v); # backslash (one)
+
+	# htmlspecialchars
+	if ($encode_html_characters) {
+		$v = str_replace('<', '&lt;', $v);
+		$v = str_replace('>', '&gt;', $v);
+	}
+
+	return $v;
+}
+
+
+function screen_escape($v) {
+	return real_escape_string($v, array("encode_html" => true, "output" => "screen"));
+}
+
+function mysql_escape_nohtml($v) {
+	return real_escape_string($v, array("strip_html" => true, "output" => "database"));
+}
+
+function mysql_escape($v) {
+	return real_escape_string($v, array("output" => "database"));
+}
+
+
+# Custom encoding/escaping
+function real_escape_string($v, $options = array()) {
+	if (isset($options["strip_html"]) && $options["strip_html"]) $v = strip_tags($v);
+	if (isset($options["encode_html"]) && $options["encode_html"]) {
+		$v = str_replace('&', "&amp;", $v);   # ampersand
+		$v = str_replace('"', "&quot;", $v);  # double quote
+		$v = str_replace("'", "&#039;", $v);  # single quote
+		$v = str_replace("\\", "&#092;", $v); # backslash (one)
+		$v = str_replace('<', '&lt;', $v);
+		$v = str_replace('>', '&gt;', $v);
+	}
+
+	if (isset($options["output"]) && $options["output"] == "database") return mysql_real_escape_string($v);
+	else return $v;
+}
+
+
+# Advanced version of stripslashes()
+function real_unescape_string($v) {
+	# work your way through different PHP configurations and strip automatic character escaping
+	if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) {
+		if (ini_get("get_magic_quotes_sybase") == 1) $v = str_replace("''", "'", $v);
+		else $v = stripslashes($v);
+	}
+	return $v;
+}
+
+
 # Include CSS/JS in the HEAD of the html page
 function wp_movie_ratings_head_inclusion() {
 	$plugin_path = get_plugin_path("absolute");

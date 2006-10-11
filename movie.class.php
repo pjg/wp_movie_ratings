@@ -75,7 +75,9 @@ class Movie {
         $watched_on = ($this->_watched_on == null ? $this->get_current_time() : $this->_watched_on);
 
         # insert into db (we make sure that special characters are properly escaped, but not double escaped)
-        $title = (get_magic_quotes_runtime() == 0 ? addslashes($this->_title) : $this->_title);
+        #$title = (get_magic_quotes_runtime() == 0 ? addslashes($this->_title) : $this->_title);
+		$title = mysql_real_escape_string($this->title);
+
         $review = (get_magic_quotes_runtime() == 0 ? addslashes($this->_review) : $this->_review);
 
         # encode &amp; separately for review (which allows HTML code) (this is important when adding movies via admin panel)
@@ -113,15 +115,16 @@ class Movie {
 		$this->_url = rawurldecode(trim($_POST["url"]));
 		$this->_rating = intval($_POST["rating"]);
 		$msg = $this->parse_parameters();
-		
+	
 		# stop if wrong imdb url
 		if (strlen($msg) > 0) return $msg;
 
-        $this->_title = htmlspecialchars($_POST["title"]);
+		$this->_title = real_decode_string($_POST["title"]);
         $this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
-        $this->_replacement_url = trim(str_replace("&", "&amp;", $_POST["replacement_url"]));
+        $this->_replacement_url = rawurldecode(trim($_POST["replacement_url"]));
         $this->_watched_on = $_POST["watched_on"];
-        $this->_wpdb->query("UPDATE $this->_table SET imdb_url_short='$this->_url_short', title='$this->_title', rating=$this->_rating, review='$this->_review', replacement_url='$this->_replacement_url', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
+		
+        $this->_wpdb->query("UPDATE $this->_table SET imdb_url_short='$this->_url_short', title='" . mysql_real_escape_string($this->_title) . "', rating=$this->_rating, review='$this->_review', replacement_url='$this->_replacement_url', watched_on='$this->_watched_on' WHERE id=$this->_id LIMIT 1");
         $this->_wpdb->show_errors();
 
         if ($this->_wpdb->rows_affected > 0) {
