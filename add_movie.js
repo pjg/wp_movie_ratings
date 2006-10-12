@@ -14,19 +14,19 @@ Ajax.Responders.register({
 // Cross-browser AddEvent function
 function addEvent(obj, evType, fn) {
 	if (obj.addEventListener) {
-		obj.addEventListener(evType, fn, false);
-		return true;
+		obj.addEventListener(evType, fn, false)
+		return true
 	} else if (obj.attachEvent) {
-		var r = obj.attachEvent('on' + evType, fn);
-		return r;
+		var r = obj.attachEvent('on' + evType, fn)
+		return r
 	} else {
-		return false;
+		return false
 	}
 }
 
 // escape() that works well with ALL Unicode characters
 // http://www.kanolife.com/escape/2006/03/escape-and-unescape-javascript.html
-function unicode_escape (pstrString) {
+function unicode_escape(pstrString) {
 	if (pstrString == '') {
 		return ''
 	}

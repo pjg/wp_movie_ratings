@@ -59,8 +59,7 @@ function wp_movie_ratings_install() {
 			review text,
 			replacement_url varchar(255) default '',
 			watched_on datetime NOT NULL default '0000-00-00 00:00:00',
-			PRIMARY KEY (id),
-			UNIQUE KEY (imdb_url_short)
+			PRIMARY KEY (id)
 		);";
 
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
@@ -71,13 +70,23 @@ function wp_movie_ratings_install() {
 		$found = false;
 		$new_column = "replacement_url";
 		$table_fields = $wpdb->get_results("DESCRIBE $table_name;");
-		
+
 		foreach($table_fields as $table_field) {
 			if ($table_field->Field == $new_column) $found = true;
 		}
 
 		if (!$found) $wpdb->query("ALTER TABLE $table_name ADD COLUMN $new_column varchar(255) default '';");
 	}
+
+
+	# DROP INDEX UNIQUE KEY (imdb_url_short) created in versions prior to 1.4 of this plugin so we have no problems while adding titles without imdb link
+	$indexes = $wpdb->get_results("SHOW INDEX FROM $table_name;");
+	foreach($indexes as $index) {
+		if ($index->Column_name == "imdb_url_short") {
+			$wpdb->query("ALTER TABLE $table_name DROP INDEX imdb_url_short");
+		}
+	}
+
 
 	# plugin options
 	add_option('wp_movie_ratings_count', 6, 'Number of displayed movie ratings (default)', 'no');
@@ -120,7 +129,7 @@ function UTF8RawURLDecode($source) {
 		if ($charAt == '%')	{
 			$pos++;
 			$charAt = substr($source, $pos, 1);
-			if ($charAt == 'u') { 
+			if ($charAt == 'u') {
 				# we have a unicode character
 				$pos++;
 				$unicodeHexVal = substr($source, $pos, 4);
@@ -319,7 +328,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 		$i = 0; # row alternator
 		$separator = ""; # used when sorting by view date when in page mode
 		$separator_last = "";
-		
+
 		foreach($movies as $movie) {
 
 			# Separator logic
@@ -359,7 +368,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 			# cleanup of my sh*t
 			$link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
-			
+
 			# put ? or &amp; at the end of the link depending on the situation
 			if (strpos($link, "?")) $link .= "&amp;";
 			else $link .= "?";
@@ -380,7 +389,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 				if ($current_page != $i) $o .= "</a> "; else $o .= "</em> ";
 				$o .= "\n";
 			}
-			
+
 			# next button
 			if ($current_page < $total_pages) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em class=\"next_prev\">";
 			$o .= "next <span class=\"bullet\">&rarr;</span></a>";
@@ -473,14 +482,23 @@ function wp_movie_ratings_management_page() {
 	# DATABASE -> ADD NEW MOVIE
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 3) == "add")) {
+		$url = (isset($_POST["url"]) ? UTF8RawURLDecode($_POST["url"]) : null);
+		$rating = (isset($_POST["rating"]) ? $_POST["rating"] : null);
+		$title = (isset($_POST["title"]) ? UTF8RawURLDecode($_POST["title"]) : "");
 		$review = (isset($_POST["review"]) ? UTF8RawURLDecode($_POST["review"]) : "");
 		$replacement_url = (isset($_POST["replacement_url"]) ? UTF8RawURLDecode($_POST["replacement_url"]) : "");
 		$watched_on = (isset($_POST["watched_on"]) ? UTF8RawURLDecode($_POST["watched_on"]) : null);
-		$movie = new Movie($_POST["url"], $_POST["rating"], $review, null, $replacement_url, $_POST["watched_on"]);
-		$msg = $movie->parse_parameters();
-		if ($msg == "") {
-			$msg = $movie->get_title();
-			if ($msg == "")	{
+
+		$movie = new Movie($url, $rating, $review, $title, $replacement_url, $watched_on);
+		$msg = $movie->parse_rating();
+		if (empty($msg)) {
+			if (!empty($url)) $msg = $movie->parse_imdb_url();
+
+			# fetch title from imdb
+			if (empty($msg) && empty($title) && !empty($url)) $msg = $movie->get_title();
+
+			# save new movie raing in database
+			if (empty($msg)) {
 				$movie->set_database($wpdb, $table_prefix);
 				$msg = $movie->save();
 			}

@@ -35,19 +35,20 @@ class Movie {
     }
 
 
-    # check if we have a valid imdb.com link
-    function parse_parameters() {
-        if (preg_match("/^http:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $matches)) {
-            if (($this->_rating > 0) && ($this->_rating < 11)) {
-                $this->_url_short = $matches[2];
-                $this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
-                $msg = "";
-            }
-            else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
-        }
-        else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong imdb link.</strong></p></div>';
+	# check if we have a valid movie rating
+	function parse_rating() {
+		if (($this->_rating > 0) && ($this->_rating < 11)) $msg = "";
+		else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
+	}
 
-        return $msg;
+
+    # check if we have a valid imdb.com link
+    function parse_imdb_url() {
+        if (preg_match("/^http:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $matches)) {
+			$this->_url_short = $matches[2];
+			$this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
+			return "";
+		} else return '<div id="message" class="error fade"><p><strong>Error: wrong imdb link.</strong></p></div>';
     }
 
 
@@ -113,13 +114,20 @@ class Movie {
 
     # update movie data
     function update_from_post() {
-		# parse imdb url
+		
+		# check user submitted rating & imdb url
 		$this->_url = UTF8RawURLDecode(trim($_POST["url"]));
 		$this->_rating = intval($_POST["rating"]);
-		$msg = $this->parse_parameters();
+
+		# wrong rating
+		$msg = $this->parse_rating();
+		if (!empty($msg)) return $msg;
 	
-		# stop if wrong imdb url
-		if (strlen($msg) > 0) return $msg;
+		# wrong imdb link (if entered)
+		if (!empty($this->_url)) {
+			$msg = $this->parse_imdb_url();
+			if (!empty($msg)) return $msg;
+		}
 
 		$this->_title = real_unescape_string($_POST["title"]);
 		$title_screen = real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
@@ -233,7 +241,8 @@ class Movie {
 
         if ($results) {
             foreach ($results as $r) {
-                $movie = new Movie("http://imdb.com/title/tt" . $r->imdb_url_short . "/", $r->rating, real_unescape_string($r->review), real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
+				$url = (!empty($r->imdb_url_short) ? "http://imdb.com/title/tt" . $r->imdb_url_short . "/" : "");
+                $movie = new Movie($url, $r->rating, real_unescape_string($r->review), real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
                 $movie->set_database($this->_wpdb, $this->_table_prefix);
                 array_push($movies, $movie);
             }
@@ -364,10 +373,16 @@ class Movie {
         }
 
         # Movie title
-        $o .= "<a class=\"url fn\" href=\"";
-        $o .= (strlen($this->_replacement_url) > 0 ? $this->_replacement_url : $this->_url);
-        $o .= "\" title=\"$this->_title\n";
-        $o .= "Watched and reviewed on $this->_watched_on\">$title_short</a>\n";
+		$is_url = ((!empty($this->_replacement_url) || !empty($this->_url)) ? true : false);
+        if ($is_url) {
+			$o .= "<a class=\"url fn\" href=\"";
+	        $o .= (!empty($this->_replacement_url) ? $this->_replacement_url : $this->_url);
+			$o .= "\" title=\"$this->_title\n";
+			$o .= "Watched and reviewed on $this->_watched_on\">";
+		}
+		$o .= $title_short;
+		if ($is_url) $o .= "</a>";
+		$o .= "\n"; # !important (gives space after movie's title regardless of the link)
 
         # Edit link
         if (!is_plugin_page()) {
@@ -463,18 +478,20 @@ class Movie {
 <th scope="row"><label for="url">iMDB link:</label></th>
 <td><input type="text" name="url" id="url" class="text" size="40" value="<?= $this->_url ?>" />
 <br />
-Must be a valid <a href="http://imdb.com/">imdb.com</a> link.</td>
+Must be a valid <a href="http://imdb.com/">imdb</a> link (but may be left empty so <strong>replacement link</strong> is used instead).</td>
 </tr>
 
-<?php if ($action == "Update") { ?>
 <tr valign="top">
 <th scope="row"><label for="title">Title:</label></th>
 <td><input type="text" name="title" id="title" class="text" size="46" value="<?= $this->_title ?>" />
 <br />
+<?php if ($action == "Update") { ?>
 You <em>really</em> should not be editing the title.
+<?php } else { ?>
+If you leave the title empty and enter a correct <a href="http://imdb.com/">imdb</a> link, the title will be fetched automatically.
+<?php } ?>
 </td>
 </tr>
-<?php } ?>
 
 <tr valign="top">
 <th scope="row"><label for="rating">Movie rating:</label></th>
@@ -498,7 +515,7 @@ for($i=1; $i<11; $i++) {
 <?= $this->_review ?>
 </textarea>
 <br />
-HTML code is allowed in the review.
+HTML code allowed.
 </td>
 </tr>
 
@@ -507,7 +524,7 @@ HTML code is allowed in the review.
 <td>
 <input type="text" name="replacement_url" id="replacement_url" class="text" size="40" value="<?= $this->_replacement_url ?>" />
 <br />
-Type additional movie link if you don't want to display <a href="http://imdb.com/">imdb</a> links.
+Type additional movie link if you don't want to display <a href="http://imdb.com/">imdb</a> links or when the movie is not listed on imdb.
 </td>
 </tr>
 
