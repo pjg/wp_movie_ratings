@@ -58,7 +58,7 @@ class Movie {
         preg_match("/<title>(.+)<\/title>/i", $imdb, $title_matches);
         $this->_title = $title_matches[1];
 
-        if ($this->_title == "") return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb.</strong></p></div>';
+        if (empty($this->_title)) return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb.</strong></p></div>';
         else return "";
     }
 

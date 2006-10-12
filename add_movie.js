@@ -17,7 +17,7 @@ function addEvent(obj, evType, fn) {
 		obj.addEventListener(evType, fn, false);
 		return true;
 	} else if (obj.attachEvent) {
-		var r = obj.attachEvent("on"+evType, fn);
+		var r = obj.attachEvent('on' + evType, fn);
 		return r;
 	} else {
 		return false;
@@ -27,33 +27,30 @@ function addEvent(obj, evType, fn) {
 // escape() that works well with ALL Unicode characters
 // http://www.kanolife.com/escape/2006/03/escape-and-unescape-javascript.html
 function unicode_escape (pstrString) {
-  if (pstrString == "") {
-    return "";
-  }
-  var iPos = 0;
-  var strOut = "";
-  var strChar;
-  var strString = escape(pstrString);
-  while (iPos < strString.length) {
-    strChar = strString.substr(iPos, 1);
-    if (strChar == "%") {
-      strNextChar = strString.substr(iPos + 1, 1);
-      if (strNextChar == "u") {
-        strOut += strString.substr(iPos, 6);
-        iPos += 6; 
-      }
-      else {
-        strOut += "%u00" + 
-                  strString.substr(iPos + 1, 2);
-        iPos += 3;
-      }
-    }
-    else {
-      strOut += strChar;
-      iPos++;
-    }
-  }
-  return strOut;
+	if (pstrString == '') {
+		return ''
+	}
+	var iPos = 0
+	var strOut = ''
+	var strChar
+	var strString = escape(pstrString)
+	while (iPos < strString.length) {
+		strChar = strString.substr(iPos, 1)
+		if (strChar == '%') {
+			strNextChar = strString.substr(iPos + 1, 1)
+			if (strNextChar == 'u') {
+				strOut += strString.substr(iPos, 6)
+				iPos += 6
+			} else {
+				strOut += '%u00' + strString.substr(iPos + 1, 2)
+				iPos += 3
+			}
+		} else {
+			strOut += strChar
+			iPos++
+		}
+	}
+	return strOut
 }
 
 // Clear query parameters in imdb links (added by imdb.com while searching for titles there)

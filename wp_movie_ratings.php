@@ -112,7 +112,6 @@ function get_plugin_path($type) {
 
 # PHP decode javascript's escape() encoded string
 function UTF8RawURLDecode($source) {
-//	echo $source;
 	$decodedStr = '';
 	$pos = 0;
 	$len = strlen($source);
@@ -151,17 +150,24 @@ function real_escape_string($v, $options = array()) {
 	}
 
 	if (isset($options["encode_html"]) && $options["encode_html"]) {
-		$v = str_replace('&', "&amp;", $v);   # ampersand
-		$v = str_replace('"', "&quot;", $v);  # double quote
-		$v = str_replace("'", "&#039;", $v);  # single quote
-		$v = str_replace("\\", "&#092;", $v); # backslash (one)
-		$v = str_replace('<', '&lt;', $v);
-		$v = str_replace('>', '&gt;', $v);
+		# we will NOT encode HTML entities if there are already some encoded HTML entities (so we will not double encode)
+		if (!preg_match("/&[a-zA-Z0-9#]*?;/", $v)) {
+			$v = str_replace('&', "&amp;", $v);   # ampersand
+			$v = str_replace('"', "&quot;", $v);  # double quote
+			$v = str_replace("'", "&#039;", $v);  # single quote
+			$v = str_replace("\\", "&#092;", $v); # backslash (one)
+			$v = str_replace('<', '&lt;', $v);
+			$v = str_replace('>', '&gt;', $v);
+		}
 	}
 
 	if (isset($options["output"]) && $options["output"] == "database") {
 		# first remove default escaping
-		if (get_magic_quotes_gpc()) $v = stripslashes($v);
+		#if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) $v = stripslashes($v);
+
+		# FORCE stripslashes() anyway (suxx... can break things; but it mostly fixes them)
+		$v = stripslashes($v);
+
 		# then apply better mysql escaping
 		$v = mysql_real_escape_string($v);
 	}
@@ -175,8 +181,12 @@ function real_unescape_string($v) {
 	# work your way through different PHP configurations and strip automatic character escaping
 	if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) {
 		if (ini_get("get_magic_quotes_sybase") == 1) $v = str_replace("''", "'", $v);
-		else $v = stripslashes($v);
+		#else $v = stripslashes($v);
 	}
+
+	# FORCE stripslashes() anyway (suxx... can break things; but it mostly fixes them)
+	$v = stripslashes($v);
+
 	return $v;
 }
 
