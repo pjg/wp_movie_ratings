@@ -124,6 +124,7 @@
 }
 
 #wp_movie_ratings #reviews li.separator h3 {
+	background: transparent;
 	border-bottom: 1px solid #C9CFB6;
     display: block;
 	float: none;
