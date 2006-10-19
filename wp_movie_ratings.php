@@ -9,7 +9,7 @@ Description: Wordpress movie rating plugin, which lets you easily rate movies
 you've seen recently and display a short list of those movies on your blog
 (ala kottke.org style). Internet Movie Database (imdb.com) is used to
 automatically fetch movie titles. 1-click movie rating is possible using
-Firefox bookmarklet (included) while browsing the imdb.com pages.
+the included bookmarklet while browsing the imdb.com pages.
 */
 
 /*
@@ -553,7 +553,7 @@ wp_movie_ratings_show_statistics("detailed");
 
 ?>
 
-<h2>Firefox bookmarklet</h2>
+<h2>Bookmarklet</h2>
 
 <p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work, though.</p>
 <p><a href="javascript:(function(){open('<?= get_plugin_path("absolute") ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>

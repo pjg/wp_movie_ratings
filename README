@@ -2,7 +2,7 @@ WP Movie Ratings v1.3 (2006-08-04)
 ==================================
 
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
-its core is a Firefox bookmarklet, which combined with Internet Movie Database
+its core is a bookmarklet, which combined with Internet Movie Database
 (imdb.com) and a little bit of AJAX magic lets you rate movies with just
 1 click. Also, there is no need to write the title of the movie as it is
 automatically fetched from imdb. Optionally, you can also write a short review
@@ -39,8 +39,8 @@ Installation
    Ratings.
 
 4. Go to the Manage section in the administration panel and see the new Movies
-   menu option there (you’ll find the Firefox bookmarklet there too). Rate at
-   least one movie (using the bookmarklet or the administration page).
+   menu option there (you’ll find the bookmarklet there too). Rate at least
+   one movie (using the bookmarklet or the administration page).
 
 5. Go to the Options section in the administration panel and under the Movies
    tab customize this plugin's options.
