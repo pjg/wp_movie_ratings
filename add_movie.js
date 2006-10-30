@@ -50,7 +50,9 @@ function unicode_escape(pstrString) {
 			iPos++
 		}
 	}
-	return strOut
+
+	// encode HTML entities (< > " ' &) plus space and equal sign (  =) separately so you can write HTML code in your review and it sort of stays html
+	return strOut.replace(/%u0020/g, "%20").replace(/%u003D/g, "%3D").replace(/%u003C/g, "%3C").replace(/%u003E/g, "%3E").replace(/%u0022/g, "%22").replace(/%u0027/g, "%27").replace(/%u0026/g, "%26")
 }
 
 // Clear query parameters in imdb links (added by imdb.com while searching for titles there)
