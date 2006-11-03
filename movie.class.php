@@ -354,13 +354,9 @@ class Movie {
         } else $title_short = $this->_title;
 
         # Admin options
-        if (is_plugin_page()) {
-            $o .= "<form method=\"post\" action=\"\">\n";
-            $o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
-        }
+        if (is_plugin_page()) $o .= "<form method=\"post\" action=\"\">\n";
 
         $o .= "<div class=\"hreview\">\n";
-
         $o .= "<p class=\"item\">";
 
         # Toggle review for page mode
@@ -401,6 +397,7 @@ class Movie {
 
         # Admin options
         if (is_plugin_page()) {
+			$o .= "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />\n";
             $o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"edit\" />\n";
             $o .= "<input class=\"button\" type=\"submit\" name=\"action\" value=\"delete\" onclick=\"return delete_confirmation()\" />\n";
         }

@@ -479,7 +479,7 @@ function wp_movie_ratings_add_options_page() {
 function wp_movie_ratings_management_page() {
 	global $table_prefix, $wpdb;
 
-	# DATABASE -> ADD NEW MOVIE
+	# DATABASE -> ADD A NEW MOVIE
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 3) == "add")) {
 		$url = (isset($_POST["url"]) ? UTF8RawURLDecode($_POST["url"]) : null);
@@ -534,8 +534,8 @@ function wp_movie_ratings_management_page() {
 		$dialog_title = "Edit";
 		$action = "Update";
 	} else { # ADD MOVIE
-		$dialog_title = "Add new";
-		$action = "Add new";
+		$dialog_title = "Add a new";
+		$action = "Add a new";
 		$m = new Movie(); # new 'empty' movie object
 	}
 
