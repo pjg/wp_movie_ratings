@@ -2,7 +2,7 @@ WP Movie Ratings changelog:
 ===========================
 
 2006-11-18
-- fixed lots of rendering issues (problems in IE, K2Blue theme, Golden Gray theme, reviews not expanding, etc.).
+- fixed lots of rendering issues (problems in IE, Blue-k2 theme, Golden Gray theme, reviews not expanding, etc.).
 - completely rewritten encoding module, so now international characters as well as HTML should work correctly.
 - fix for Markdown markup - you can now use the alternate tag: <!--wp_movie_ratings_page--> to create a movie ratings page.
 - new feature: if no imdb link is given, the plugin will not look for the movie's title on imdb. As a drawback, there can be now movies without imdb links (and without titles...).
