@@ -1,6 +1,23 @@
 WP Movie Ratings changelog:
 ===========================
 
+2006-11-18
+- fixed lots of rendering issues (problems in IE, K2Blue theme, Golden Gray theme, reviews not expanding, etc.).
+- completely rewritten encoding module, so now international characters as well as HTML should work correctly.
+- fix for Markdown markup - you can now use the alternate tag: <!--wp_movie_ratings_page--> to create a movie ratings page.
+- new feature: if no imdb link is given, the plugin will not look for the movie's title on imdb. As a drawback, there can be now movies without imdb links (and without titles...).
+- new feature: ability to edit imdb links for already rated movies.
+- new feature: added pagination in page mode (so movie reviews can now span among several pages).
+- added option to disable pingerati.net pinging.
+- added option to highlight top rated movies.
+- added link from the recently rated movies list to the page with all movie ratings.
+- movies are now grouped together by month when sorting by view date in page mode.
+- added default movies sorting options for page mode.
+- added a new database field with optional link that is used instead of imdb.
+- added option to initially display expanded reviews in page mode.
+- added ability to edit movies directly from the displayed ratings list (in page mode too).
+- release 1.4.
+
 2006-08-04
 - lots of CSS fixes to make the plugin compatible with more Wordpress themes.
 - added reviews when in page mode.

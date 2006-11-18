@@ -1,4 +1,4 @@
-WP Movie Ratings v1.3 (2006-08-04)
+WP Movie Ratings v1.4 (2006-11-18)
 ==================================
 
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
@@ -19,7 +19,7 @@ Plugin page: http://paulgoscicki.com/projects/wp-movie-ratings/
 Requirements
 ----------------------------------
 
-* Wordpress 2.0+
+* Wordpress 2.04+
 * FTP, SSH or SCP access to your wordpress blog (so you can upload this
   plugin).
 
