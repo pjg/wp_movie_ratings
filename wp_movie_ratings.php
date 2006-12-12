@@ -254,6 +254,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$highlight = (isset($options["highlight"]) ? $options["highlight"] : get_option("wp_movie_ratings_highlight"));
 	$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
 	$page_url = get_option("wp_movie_ratings_page_url");
+	$char_limit = (isset($options["char_limit"]) ? intval($options["char_limit"]) : get_option("wp_movie_ratings_char_limit"));
 
 	# parse query parameters for page mode (sorting options) (title/rating/watched_on && ASC/DESC)
 	if ($page_mode == "yes") {
@@ -342,7 +343,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 			# Movie display
 			$o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-			$o .= $movie->show(get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode));
+			$o .= $movie->show(get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode, "char_limit" => $char_limit));
 			$o .= "</li>\n";
 		}
 	}

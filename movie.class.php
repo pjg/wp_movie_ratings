@@ -328,11 +328,10 @@ class Movie {
         $five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 		$highlight = (isset($options["highlight"]) ? $options["highlight"] : get_option("wp_movie_ratings_highlight"));
         $page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
+		$char_limit = (isset($options["char_limit"]) ? $options["char_limit"] : get_option("wp_movie_ratings_char_limit"));
 
         if (!is_plugin_page()) {
-            # shorten the title
-            $char_limit = get_option("wp_movie_ratings_char_limit");
-
+			# shorten the title
             if (strlen($this->_title) <= $char_limit) $title_short = $this->_title;
             else {
                 # cut at limit
@@ -341,7 +340,7 @@ class Movie {
                 # find last space char: " "
                 $last_space_position = strrpos($title_short, " ");
 
-                # cut at the last space
+                # cut at the last space and add three dots
                 $title_short = substr($title_short, 0, $last_space_position) . "...";
             }
         } else $title_short = $this->_title;
