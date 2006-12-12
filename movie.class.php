@@ -10,13 +10,13 @@ class Movie {
     var $_review;           # Truly a masterpiece.
     var $_watched_on;       # 2006-03-01 23:15
 
-    var $_wpdb;             # wordpress database handle
-    var $_table;            # database table name
-    var $_table_prefix;     # just the wordpress database table prefix
+	var $_wpdb;             # wordpress database handler
+    var $_table;            # database table name (usually wp_movie_ratings)
 
 
     # constructor
     function Movie($url=null, $rating=null, $review=null, $title=null, $replacement_url=null, $watched_on=null, $id=null) {
+		global $wpdb;
         $this->_url = rawurldecode(trim($url));
         $this->_rating = intval($rating);
         $this->_review = trim($review);
@@ -24,14 +24,8 @@ class Movie {
         $this->_replacement_url = rawurldecode(trim($replacement_url));
         $this->_watched_on = $watched_on;
         $this->_id = $id;
-    }
-
-
-    # wordpress' database handler and table prefix
-    function set_database($wpdb, $table_prefix) {
-        $this->_wpdb = $wpdb;
-        $this->_table_prefix = $table_prefix;
-        $this->_table = $table_prefix . "movie_ratings";
+		$this->_wpdb = $wpdb;
+        $this->_table = $wpdb->prefix . "movie_ratings";
     }
 
 
@@ -243,7 +237,6 @@ class Movie {
             foreach ($results as $r) {
 				$url = (!empty($r->imdb_url_short) ? "http://imdb.com/title/tt" . $r->imdb_url_short . "/" : "");
                 $movie = new Movie($url, $r->rating, real_unescape_string($r->review), real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
-                $movie->set_database($this->_wpdb, $this->_table_prefix);
                 array_push($movies, $movie);
             }
         }
@@ -545,4 +538,5 @@ Remember to use correct date format (<code>YYYY-MM-DD HH:MM:SS</code>) when sett
 <?php
     }
 }
+
 ?>

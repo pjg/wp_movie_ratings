@@ -41,10 +41,10 @@ include_once(dirname(__FILE__) . "/movie.class.php");
 
 # Plugin installation function
 function wp_movie_ratings_install() {
-	global $table_prefix, $wpdb, $user_level;
+	global $wpdb, $user_level;
 
 	# usually: wp_movie_ratings
-	$table_name = $table_prefix . "movie_ratings";
+	$table_name = $wpdb->prefix . "movie_ratings";
 
 	# only special users can install plugins
 	if ($user_level < 8) { return; }
@@ -241,8 +241,6 @@ function wp_movie_ratings_show($count = null, $options = array()) {
 #       'page_mode' -> display all movie ratings on a separate page (with additional options, etc.)
 #       'highlight' -> will highlight the stars of top rated movies
 function wp_movie_ratings_get($count = null, $options = array()) {
-	global $wpdb, $table_prefix;
-
 	# output
 	$o = "";
 
@@ -271,7 +269,6 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	}
 
 	$m = new Movie();
-	$m->set_database($wpdb, $table_prefix);
 
 	if ($page_mode == "yes") {
 		$movies = $m->get_all_movies($order_by, $order_direction, $start, $limit);
@@ -422,11 +419,8 @@ function wp_movie_ratings_show_statistics($type = "brief") {
 
 # Get statistics
 function wp_movie_ratings_get_statistics($type = "brief") {
-	global $wpdb, $table_prefix;
-
 	$o = "";
 	$m = new Movie();
-	$m->set_database($wpdb, $table_prefix);
 
 	$total = $m->get_watched_movies_count("total");
 	$total_avg = $m->get_watched_movies_count("total-average");
@@ -477,8 +471,6 @@ function wp_movie_ratings_add_options_page() {
 
 # Manage Movies administration page
 function wp_movie_ratings_management_page() {
-	global $table_prefix, $wpdb;
-
 	# DATABASE -> ADD A NEW MOVIE
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 3) == "add")) {
@@ -498,10 +490,7 @@ function wp_movie_ratings_management_page() {
 			if (empty($msg) && empty($title) && !empty($url)) $msg = $movie->get_title();
 
 			# save new movie raing in database
-			if (empty($msg)) {
-				$movie->set_database($wpdb, $table_prefix);
-				$msg = $movie->save();
-			}
+			if (empty($msg)) $msg = $movie->save();
 		}
 		echo UTF8RawURLDecode($msg);
 		$m = new Movie(); # new 'empty' movie object
@@ -510,7 +499,6 @@ function wp_movie_ratings_management_page() {
 	# DATABASE -> DELETE MOVIE
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "delete")) {
 		$m = new Movie();
-		$m->set_database($wpdb, $table_prefix);
 		$movie = $m->get_movie_by_id($_POST["id"]);
 		if ($movie != null)	echo $movie->delete();
 		else echo '<div id="message" class="error fade"><p><strong>Error: no movie to delete.</strong></p></div>';
@@ -521,7 +509,6 @@ function wp_movie_ratings_management_page() {
 	# DATABASE -> UPDATE MOVIE DATA
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "update")) {
 		$movie = new Movie();
-		$movie->set_database($wpdb, $table_prefix);
 		$m = $movie->get_movie_by_id($_POST["id"]);
 		if (isset($_POST["url"]) && isset($_POST["title"]) && isset($_POST["rating"]) && isset($_POST["review"]) && isset($_POST["replacement_url"]) && isset($_POST["watched_on"])) echo $m->update_from_post();
 	}
@@ -529,7 +516,6 @@ function wp_movie_ratings_management_page() {
 	# EDIT MOVIE
 	if ((isset($_POST["action"]) && ($_POST["action"] == "edit")) || (isset($_GET["action"]) && ($_GET["action"] == "edit"))) {
 		$movie = new Movie();
-		$movie->set_database($wpdb, $table_prefix);
 		$m = $movie->get_movie_by_id( (isset($_POST["id"]) ? $_POST["id"] : (isset($_GET["id"]) ? $_GET["id"] : 0) ));
 		$dialog_title = "Edit";
 		$action = "Update";
@@ -587,8 +573,6 @@ function get_plugin_options() {
 
 # WP Movie Ratings options page
 function wp_movie_ratings_options_page() {
-	global $table_prefix, $wpdb;
-
 	# Save options in the database
 	if (isset($_POST["wp_movie_ratings_count"]) && isset($_POST["wp_movie_ratings_text_ratings"])) {
 		update_option("wp_movie_ratings_count", $_POST["wp_movie_ratings_count"]);
