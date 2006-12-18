@@ -68,14 +68,14 @@ class Movie {
     # save movie rating to the database
     function save() {
 
-		$this->_title = real_unescape_string($this->_title);
-		$title_screen = real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
-		$title_db = real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
+		$this->_title = wp_movie_ratings_real_unescape_string($this->_title);
+		$title_screen = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
+		$title_db = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
 
 		# encode &amp; separately for review (which allows HTML code) (this is important when adding movies via admin panel)
 		# and it fucking suxx
-		$this->_review = str_replace(" & ", " &amp; ", real_unescape_string($this->_review));
-		$review_db = real_escape_string($this->_review, array("output" => "database"));
+		$this->_review = str_replace(" & ", " &amp; ", wp_movie_ratings_real_unescape_string($this->_review));
+		$review_db = wp_movie_ratings_real_escape_string($this->_review, array("output" => "database"));
 
         # encode &amp; in replacement url
         $replacement_url = str_replace("&amp;", "&", $this->_replacement_url); # so we a 'common base'
@@ -110,7 +110,7 @@ class Movie {
     function update_from_post() {
 		
 		# check user submitted rating & imdb url
-		$this->_url = UTF8RawURLDecode(trim($_POST["url"]));
+		$this->_url = wp_movie_ratings_utf8_raw_url_decode(trim($_POST["url"]));
 		$this->_rating = intval($_POST["rating"]);
 
 		# wrong rating
@@ -123,17 +123,17 @@ class Movie {
 			if (!empty($msg)) return $msg;
 		}
 
-		$this->_title = real_unescape_string($_POST["title"]);
-		$title_screen = real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
-		$title_db = real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
+		$this->_title = wp_movie_ratings_real_unescape_string($_POST["title"]);
+		$title_screen = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
+		$title_db = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
 
 		# str_replace here is so fucking wrong... (no idea how to do it better, though)
 		$this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
-		$review_db = real_escape_string($this->_review, array("output" => "database"));
+		$review_db = wp_movie_ratings_real_escape_string($this->_review, array("output" => "database"));
 
-        $this->_replacement_url = UTF8RawURLDecode(trim($_POST["replacement_url"]));
-        $this->_watched_on = real_unescape_string($_POST["watched_on"]);
-		$watched_on_db = real_escape_string($this->_watched_on, array("output" => "database"));
+        $this->_replacement_url = wp_movie_ratings_utf8_raw_url_decode(trim($_POST["replacement_url"]));
+        $this->_watched_on = wp_movie_ratings_real_unescape_string($_POST["watched_on"]);
+		$watched_on_db = wp_movie_ratings_real_escape_string($this->_watched_on, array("output" => "database"));
 
 		$sql = "UPDATE $this->_table SET imdb_url_short='$this->_url_short', title='$title_db', rating=$this->_rating, review='$review_db', replacement_url='$this->_replacement_url', watched_on='$watched_on_db' WHERE id=$this->_id LIMIT 1";
 
@@ -236,7 +236,7 @@ class Movie {
         if ($results) {
             foreach ($results as $r) {
 				$url = (!empty($r->imdb_url_short) ? "http://imdb.com/title/tt" . $r->imdb_url_short . "/" : "");
-                $movie = new Movie($url, $r->rating, real_unescape_string($r->review), real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
+                $movie = new Movie($url, $r->rating, wp_movie_ratings_real_unescape_string($r->review), wp_movie_ratings_real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
                 array_push($movies, $movie);
             }
         }

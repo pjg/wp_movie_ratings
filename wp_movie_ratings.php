@@ -107,7 +107,7 @@ function wp_movie_ratings_install() {
 
 
 # Get web server plugin path -> "relative" or "absolute"
-function get_plugin_path($type) {
+function wp_movie_ratings_get_plugin_path($type) {
 	$siteurl = get_option("siteurl");
 	if ($siteurl[strlen($siteurl)-1] != "/") $siteurl .= "/";
 	$path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__)) . "/";
@@ -120,7 +120,7 @@ function get_plugin_path($type) {
 
 
 # PHP decode javascript's escape() encoded string
-function UTF8RawURLDecode($source) {
+function wp_movie_ratings_utf8_raw_url_decode($source) {
 	$decodedStr = '';
 	$pos = 0;
 	$len = strlen($source);
@@ -153,7 +153,7 @@ function UTF8RawURLDecode($source) {
 
 
 # Custom encoding/escaping
-function real_escape_string($v, $options = array()) {
+function wp_movie_ratings_real_escape_string($v, $options = array()) {
 	if (isset($options["strip_html"]) && $options["strip_html"]) {
 		$v = strip_tags($v);
 	}
@@ -186,7 +186,7 @@ function real_escape_string($v, $options = array()) {
 
 
 # Advanced version of stripslashes()
-function real_unescape_string($v) {
+function wp_movie_ratings_real_unescape_string($v) {
 	# work your way through different PHP configurations and strip automatic character escaping
 	if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) {
 		if (ini_get("get_magic_quotes_sybase") == 1) $v = str_replace("''", "'", $v);
@@ -202,7 +202,7 @@ function real_unescape_string($v) {
 
 # Include CSS/JS in the HEAD of the html page
 function wp_movie_ratings_head_inclusion() {
-	$plugin_path = get_plugin_path("absolute");
+	$plugin_path = wp_movie_ratings_get_plugin_path("absolute");
 
 	# CSS inclusion
 	echo "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"" . $plugin_path;
@@ -214,7 +214,7 @@ function wp_movie_ratings_head_inclusion() {
 
 
 # Change [[wp_movie_ratings_page]] into movie ratings list (alternate tag: <!--wp_movie_ratings_page--> -- Markdown fix)
-function parse_wp_movie_ratings_tags($content = "") {
+function wp_movie_ratings_parse_page_tag($content = "") {
 	# get rid of the unnecessary p/pre/div/h1/h2/h3 tags, which make the movie ratings page non XHTML compliant
 	$tmp = preg_replace("/<(p|pre|div|h1|h2|h3)[\s]*(class=\".*?\")*>(\[\[wp_movie_ratings_page\]\])|(<!--wp_movie_ratings_page-->)[\s]*<\/(p|pre|div|h1|h2|h3)>/", "[[wp_movie_ratings_page]]", $content);
 	# parse the movie ratings tag
@@ -343,7 +343,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 			# Movie display
 			$o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-			$o .= $movie->show(get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode, "char_limit" => $char_limit));
+			$o .= $movie->show(wp_movie_ratings_get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode, "char_limit" => $char_limit));
 			$o .= "</li>\n";
 		}
 	}
@@ -475,12 +475,12 @@ function wp_movie_ratings_management_page() {
 	# DATABASE -> ADD A NEW MOVIE
 	# Get title of the movie and save its rating in the database
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 3) == "add")) {
-		$url = (isset($_POST["url"]) ? UTF8RawURLDecode($_POST["url"]) : null);
+		$url = (isset($_POST["url"]) ? wp_movie_ratings_utf8_raw_url_decode($_POST["url"]) : null);
 		$rating = (isset($_POST["rating"]) ? $_POST["rating"] : null);
-		$title = (isset($_POST["title"]) ? UTF8RawURLDecode($_POST["title"]) : "");
-		$review = (isset($_POST["review"]) ? UTF8RawURLDecode($_POST["review"]) : "");
-		$replacement_url = (isset($_POST["replacement_url"]) ? UTF8RawURLDecode($_POST["replacement_url"]) : "");
-		$watched_on = (isset($_POST["watched_on"]) ? UTF8RawURLDecode($_POST["watched_on"]) : null);
+		$title = (isset($_POST["title"]) ? wp_movie_ratings_utf8_raw_url_decode($_POST["title"]) : "");
+		$review = (isset($_POST["review"]) ? wp_movie_ratings_utf8_raw_url_decode($_POST["review"]) : "");
+		$replacement_url = (isset($_POST["replacement_url"]) ? wp_movie_ratings_utf8_raw_url_decode($_POST["replacement_url"]) : "");
+		$watched_on = (isset($_POST["watched_on"]) ? wp_movie_ratings_utf8_raw_url_decode($_POST["watched_on"]) : null);
 
 		$movie = new Movie($url, $rating, $review, $title, $replacement_url, $watched_on);
 		$msg = $movie->parse_rating();
@@ -493,7 +493,7 @@ function wp_movie_ratings_management_page() {
 			# save new movie raing in database
 			if (empty($msg)) $msg = $movie->save();
 		}
-		echo UTF8RawURLDecode($msg);
+		echo wp_movie_ratings_utf8_raw_url_decode($msg);
 		$m = new Movie(); # new 'empty' movie object
 	}
 
@@ -543,7 +543,7 @@ wp_movie_ratings_show_statistics("detailed");
 <h2>Bookmarklet</h2>
 
 <p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work, though.</p>
-<p><a href="javascript:(function(){open('<?= get_plugin_path("absolute") ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
+<p><a href="javascript:(function(){open('<?= wp_movie_ratings_get_plugin_path("absolute") ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
 
 </div>
 
@@ -552,7 +552,7 @@ wp_movie_ratings_show_statistics("detailed");
 
 
 # Get all plugin's options
-function get_plugin_options() {
+function wp_movie_ratings_get_plugin_options() {
 	$options = array();
 	$options["count"] = get_option("wp_movie_ratings_count");
 	$options["text_ratings"] = get_option("wp_movie_ratings_text_ratings");
@@ -593,7 +593,7 @@ function wp_movie_ratings_options_page() {
 		echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
 	}
 
-	$plugin_options = get_plugin_options();
+	$plugin_options = wp_movie_ratings_get_plugin_options();
 ?>
 
 <div class="wrap">
@@ -772,6 +772,6 @@ add_action('wp_head', 'wp_movie_ratings_head_inclusion');
 add_action('admin_head', 'wp_movie_ratings_head_inclusion');
 
 # Filter [[wp_movie_ratings_page]] tag in page mode
-add_filter("the_content", "parse_wp_movie_ratings_tags");
+add_filter("the_content", "wp_movie_ratings_parse_page_tag");
 
 ?>
