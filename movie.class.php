@@ -31,7 +31,7 @@ class Movie {
 
 	# check if we have a valid movie rating
 	function parse_rating() {
-		if (($this->_rating > 0) && ($this->_rating < 11)) $msg = "";
+		if (($this->_rating >= 0) && ($this->_rating < 11)) $msg = "";
 		else $msg = '<div id="message" class="error fade"><p><strong>Error: wrong movie rating.</strong></p></div>';
 	}
 
@@ -380,12 +380,16 @@ class Movie {
             }
         }
 
-        # Text rating
-        $o .= "<span class=\"rating" . ($this->_rating == 9 ? " half_light" : "") . ($this->_rating == 10 ? " highlight" : "") . "\"><span class=\"value\">";
-        $o .= ($five_stars_ratings == "yes" ? ($this->_rating / 2) : $this->_rating);
-        $o .= "</span>/<span class=\"best\">";
-        $o .= ($five_stars_ratings == "yes" ? "5" : "10");
-        $o .= "</span></span>\n";
+        # Text rating (will be displayed in administration panel; will be hidden via css in the blog if text_ratings options is not set; for movies rated 0 (not rated) span ratings tags will not be printed in the html code at all (on the blog)
+		if (is_plugin_page() && ($this->_rating == 0)) {
+			$o .= "<span class=\"rating\">Not rated</span>";
+		} elseif ($this->_rating != 0) {
+			$o .= "<span class=\"rating" . ($this->_rating == 9 ? " half_light" : "") . ($this->_rating == 10 ? " highlight" : "") . "\"><span class=\"value\">";
+			$o .= ($five_stars_ratings == "yes" ? ($this->_rating / 2) : $this->_rating);
+			$o .= "</span>/<span class=\"best\">";
+			$o .= ($five_stars_ratings == "yes" ? "5" : "10");
+			$o .= "</span></span>\n";
+		}
 
         # Admin options
         if (is_plugin_page()) {
@@ -399,7 +403,7 @@ class Movie {
         $o .= "<acronym class=\"dtreviewed\" title=\"" . str_replace(" ", "T", $this->_watched_on) . "\">$this->_watched_on</acronym>\n";
 
         # Stars rating using images
-        if ($text_ratings == "no") {
+        if ($text_ratings == "no" && ($this->_rating != 0)) {
             $o .= "<div class=\"rating_stars\">\n";
 
             if ($five_stars_ratings == "yes") {
@@ -487,10 +491,12 @@ If you leave the title empty and enter a correct <a href="http://imdb.com/">imdb
 <td>
 <select name="rating" id="rating">
 <?php
-for($i=1; $i<11; $i++) {
+for($i=0; $i<11; $i++) {
     echo "<option value=\"$i\"";
-    if (($i == $this->_rating) || (($i==7) && ($this->_rating == null))) echo " selected=\"selected\"";
-    echo ">" . ($five_stars_ratings == "yes" ? ($i/2) : $i) . "</option>\n";
+	if ($this->_rating == $i) echo " selected=\"selected\"";
+    echo ">";
+	if ($i == 0) echo "Not yet rated"; else echo ($five_stars_ratings == "yes" ? ($i/2) : $i);
+	echo "</option>\n";
 }
 ?>
 </select>

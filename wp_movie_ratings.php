@@ -523,7 +523,7 @@ function wp_movie_ratings_management_page() {
 	} else { # ADD MOVIE
 		$dialog_title = "Add a new";
 		$action = "Add a new";
-		$m = new Movie(); # new 'empty' movie object
+		$m = new Movie(null, 7); # new 'empty' movie object (7 is the default rating)
 	}
 
 	$dialog_title .= " movie rating.";
