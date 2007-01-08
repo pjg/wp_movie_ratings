@@ -215,10 +215,15 @@ function wp_movie_ratings_head_inclusion() {
 
 # Change [[wp_movie_ratings_page]] into movie ratings list (alternate tag: <!--wp_movie_ratings_page--> -- Markdown fix)
 function wp_movie_ratings_parse_page_tag($content = "") {
-	# get rid of the unnecessary p/pre/div/h1/h2/h3 tags, which make the movie ratings page non XHTML compliant
-	$tmp = preg_replace("/<(p|pre|div|h1|h2|h3)[\s]*(class=\".*?\")*>(\[\[wp_movie_ratings_page\]\])|(<!--wp_movie_ratings_page-->)[\s]*<\/(p|pre|div|h1|h2|h3)>/", "[[wp_movie_ratings_page]]", $content);
+	# change alternate tag to normal tag
+	$tmp = str_replace("<!--wp_movie_ratings_page-->", "[[wp_movie_ratings_page]]", $content);
+
+	# get rid of the unnecessary p/pre/div/h1/h2/h3/h4/h5 tags, which make the movie ratings page non XHTML compliant
+	$tmp = preg_replace("/<(p|pre|div|h1|h2|h3|h4|h5)[\s]*(class=\".*?\")*>[\s]*(\[\[wp_movie_ratings_page\]\])[\s]*<\/(p|pre|div|h1|h2|h3|h4|h5)>/", "[[wp_movie_ratings_page]]", $tmp);
+
 	# parse the movie ratings tag
 	$tmp = str_replace("[[wp_movie_ratings_page]]", wp_movie_ratings_get(null, array("page_mode" => "yes")), $tmp); // . wp_movie_ratings_get_statistics("brief")
+	
 	return $tmp;
 }
 
@@ -390,7 +395,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 			# next button
 			if ($current_page < $total_pages) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em class=\"next_prev\">";
-			$o .= "next <span class=\"bullet\">&rarr;</span></a>";
+			$o .= "next <span class=\"bullet\">&rarr;</span>";
 			if ($current_page < $total_pages) $o .= "</a>"; else $o .= "</em>";
 			$o .= "\n";
 
