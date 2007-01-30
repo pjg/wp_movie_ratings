@@ -466,7 +466,6 @@ class Movie {
 
 <table class="optiontable">
 
-<?php  ?>
 <tr valign="top">
 <th scope="row"><label for="url">iMDB link:</label></th>
 <td><input type="text" name="url" id="url" class="text" size="40" value="<?php echo $this->_url ?>" />
