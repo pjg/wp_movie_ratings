@@ -535,7 +535,7 @@ function wp_movie_ratings_management_page() {
 ?>
 
 <div class="wrap">
-<h2><?= $dialog_title ?></h2>
+<h2><?php echo $dialog_title ?></h2>
 
 <?php
 $m->show_add_edit_form($action);
@@ -553,7 +553,7 @@ wp_movie_ratings_show_statistics("detailed");
 <h2>Bookmarklet</h2>
 
 <p>Add the following link to your Bookmarklets folder so you can rate your movies without visiting Wordpress administration page. You must be <strong>logged in</strong> to your Wordpress blog for it to work, though.</p>
-<p><a href="javascript:(function(){open('<?= wp_movie_ratings_get_plugin_path("absolute") ?>add_movie.html?url='+escape(location.href),'<?= basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
+<p><a href="javascript:(function(){open('<?php echo wp_movie_ratings_get_plugin_path("absolute") ?>add_movie.html?url='+escape(location.href),'<?php echo basename(__FILE__, ".php") ?>','toolbar=no,width=432,height=335')})()" title="Add movie rating bookmarklet">Add movie rating bookmarklet</a></p>
 
 </div>
 
@@ -617,21 +617,21 @@ function wp_movie_ratings_options_page() {
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_dialog_title">Title for movie ratings box:</label></th>
-<td><input type="text" name="wp_movie_ratings_dialog_title" id="wp_movie_ratings_dialog_title" class="text" size="50" value="<?= stripslashes($plugin_options["dialog_title"]) ?>"/><br />
+<td><input type="text" name="wp_movie_ratings_dialog_title" id="wp_movie_ratings_dialog_title" class="text" size="50" value="<?php echo stripslashes($plugin_options["dialog_title"]) ?>"/><br />
 Leave empty if you don't want any title at all.
 </td>
 </tr>
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_char_limit">Cut movie title at:</label></th>
-<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?= $plugin_options["char_limit"] ?>"/> character.<br />
+<td><input type="text" name="wp_movie_ratings_char_limit" id="wp_movie_ratings_char_limit" class="text" size="2" value="<?php echo $plugin_options["char_limit"] ?>"/> character.<br />
 Display that many characters when the movie title is too long to fit.
 </td>
 </tr>
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_page_url">Movie ratings page url:</label></th>
-<td><input type="text" name="wp_movie_ratings_page_url" id="wp_movie_ratings_page_url" class="text" size="50" value="<?= stripslashes($plugin_options["page_url"]) ?>"/><br />
+<td><input type="text" name="wp_movie_ratings_page_url" id="wp_movie_ratings_page_url" class="text" size="50" value="<?php echo stripslashes($plugin_options["page_url"]) ?>"/><br />
 If you enter the link (absolute) to the page listing all movie ratings it will create a link from movie ratings box to full archive.
 </td>
 </tr>
@@ -639,9 +639,9 @@ If you enter the link (absolute) to the page listing all movie ratings it will c
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_ping_pingerati_yes">Ping pingerati?</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_ping_pingerati_yes" name="wp_movie_ratings_ping_pingerati"<?= ($plugin_options["ping_pingerati"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_ping_pingerati_yes" name="wp_movie_ratings_ping_pingerati"<?php echo ($plugin_options["ping_pingerati"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_ping_pingerati_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_ping_pingerati_no" name="wp_movie_ratings_ping_pingerati"<?= ($plugin_options["ping_pingerati"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_ping_pingerati_no" name="wp_movie_ratings_ping_pingerati"<?php echo ($plugin_options["ping_pingerati"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_ping_pingerati_no">no</label><br />
 Will ping <a href="http://pingerati.net/">pingerati.net</a> for every new movie review you make.
 </td>
@@ -657,7 +657,7 @@ Will ping <a href="http://pingerati.net/">pingerati.net</a> for every new movie 
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings:</label></th>
-<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?= $plugin_options["count"] ?>"/><br />
+<td><input type="text" name="wp_movie_ratings_count" id="wp_movie_ratings_count" class="text" size="2" value="<?php echo $plugin_options["count"] ?>"/><br />
 Display that many latest movie ratings.
 </td>
 </tr>
@@ -665,9 +665,9 @@ Display that many latest movie ratings.
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_text_ratings_yes">Text movie ratings?</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_text_ratings_yes" name="wp_movie_ratings_text_ratings"<?= ($plugin_options["text_ratings"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_text_ratings_yes" name="wp_movie_ratings_text_ratings"<?php echo ($plugin_options["text_ratings"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_text_ratings_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_text_ratings_no" name="wp_movie_ratings_text_ratings"<?= ($plugin_options["text_ratings"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_text_ratings_no" name="wp_movie_ratings_text_ratings"<?php echo ($plugin_options["text_ratings"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_text_ratings_no">no</label><br />
 Display text ratings (ie: <strong>5/10</strong>) instead of images.
 </td>
@@ -676,9 +676,9 @@ Display text ratings (ie: <strong>5/10</strong>) instead of images.
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_include_review_yes">Display reviews?</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_include_review_yes" name="wp_movie_ratings_include_review"<?= ($plugin_options["include_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_include_review_yes" name="wp_movie_ratings_include_review"<?php echo ($plugin_options["include_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_include_review_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_include_review_no" name="wp_movie_ratings_include_review"<?= ($plugin_options["include_review"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_include_review_no" name="wp_movie_ratings_include_review"<?php echo ($plugin_options["include_review"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_include_review_no">no</label>
 </td>
 </tr>
@@ -686,9 +686,9 @@ Display text ratings (ie: <strong>5/10</strong>) instead of images.
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_sidebar_mode_yes">Sidebar mode:</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_sidebar_mode_yes" name="wp_movie_ratings_sidebar_mode"<?= ($plugin_options["sidebar_mode"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_sidebar_mode_yes" name="wp_movie_ratings_sidebar_mode"<?php echo ($plugin_options["sidebar_mode"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_sidebar_mode_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_sidebar_mode_no" name="wp_movie_ratings_sidebar_mode"<?= ($plugin_options["sidebar_mode"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_sidebar_mode_no" name="wp_movie_ratings_sidebar_mode"<?php echo ($plugin_options["sidebar_mode"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_sidebar_mode_no">no</label><br />
 Movie rating will be displayed in a new line.
 </td>
@@ -697,9 +697,9 @@ Movie rating will be displayed in a new line.
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_five_stars_ratings_yes">5 stars ratings?</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_five_stars_ratings_yes" name="wp_movie_ratings_five_stars_ratings"<?= ($plugin_options["five_stars_ratings"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_five_stars_ratings_yes" name="wp_movie_ratings_five_stars_ratings"<?php echo ($plugin_options["five_stars_ratings"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_five_stars_ratings_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_five_stars_ratings_no" name="wp_movie_ratings_five_stars_ratings"<?= ($plugin_options["five_stars_ratings"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_five_stars_ratings_no" name="wp_movie_ratings_five_stars_ratings"<?php echo ($plugin_options["five_stars_ratings"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_five_stars_ratings_no">no</label><br />
 Display ratings using 5 stars instead of 10.
 </td>
@@ -708,9 +708,9 @@ Display ratings using 5 stars instead of 10.
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_highlight_yes">Highlight top rated movies?</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_highlight_yes" name="wp_movie_ratings_highlight"<?= ($plugin_options["highlight"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_highlight_yes" name="wp_movie_ratings_highlight"<?php echo ($plugin_options["highlight"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_highlight_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_highlight_no" name="wp_movie_ratings_highlight"<?= ($plugin_options["highlight"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_highlight_no" name="wp_movie_ratings_highlight"<?php echo ($plugin_options["highlight"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_highlight_no">no</label><br />
 Will highlight movies rated 9 and 10 (4,5 and 5 for five stars mode).
 </td>
@@ -727,9 +727,9 @@ Will highlight movies rated 9 and 10 (4,5 and 5 for five stars mode).
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_expand_review_yes">Expand reviews in page mode?</label></th>
 <td>
-<input type="radio" value="yes" id="wp_movie_ratings_expand_review_yes" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="yes" id="wp_movie_ratings_expand_review_yes" name="wp_movie_ratings_expand_review"<?php echo ($plugin_options["expand_review"] == "yes" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_expand_review_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_expand_review_no" name="wp_movie_ratings_expand_review"<?= ($plugin_options["expand_review"] == "no" ? " checked=\"checked\"" : "") ?> />
+<input type="radio" value="no" id="wp_movie_ratings_expand_review_no" name="wp_movie_ratings_expand_review"<?php echo ($plugin_options["expand_review"] == "no" ? " checked=\"checked\"" : "") ?> />
 <label for="wp_movie_ratings_expand_review_no">no</label><br />
 Initially show expanded reviews when in page mode.
 </td>
@@ -739,13 +739,13 @@ Initially show expanded reviews when in page mode.
 <th scope="row"><label for="wp_movie_ratings_order_by">Sort movies by:</label></th>
 <td>
 <select name="wp_movie_ratings_order_by" id="wp_movie_ratings_order_by">
-<option value="title"<?= ($plugin_options["order_by"] == "title" ? "selected=\"selected\"" : ""); ?>>title</option>
-<option value="rating"<?= ($plugin_options["order_by"] == "rating" ? "selected=\"selected\"" : ""); ?>>rating</option>
-<option value="watched_on"<?= ($plugin_options["order_by"] == "watched_on" ? "selected=\"selected\"" : ""); ?>>view date</option>
+<option value="title"<?php echo ($plugin_options["order_by"] == "title" ? "selected=\"selected\"" : ""); ?>>title</option>
+<option value="rating"<?php echo ($plugin_options["order_by"] == "rating" ? "selected=\"selected\"" : ""); ?>>rating</option>
+<option value="watched_on"<?php echo ($plugin_options["order_by"] == "watched_on" ? "selected=\"selected\"" : ""); ?>>view date</option>
 </select>
 <select name="wp_movie_ratings_order_direction" id="wp_movie_ratings_order_direction">
-<option value="ASC"<?= ($plugin_options["order_direction"] == "ASC" ? "selected=\"selected\"" : ""); ?>>ascending</option>
-<option value="DESC"<?= ($plugin_options["order_direction"] == "DESC" ? "selected=\"selected\"" : ""); ?>>descending</option>
+<option value="ASC"<?php echo ($plugin_options["order_direction"] == "ASC" ? "selected=\"selected\"" : ""); ?>>ascending</option>
+<option value="DESC"<?php echo ($plugin_options["order_direction"] == "DESC" ? "selected=\"selected\"" : ""); ?>>descending</option>
 </select>
 when in page mode.
 </td>
@@ -753,7 +753,7 @@ when in page mode.
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_pagination_limit">Max movies per page:</label></th>
-<td><input type="text" name="wp_movie_ratings_pagination_limit" id="wp_movie_ratings_pagination_limit" class="text" size="2" value="<?= $plugin_options["pagination_limit"] ?>"/><br />
+<td><input type="text" name="wp_movie_ratings_pagination_limit" id="wp_movie_ratings_pagination_limit" class="text" size="2" value="<?php echo $plugin_options["pagination_limit"] ?>"/><br />
 Display that many movies per page when in page mode (otherwise paginate the page).
 </td>
 </tr>
