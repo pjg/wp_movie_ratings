@@ -243,8 +243,10 @@ function wp_movie_ratings_show($count = null, $options = array()) {
 #		'expand_review' -> initially display expanded reviews when in page mode
 #	    'sidebar_mode' -> compact view for sidebar mode ('yes'/'no')
 #	    'five_stars_ratings' -> display movie ratings using 5 stars instead of 10 ('yes'/'no')
-#       'page_mode' -> display all movie ratings on a separate page (with additional options, etc.)
-#       'highlight' -> will highlight the stars of top rated movies
+#       'highlight' -> will highlight the stars of top rated movies ('yes'/'no')
+#       'page_mode' -> display all movie ratings on a separate page (with additional options, etc.) ('yes'/'no')
+#       'page_url' -> link to movie reviews page (url)
+#       'char_limit' -> will cut any character in the title after this number (number)
 function wp_movie_ratings_get($count = null, $options = array()) {
 	# output
 	$o = "";
