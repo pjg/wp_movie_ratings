@@ -108,7 +108,7 @@ class Movie {
 
     # update movie data
     function update_from_post() {
-		
+
 		# check user submitted rating & imdb url
 		$this->_url = wp_movie_ratings_utf8_raw_url_decode(trim($_POST["url"]));
 		$this->_rating = intval($_POST["rating"]);
@@ -116,7 +116,7 @@ class Movie {
 		# wrong rating
 		$msg = $this->parse_rating();
 		if (!empty($msg)) return $msg;
-	
+
 		# wrong imdb link (if entered)
 		if (!empty($this->_url)) {
 			$msg = $this->parse_imdb_url();
@@ -180,17 +180,23 @@ class Movie {
 
 
     # get all movies
-    function get_all_movies($order_by = "title", $direction = "ascending", $start = null, $limit = null) {
-        return $this->get_movies(array("type" => "all", "order_by" => $order_by, "direction" => $direction, "start" => $start, "limit" => $limit));
+    function get_all_movies($order_by = "title", $order_direction = "ASC", $start = null, $limit = null) {
+        return $this->get_movies(array("type" => "all", "order_by" => $order_by, "order_direction" => $order_direction, "start" => $start, "limit" => $limit));
+    }
+
+
+	# get all 'not rated' movies
+    function get_not_rated_movies($order_by = "title", $order_direction = "ASC", $start = null, $limit = null) {
+        return $this->get_movies(array("type" => "not_rated", "order_by" => $order_by, "order_direction" => $order_direction, "start" => $start, "limit" => $limit));
     }
 
 
     # get movies
     # options:
-    #   "type" => "one"/"latest"/"all"
+    #   "type" => "one"/"latest"/"all"/"not_rated"
     #   "count" => 1-n
     #   "order_by" => "title"/"watched_on"
-    #   "direction" => "ASC"/"DESC"
+    #   "order_direction" => "ASC"/"DESC"
 	#   "start" => pagination start
 	#   "limit" => number of movies per page
     function get_movies($options = array()) {
@@ -206,24 +212,30 @@ class Movie {
 
         if ($type == "latest") {
             $order_by = (isset($options["order_by"]) ? $options["order_by"] : "watched_on");
-            $direction = (isset($options["direction"]) ? $options["direction"] : "DESC");
+            $order_direction = (isset($options["order_direction"]) ? $options["order_direction"] : "DESC");
             $count = (isset($options["count"]) ? $options["count"] : 20);
         }
 
         if ($type == "all") {
             $order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
-            $direction = (isset($options["direction"]) ? $options["direction"] : "ASC");
+            $order_direction = (isset($options["order_direction"]) ? $options["order_direction"] : "ASC");
 			$start = intval((isset($options["start"]) && $options["start"] != null) ? $options["start"] : 0);
-			$limit = intval((isset($options["limit"]) && $options["limit"] != null) ? $options["limit"] : get_option("wp_movie_ratings_pagination_limit"));		
+			$limit = intval((isset($options["limit"]) && $options["limit"] != null) ? $options["limit"] : get_option("wp_movie_ratings_pagination_limit"));
+		}
+
+		if ($type == "not_rated") {
+            $order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
+            $order_direction = (isset($options["order_direction"]) ? $options["order_direction"] : "ASC");
 		}
 
         # Bulding SQL query
         $date_format = "%Y-%m-%d %H:%i" . ($type == "one" ? ":%s" : "");
         $sql  = "SELECT id, title, imdb_url_short, rating, review, replacement_url, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
         if ($type == "one") $sql .= " WHERE id=$id ";
-        
+		if ($type == "not_rated") $sql .= " WHERE rating=0 ";
+
 		# default second sort is by date -> important when sorting by rating, so we get the newest movies with same rating first
-        if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $direction . ", watched_on DESC ";
+        if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $order_direction . ", watched_on DESC ";
 
 		# limit for latest movies
         if (in_array($type, array("latest", "one"))) $sql .= " LIMIT " . intval($count);
@@ -380,7 +392,7 @@ class Movie {
             }
         }
 
-        # Text rating (will be displayed in administration panel; will be hidden via css in the blog if text_ratings options is not set; for movies rated 0 (not rated) span ratings tags will not be printed in the html code at all (on the blog)
+        # Text rating (will be displayed in the administration panel; will be hidden via css in the blog if text_ratings options is not set; for movies rated 0 (not rated) span ratings tags will not be printed in the html code at all (on the blog)
 		if (is_plugin_page() && ($this->_rating == 0)) {
 			$o .= "<span class=\"rating\">Not rated</span>";
 		} elseif ($this->_rating != 0) {
@@ -416,7 +428,7 @@ class Movie {
 						$img_name = "full_star" . ($highlight == "yes" ? ($this->_rating == 10 ? "_highlight" : "") . ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
 						$img_alt = "*";
 					}
-                    else { 
+                    else {
 						$img_name = "empty_star.gif";
 						$img_alt = "";
 					}
