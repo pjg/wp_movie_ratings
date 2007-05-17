@@ -478,7 +478,7 @@ function wp_movie_ratings_get_statistics($type = "brief") {
 # Add 'Movies' page to Wordpress' Manage menu
 function wp_movie_ratings_add_management_page() {
     if (function_exists('add_management_page')) {
-		  add_management_page('Movies', 'Movies', 8, basename(__FILE__), 'wp_movie_ratings_management_page');
+		  add_management_page('Movies', 'Movies', 8, 'wp_movie_ratings_management', 'wp_movie_ratings_management_page');
     }
 }
 
@@ -486,7 +486,7 @@ function wp_movie_ratings_add_management_page() {
 # Add 'Movies' page to Wordpress' Options menu
 function wp_movie_ratings_add_options_page() {
     if (function_exists('add_options_page')) {
-		  add_options_page('Movies', 'Movies', 8, basename(__FILE__), 'wp_movie_ratings_options_page');
+		  add_options_page('Movies', 'Movies', 8, 'wp_movie_ratings_options', 'wp_movie_ratings_options_page');
     }
 }
 
