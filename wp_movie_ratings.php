@@ -46,9 +46,6 @@ function wp_movie_ratings_install() {
 	# usually: wp_movie_ratings
 	$table_name = $wpdb->prefix . "movie_ratings";
 
-	# only special users can install plugins
-	if ($user_level < 8) { return; }
-
 	# INSTALLAION -> Create the movie ratings table (first install)
 	if ($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 		$sql = "CREATE TABLE " . $table_name . " (
@@ -223,7 +220,7 @@ function wp_movie_ratings_parse_page_tag($content = "") {
 
 	# parse the movie ratings tag
 	$tmp = str_replace("[[wp_movie_ratings_page]]", wp_movie_ratings_get(null, array("page_mode" => "yes")), $tmp); // . wp_movie_ratings_get_statistics("brief")
-	
+
 	return $tmp;
 }
 
@@ -477,17 +474,17 @@ function wp_movie_ratings_get_statistics($type = "brief") {
 
 # Add 'Movies' page to Wordpress' Manage menu
 function wp_movie_ratings_add_management_page() {
-    if (function_exists('add_management_page')) {
+	if (function_exists('add_management_page')) {
 		  add_management_page('Movies', 'Movies', 8, 'wp_movie_ratings_management', 'wp_movie_ratings_management_page');
-    }
+	}
 }
 
 
 # Add 'Movies' page to Wordpress' Options menu
 function wp_movie_ratings_add_options_page() {
-    if (function_exists('add_options_page')) {
+	if (function_exists('add_options_page')) {
 		  add_options_page('Movies', 'Movies', 8, 'wp_movie_ratings_options', 'wp_movie_ratings_options_page');
-    }
+	}
 }
 
 
