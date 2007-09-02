@@ -273,6 +273,7 @@
     bottom: auto;
     color: #555;
     display: block;
+	float: none;
     font: 11px arial, sans-serif;
 	height: auto;
     left: auto;
