@@ -84,7 +84,7 @@ function add_behaviour() {
 				// execute AJAX call
 				Effect.Fade('message', {duration: 0.4, queue: 'end'})
 				var pars = 'action=add&rating=' + rating + '&url=' + escape(beautify_imdb_uri($F('url'))) + '&review=' + unicode_escape($F('review'))
-				var myAjax = new Ajax.Request('../../../wp-admin/edit.php?page=wp_movie_ratings.php', { method: 'post', parameters: pars, onComplete: show_response })
+				var myAjax = new Ajax.Request('../../../wp-admin/edit.php?page=wp_movie_ratings_management', { method: 'post', parameters: pars, onComplete: show_response })
 			} else {
 				message.setAttribute('class', 'error')
 				message.innerHTML = '<p><strong>Error: wrong imdb link.</strong></p>'

@@ -388,7 +388,7 @@ class Movie {
         if (!is_plugin_page()) {
             $user = wp_get_current_user();
             if ($user->ID && ($user->user_level >= 8)) {
-                $o .= "<a class=\"edit\" href=\"" . get_settings('siteurl') . "/wp-admin/edit.php?page=wp_movie_ratings.php&amp;action=edit&amp;id=" . $this->_id . "\">e</a>\n";
+                $o .= "<a class=\"edit\" href=\"" . get_settings('siteurl') . "/wp-admin/edit.php?page=wp_movie_ratings_management&amp;action=edit&amp;id=" . $this->_id . "\">e</a>\n";
             }
         }
 
