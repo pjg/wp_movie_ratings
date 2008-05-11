@@ -245,6 +245,7 @@ function wp_movie_ratings_show($count = null, $options = array()) {
 #       'page_url' -> link to movie reviews page (url)
 #       'char_limit' -> will cut any character in the title after this number (number)
 #		'only_not_rated' -> will select only not yet rated movies ('yes'/'no')
+#		'only_rated' -> will select only already rated movies ('yes'/'no')
 #		'order_by' -> default sorting (valid only for 'only_not_rated') ('title'/'rating'/'watched_on')
 #		'order_direction' -> default sorting direction (valid only for 'only_not_rated') ('ASC'/'DESC')
 function wp_movie_ratings_get($count = null, $options = array()) {
@@ -263,6 +264,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$page_url = get_option("wp_movie_ratings_page_url");
 	$char_limit = (isset($options["char_limit"]) ? intval($options["char_limit"]) : get_option("wp_movie_ratings_char_limit"));
 	$only_not_rated = (isset($options["only_not_rated"]) ? $options["only_not_rated"] : "no");
+	$only_rated = (isset($options["only_rated"]) ? $options["only_rated"] : "no");
 
 	# parse query parameters for page mode (sorting options) (title/rating/watched_on && ASC/DESC)
 	if ($page_mode == "yes") {
@@ -277,8 +279,8 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 		$start = ($current_page - 1) * $limit;
 	}
 
-	# for 'not yet rated' movies you can set 'order_by' and 'order_direction' paremeters
-	if ($only_not_rated == "yes") {
+	# for 'only not rated' and 'only rated' movies you can set 'order_by' and 'order_direction' paremeters
+	if (($only_not_rated == "yes") || ($only_rated == "yes")) {
 		$order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
 		$order_direction = (isset($options["order_direction"]) ? $options["order_direction"] : "ASC");
 	}
@@ -287,6 +289,8 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$m = new Movie();
 	if ($only_not_rated == "yes") {
 		$movies = $m->get_not_rated_movies($order_by, $order_direction);
+	} elseif ($only_rated == "yes") {
+		$movies = $m->get_rated_movies($order_by, $order_direction);
 	} elseif ($page_mode == "yes") {
 		$movies = $m->get_all_movies($order_by, $order_direction, $start, $limit);
 	} else {

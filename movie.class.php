@@ -185,15 +185,21 @@ class Movie {
     }
 
 
-	# get all 'not rated' movies
+	# get only 'not rated' movies
     function get_not_rated_movies($order_by = "title", $order_direction = "ASC", $start = null, $limit = null) {
         return $this->get_movies(array("type" => "not_rated", "order_by" => $order_by, "order_direction" => $order_direction, "start" => $start, "limit" => $limit));
     }
 
 
+	# get only 'rated' movies
+    function get_rated_movies($order_by = "title", $order_direction = "ASC", $start = null, $limit = null) {
+        return $this->get_movies(array("type" => "rated", "order_by" => $order_by, "order_direction" => $order_direction, "start" => $start, "limit" => $limit));
+    }
+
+
     # get movies
     # options:
-    #   "type" => "one"/"latest"/"all"/"not_rated"
+    #   "type" => "one"/"latest"/"all"/"not_rated"/"rated"
     #   "count" => 1-n
     #   "order_by" => "title"/"watched_on"
     #   "order_direction" => "ASC"/"DESC"
@@ -223,7 +229,7 @@ class Movie {
 			$limit = intval((isset($options["limit"]) && $options["limit"] != null) ? $options["limit"] : get_option("wp_movie_ratings_pagination_limit"));
 		}
 
-		if ($type == "not_rated") {
+		if (($type == "not_rated") || ($type == "rated")) {
             $order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
             $order_direction = (isset($options["order_direction"]) ? $options["order_direction"] : "ASC");
 		}
@@ -231,8 +237,13 @@ class Movie {
         # Bulding SQL query
         $date_format = "%Y-%m-%d %H:%i" . ($type == "one" ? ":%s" : "");
         $sql  = "SELECT id, title, imdb_url_short, rating, review, replacement_url, DATE_FORMAT(watched_on, '$date_format') AS watched_on FROM $this->_table ";
-        if ($type == "one") $sql .= " WHERE id=$id ";
-		if ($type == "not_rated") $sql .= " WHERE rating=0 ";
+        if ($type == "one") {
+			$sql .= " WHERE id=$id ";
+		} elseif ($type == "not_rated") {
+			$sql .= " WHERE rating=0 ";
+		} elseif ($type == "rated") {
+			$sql .= " WHERE rating>0 ";
+		}
 
 		# default second sort is by date -> important when sorting by rating, so we get the newest movies with same rating first
         if ($type != "one") $sql .= " ORDER BY " . $order_by . " " . $order_direction . ", watched_on DESC ";
