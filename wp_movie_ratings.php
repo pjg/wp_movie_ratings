@@ -246,8 +246,8 @@ function wp_movie_ratings_show($count = null, $options = array()) {
 #       'char_limit' -> will cut any character in the title after this number (number)
 #		'only_not_rated' -> will select only not yet rated movies ('yes'/'no')
 #		'only_rated' -> will select only already rated movies ('yes'/'no')
-#		'order_by' -> default sorting (valid only for 'only_not_rated') ('title'/'rating'/'watched_on')
-#		'order_direction' -> default sorting direction (valid only for 'only_not_rated') ('ASC'/'DESC')
+#		'order_by' -> default sort (valid only when used with combination of either 'only_rated' or 'only_not_rated') ('title'/'rating'/'watched_on')
+#		'order_direction' -> default sort direction (valid only when used with combination of either 'only_rated' or 'only_not_rated') ('ASC'/'DESC')
 function wp_movie_ratings_get($count = null, $options = array()) {
 	# output
 	$o = "";

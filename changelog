@@ -2,7 +2,7 @@ WP Movie Ratings changelog:
 ===========================
 
 2008-05-18
-- added option to add movies without rating them (only through the administration panel) (to create a list of owned just not yet seen dvds, for example).
+- added option to add movies without rating them (to create a list of owned just not yet seen dvds, for example) (only through the administration panel).
 - added option to select all 'only_rated' or 'only_not_rated' movies using the wp_movie_ratings_show() function call.
 - char_limit option can now be passed as a parameter to the wp_movie_ratings_show() function call.
 - fixed problems making the movie reviews pages non XHTML compliant.
