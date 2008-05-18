@@ -1,10 +1,10 @@
-WP Movie Ratings v1.4 (2006-11-18)
+WP Movie Ratings v1.5 (2008-05-18)
 ==================================
 
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
-its core is a bookmarklet, which combined with Internet Movie Database
+its core is a bookmarklet, which combined with the Internet Movie Database
 (imdb.com) and a little bit of AJAX magic lets you rate movies with just
-1 click. Also, there is no need to write the title of the movie as it is
+one click. Also, there is no need to write the title of the movie as it is
 automatically fetched from imdb. Optionally, you can also write a short review
 for each movie. The output from this plugin is a list of recently watched
 movies, which you can put anywhere on your blog (it's a matter of one simple
@@ -19,7 +19,7 @@ Plugin page: http://paulgoscicki.com/projects/wp-movie-ratings/
 Requirements
 ----------------------------------
 
-* Wordpress 2.04+
+* Wordpress 2.04 or newer
 * FTP, SSH or SCP access to your wordpress blog (so you can upload this
   plugin).
 
@@ -88,7 +88,7 @@ Upgrading
 
 
 
-Copyright (c) 2006 by Paul Goscicki http://paulgoscicki.com/
+Copyright (c) 2006-2008 by Paul Goscicki, http://paulgoscicki.com/
 
 Available under the GNU General Public License (GPL) version 2 or later.
 http://www.gnu.org/licenses/gpl.html
