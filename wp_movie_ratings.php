@@ -261,7 +261,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	$five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
 	$highlight = (isset($options["highlight"]) ? $options["highlight"] : get_option("wp_movie_ratings_highlight"));
 	$page_mode = (isset($options["page_mode"]) ? $options["page_mode"] : "no");
-	$page_url = get_option("wp_movie_ratings_page_url");
+	$page_url = (isset($options["page_url"]) ? $options["page_url"] : get_option("wp_movie_ratings_page_url"));
 	$char_limit = (isset($options["char_limit"]) ? intval($options["char_limit"]) : get_option("wp_movie_ratings_char_limit"));
 	$only_not_rated = (isset($options["only_not_rated"]) ? $options["only_not_rated"] : "no");
 	$only_rated = (isset($options["only_rated"]) ? $options["only_rated"] : "no");
@@ -287,17 +287,17 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 	# fetch movies
 	$m = new Movie();
-	if ($only_not_rated == "yes") {
-		$movies = $m->get_not_rated_movies($order_by, $order_direction);
+	if ($page_mode == "yes") {
+		$movies = $m->get_all_movies($order_by, $order_direction, $start, $count);
+	} elseif ($only_not_rated == "yes") {
+		$movies = $m->get_not_rated_movies($order_by, $order_direction, 0, $count);
 	} elseif ($only_rated == "yes") {
-		$movies = $m->get_rated_movies($order_by, $order_direction);
-	} elseif ($page_mode == "yes") {
-		$movies = $m->get_all_movies($order_by, $order_direction, $start, $limit);
+		$movies = $m->get_rated_movies($order_by, $order_direction, 0, $count);
 	} else {
 		$movies = $m->get_latest_movies(intval($count));
 	}
 
-	# love advert
+	# some comment love
 	$o .= "\n<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://paulgoscicki.com/projects/wp-movie-ratings/ -->\n";
 
 	# html container

@@ -232,6 +232,8 @@ class Movie {
 		if (($type == "not_rated") || ($type == "rated")) {
             $order_by = (isset($options["order_by"]) ? $options["order_by"] : "title");
             $order_direction = (isset($options["order_direction"]) ? $options["order_direction"] : "ASC");
+			$start = intval((isset($options["start"]) && $options["start"] != null) ? $options["start"] : 0);
+			$limit = intval((isset($options["limit"]) && $options["limit"] != null) ? $options["limit"] : get_option("wp_movie_ratings_count"));
 		}
 
         # Bulding SQL query
@@ -252,7 +254,7 @@ class Movie {
         if (in_array($type, array("latest", "one"))) $sql .= " LIMIT " . intval($count);
 
 		# pagination
-		if ($type == "all") $sql .= " LIMIT $start, $limit;";
+		if (($type == "all") || ($type == "not_rated") || ($type == "rated")) $sql .= " LIMIT $start, $limit;";
 
         $results = $this->_wpdb->get_results($sql);
 
