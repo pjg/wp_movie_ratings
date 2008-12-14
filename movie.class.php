@@ -489,7 +489,7 @@ class Movie {
 
 <?php if ($action == "Update") echo "<input type=\"hidden\" name=\"id\" value=\"" . $this->_id . "\" />"; ?>
 
-<table class="optiontable">
+<table class="form-table">
 
 <tr valign="top">
 <th scope="row"><label for="url">iMDB link:</label></th>

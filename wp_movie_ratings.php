@@ -624,13 +624,14 @@ function wp_movie_ratings_options_page() {
 ?>
 
 <div class="wrap">
+
 <h2>WP Movie Ratings options</h2>
 
 <form method="post" action="">
 
 <fieldset class="options">
-<legend>General options</legend>
-<table class="optiontable">
+
+<table class="form-table">
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_dialog_title">Title for movie ratings box:</label></th>
@@ -669,8 +670,10 @@ Will ping <a href="http://pingerati.net/">pingerati.net</a> for every new movie 
 
 
 <fieldset class="options">
-<legend>Display options</legend>
-<table class="optiontable">
+
+<h2>Display options</h2>
+
+<table class="form-table">
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_count">Number of displayed movie ratings:</label></th>
@@ -738,8 +741,10 @@ Will highlight movies rated 9 and 10 (4,5 and 5 for five stars mode).
 
 
 <fieldset class="options">
-<legend>Page mode options</legend>
-<table class="optiontable">
+
+<h2>Page mode options</h2>
+
+<table class="form-table">
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_expand_review_yes">Expand reviews in page mode?</label></th>
