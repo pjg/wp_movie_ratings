@@ -548,7 +548,7 @@ function wp_movie_ratings_management_page() {
 		$m = new Movie(null, 7); # new 'empty' movie object (7 is the default rating)
 	}
 
-	$dialog_title .= " movie rating.";
+	$dialog_title .= " movie rating";
 ?>
 
 <div class="wrap">
