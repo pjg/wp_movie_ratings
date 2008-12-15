@@ -512,7 +512,7 @@ function wp_movie_ratings_management_page() {
 			# fetch title from imdb
 			if (empty($msg) && empty($title) && !empty($url)) $msg = $movie->get_title();
 
-			# save new movie raing in database
+			# save new movie rating in the database
 			if (empty($msg)) $msg = $movie->save();
 		}
 		echo wp_movie_ratings_utf8_raw_url_decode($msg);
@@ -521,12 +521,10 @@ function wp_movie_ratings_management_page() {
 
 	# DATABASE -> DELETE MOVIE
 	if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "delete")) {
-		$m = new Movie();
-		$movie = $m->get_movie_by_id($_POST["id"]);
+		$mm = new Movie();
+		$movie = $mm->get_movie_by_id($_POST["id"]);
 		if ($movie != null)	echo $movie->delete();
-		else echo '<div id="message" class="error fade"><p><strong>Error: no movie to delete.</strong></p></div>';
-
-		$m = new Movie(); # new 'empty' movie object
+		else echo '<div id="message" class="error fade"><p><strong>Error: no movie review to delete.</strong></p></div>';
 	}
 
 	# DATABASE -> UPDATE MOVIE DATA
@@ -537,11 +535,13 @@ function wp_movie_ratings_management_page() {
 	}
 
 	# EDIT MOVIE
-	if ((isset($_POST["action"]) && ($_POST["action"] == "edit")) || (isset($_GET["action"]) && ($_GET["action"] == "edit"))) {
+	if ((isset($_POST["action"]) && ($_POST["action"] == "edit")) || (isset($_GET["action"]) && ($_GET["action"] == "edit") && (!isset($_POST["action"])))) {
 		$movie = new Movie();
-		$m = $movie->get_movie_by_id( (isset($_POST["id"]) ? $_POST["id"] : (isset($_GET["id"]) ? $_GET["id"] : 0) ));
+		$id = (isset($_POST["id"]) ? $_POST["id"] : (isset($_GET["id"]) ? $_GET["id"] : 0));
+		$m = $movie->get_movie_by_id($id);
 		$dialog_title = "Edit";
 		$action = "Update";
+		if ($m == null) echo '<div id="message" class="error fade"><p><strong>Error: movie review not found.</strong></p></div>';
 	} else { # ADD MOVIE
 		$dialog_title = "Add a new";
 		$action = "Add a new";
@@ -555,7 +555,7 @@ function wp_movie_ratings_management_page() {
 <h2><?php echo $dialog_title ?></h2>
 
 <?php
-$m->show_add_edit_form($action);
+if ($m != null) $m->show_add_edit_form($action);
 wp_movie_ratings_show(20, array("text_ratings" => "yes", "include_review" => "no", "sidebar_mode" => "no"));
 ?>
 

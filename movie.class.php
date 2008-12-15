@@ -127,7 +127,7 @@ class Movie {
 		$title_screen = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
 		$title_db = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
 
-		# str_replace here is so fucking wrong... (no idea how to do it better, though)
+		# str_replace here is just so fucking wrong... (no idea how to do it better, though)
 		$this->_review = str_replace(" & ", " &amp; ", $_POST["review"]);
 		$review_db = wp_movie_ratings_real_escape_string($this->_review, array("output" => "database"));
 
@@ -495,7 +495,7 @@ class Movie {
 <th scope="row"><label for="url">iMDB link:</label></th>
 <td><input type="text" name="url" id="url" class="text" size="40" value="<?php echo $this->_url ?>" />
 <br />
-Must be a valid <a href="http://imdb.com/">imdb</a> link (but may be left empty so <strong>replacement link</strong> is used instead).</td>
+Must be a valid <a href="http://imdb.com/">imdb</a> link (but may be left empty so the <strong>replacement link</strong> is used instead).</td>
 </tr>
 
 <tr valign="top">
@@ -558,8 +558,8 @@ Remember to use correct date format (<code>YYYY-MM-DD HH:MM:SS</code>) when sett
 </table>
 
 <p class="submit">
-<?php if ($action == "Update") echo "<input type=\"submit\" name=\"action\" value=\"Delete &raquo;\" onclick=\"return delete_confirmation()\" />\n"; ?>
-<input type="submit" name="action" value="<?php echo $action ?> movie rating &raquo;" />
+<?php if ($action == "Update") echo "<input type=\"submit\" name=\"action\" value=\"Delete movie review &raquo;\" onclick=\"return delete_confirmation()\" />\n"; ?>
+<input class="button-primary" type="submit" name="action" value="<?php echo $action ?> movie review &raquo;" />
 </p>
 
 </form>
