@@ -288,7 +288,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 	# fetch movies
 	$m = new Movie();
 	if ($page_mode == "yes") {
-		$movies = $m->get_all_movies($order_by, $order_direction, $start, $count);
+		$movies = $m->get_all_movies($order_by, $order_direction, $start, $limit);
 	} elseif ($only_not_rated == "yes") {
 		$movies = $m->get_not_rated_movies($order_by, $order_direction, 0, $count);
 	} elseif ($only_rated == "yes") {
@@ -776,14 +776,14 @@ when in page mode.
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_pagination_limit">Max movies per page:</label></th>
 <td><input type="text" name="wp_movie_ratings_pagination_limit" id="wp_movie_ratings_pagination_limit" class="text" size="2" value="<?php echo $plugin_options["pagination_limit"] ?>"/><br />
-Display that many movies per page when in page mode (otherwise paginate the page).
+Display that many movies per page when in page mode (pagination).
 </td>
 </tr>
 
 </table>
 </fieldset>
 
-<p class="submit"><input type="submit" name="submit" value="Update Options &raquo;" /></p>
+<p class="submit"><input class="button-primary" type="submit" name="submit" value="Update Options &raquo;" /></p>
 
 </form>
 

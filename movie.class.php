@@ -256,7 +256,7 @@ class Movie {
 		# pagination
 		if (($type == "all") || ($type == "not_rated") || ($type == "rated")) $sql .= " LIMIT $start, $limit;";
 
-        $results = $this->_wpdb->get_results($sql);
+		$results = $this->_wpdb->get_results($sql);
 
         if ($results) {
             foreach ($results as $r) {
