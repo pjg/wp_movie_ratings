@@ -5,11 +5,7 @@ Version: 1.5
 Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
-Description: Wordpress movie rating plugin, which lets you easily rate movies
-you've seen recently and display a short list of those movies on your blog.
-Internet Movie Database (imdb.com) is used to automatically fetch movie
-titles. One-click movie rating is possible using the included bookmarklet
-while browsing the imdb.com pages.
+Description: Wordpress movie rating plugin, which lets you easily rate movies you've seen recently and display a short list of those movies on your blog. <a href="http://imdb.com/">iMDb</a> is used to automatically fetch movie titles. One-click movie rating while browsing the imdb is possible using the included bookmarklet (see <a href="tools.php?page=wp_movie_ratings_management">management page</a>). Manage movie reviews: <a href="tools.php?page=wp_movie_ratings_management">Tools/Movies</a>. <strong>Configuration: <a href="options-general.php?page=wp_movie_ratings_options">Settings/Movies</a></strong>.
 */
 
 /*
