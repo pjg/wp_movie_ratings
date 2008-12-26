@@ -555,13 +555,11 @@ if ($m != null) $m->show_add_edit_form($action);
 wp_movie_ratings_show(20, array("text_ratings" => "yes", "include_review" => "no", "sidebar_mode" => "no"));
 ?>
 
-<br />
+<p>If you'd like edit earlier movie reviews you need to create a <a href="http://paulgoscicki.com/projects/wp-movie-ratings/#installation">movie reviews page</a> and click (while being logged in) on the small 'e' link next to the movie title.</p>
 
 <?php
 wp_movie_ratings_show_statistics("detailed");
 ?>
-
-<br />
 
 <h2>Bookmarklet</h2>
 
