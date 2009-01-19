@@ -1,16 +1,16 @@
 #wp_movie_ratings ul li acronym.dtreviewed {
-	display: none;
+    display: none;
 }
 
 #wp_movie_ratings ul li span.version {
-	display: none;
+    display: none;
 }
 
 #wp_movie_ratings ul li p span.rating {
-	display: none;
+    display: none;
 }
 
 #wp_movie_ratings ul.text_ratings li p span.rating {
-	display: inline;
-	font-weight: bold;
+    display: inline;
+    font-weight: bold;
 }

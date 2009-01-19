@@ -1,184 +1,184 @@
 body {
-	background: white;
-	color: black;
+    background: white;
+    color: black;
 }
 
 label {
-	display: block;
-	font: bold 14px arial, serif;
-	letter-spacing: 0;
-	margin: 12px 0 2px 0;
+    display: block;
+    font: bold 14px arial, serif;
+    letter-spacing: 0;
+    margin: 12px 0 2px 0;
 }
 
 div, p, ul, li, h1 {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
-	font: bold 24px arial, serif;
-	letter-spacing: -2px;
+    font: bold 24px arial, serif;
+    letter-spacing: -2px;
 }
 
 input.text, textarea {
-	background: #F9F9F5;
-	border: 1px solid #666;
-	color: #222;
-	font: 13px verdana, sans-serif;
-	padding: 4px 6px;
-	width: 400px;
+    background: #F9F9F5;
+    border: 1px solid #666;
+    color: #222;
+    font: 13px verdana, sans-serif;
+    padding: 4px 6px;
+    width: 400px;
 }
 
 input.text:focus, textarea:focus {
-	background: #FFE;
-	border-color: #800;
+    background: #FFE;
+    border-color: #800;
 }
 
 textarea {
-	height: 50px;
+    height: 50px;
 }
 
 .star-rating {
-	background: url(star_rating.gif) top left repeat-x;
-	height: 20px;
-	list-style: none;
-	margin: 2px 0 5px;
-	position: relative;
-	width: 200px;
+    background: url(star_rating.gif) top left repeat-x;
+    height: 20px;
+    list-style: none;
+    margin: 2px 0 5px;
+    position: relative;
+    width: 200px;
 }
 
 .star-rating li {
-	float: left;
+    float: left;
 }
 
 .star-rating li a {
-	cursor: pointer;
-	display: block;
-	height: 20px;
-	padding: 0;
-	position: absolute;
-	text-decoration: none;
-	width: 20px;
-	z-index: 20;
+    cursor: pointer;
+    display: block;
+    height: 20px;
+    padding: 0;
+    position: absolute;
+    text-decoration: none;
+    width: 20px;
+    z-index: 20;
 }
 
 .star-rating li a:hover {
-	background: url(star_rating.gif) bottom left;
-	left: 0;
-	z-index: 1;
+    background: url(star_rating.gif) bottom left;
+    left: 0;
+    z-index: 1;
 }
 
 .star-rating a.one-star {
-	left: 0;
+    left: 0;
 }
 
 .star-rating a.one-star:hover {
-	width: 20px;
+    width: 20px;
 }
 
 .star-rating a.two-stars {
-	left: 20px;
+    left: 20px;
 }
 
 .star-rating a.two-stars:hover {
-	width: 40px;
+    width: 40px;
 }
 
 .star-rating a.three-stars {
-	left: 40px;
+    left: 40px;
 }
 
 .star-rating a.three-stars:hover {
-	width: 60px;
+    width: 60px;
 }
 
 .star-rating a.four-stars {
-	left: 60px;
+    left: 60px;
 }
 
 .star-rating a.four-stars:hover {
-	width: 80px;
+    width: 80px;
 }
 
 .star-rating a.five-stars {
-	left: 80px;
+    left: 80px;
 }
 
 .star-rating a.five-stars:hover {
-	width: 100px;
+    width: 100px;
 }
 
 .star-rating a.six-stars {
-	left: 100px;
+    left: 100px;
 }
 
 .star-rating a.six-stars:hover {
-	width: 120px;
+    width: 120px;
 }
 
 .star-rating a.seven-stars {
-	left: 120px;
+    left: 120px;
 }
 
 .star-rating a.seven-stars:hover {
-	width: 140px;
+    width: 140px;
 }
 
 .star-rating a.eight-stars {
-	left: 140px;
+    left: 140px;
 }
 
 .star-rating a.eight-stars:hover {
-	width: 160px;
+    width: 160px;
 }
 
 .star-rating a.nine-stars {
-	left: 160px;
+    left: 160px;
 }
 
 .star-rating a.nine-stars:hover {
-	width: 180px;
+    width: 180px;
 }
 
 .star-rating a.ten-stars {
-	left: 180px;
+    left: 180px;
 }
 
 .star-rating a.ten-stars:hover {
-	width: 200px;
+    width: 200px;
 }
 
 #loading {
-	left: 212px;
-	position: absolute;
-	top: 3px;
+    left: 212px;
+    position: absolute;
+    top: 3px;
 }
 
 #loading p {
-	position: absolute;
-	left: 22px;
-	top: 2px;
-	white-space: nowrap;
+    position: absolute;
+    left: 22px;
+    top: 2px;
+    white-space: nowrap;
 }
 
 p.help {
-	color: #999;
-	font: 9px verdana, sans-serif;
+    color: #999;
+    font: 9px verdana, sans-serif;
 }
 
 div.updated, div.error {
-	font: 12px tahoma, sans-serif;
-	margin-top: 15px;
-	padding: 6px 9px;
-	width: 394px;
+    font: 12px tahoma, sans-serif;
+    margin-top: 15px;
+    padding: 6px 9px;
+    width: 394px;
 }
 
 div.updated {
-	background: #CFEBF7;
-	border: 1px solid #2580B2;
+    background: #CFEBF7;
+    border: 1px solid #2580B2;
 }
 
 div.error {
-	background: #FFEFF7;
-	border: 1px solid #CC6699;
+    background: #FFEFF7;
+    border: 1px solid #CC6699;
 }
