@@ -650,18 +650,18 @@ Effect.Shake = function(element) {
   var oldStyle = {
     top: Element.getStyle(element, 'top'),
     left: Element.getStyle(element, 'left') };
-	  return new Effect.Move(element,
-	    { x:  20, y: 0, duration: 0.05, afterFinishInternal: function(effect) {
-	  new Effect.Move(effect.element,
-	    { x: -40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
-	  new Effect.Move(effect.element,
-	    { x:  40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
-	  new Effect.Move(effect.element,
-	    { x: -40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
-	  new Effect.Move(effect.element,
-	    { x:  40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
-	  new Effect.Move(effect.element,
-	    { x: -20, y: 0, duration: 0.05, afterFinishInternal: function(effect) { with(Element) {
+          return new Effect.Move(element,
+            { x:  20, y: 0, duration: 0.05, afterFinishInternal: function(effect) {
+          new Effect.Move(effect.element,
+            { x: -40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
+          new Effect.Move(effect.element,
+            { x:  40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
+          new Effect.Move(effect.element,
+            { x: -40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
+          new Effect.Move(effect.element,
+            { x:  40, y: 0, duration: 0.1,  afterFinishInternal: function(effect) {
+          new Effect.Move(effect.element,
+            { x: -20, y: 0, duration: 0.05, afterFinishInternal: function(effect) { with(Element) {
         undoPositioned(effect.element);
         setStyle(effect.element, oldStyle);
   }}}) }}) }}) }}) }}) }});

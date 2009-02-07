@@ -119,7 +119,7 @@ function wp_movie_ratings_utf8_raw_url_decode($source) {
   $len = strlen($source);
   while ($pos < $len) {
     $charAt = substr($source, $pos, 1);
-    if ($charAt == '%')	{
+    if ($charAt == '%') {
       $pos++;
       $charAt = substr($source, $pos, 1);
       if ($charAt == 'u') {
@@ -519,7 +519,7 @@ function wp_movie_ratings_management_page() {
   if (isset($_POST["action"]) && (substr(strtolower($_POST["action"]), 0, 6) == "delete")) {
     $mm = new Movie();
     $movie = $mm->get_movie_by_id($_POST["id"]);
-    if ($movie != null)	echo $movie->delete();
+    if ($movie != null) echo $movie->delete();
     else echo '<div id="message" class="error fade"><p><strong>Error: no movie review to delete.</strong></p></div>';
   }
 
