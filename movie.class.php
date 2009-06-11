@@ -89,10 +89,6 @@ class Movie {
     $this->_wpdb->show_errors();
 
     if ($this->_wpdb->rows_affected == 1) {
-
-      # Send pingerati ping
-      if (get_option("wp_movie_ratings_ping_pingerati") == "yes") $this->send_ping();
-
       return '<div id="message" class="updated fade"><p><strong>' . rawurlencode(stripslashes($this->_title)) . ' rated ' . $this->_rating . '/10 saved.</strong></p></div>';
     } else {
       $mysql_error = mysql_error();
@@ -141,26 +137,10 @@ class Movie {
     $this->_wpdb->show_errors();
 
     if ($this->_wpdb->rows_affected > 0) {
-
-      # Send ping to pingerati.net
-      if (get_option("wp_movie_ratings_ping_pingerati") == "yes") $this->send_ping();
-
       return '<div id="message" class="updated fade"><p><strong>' . $title_screen . ' rated ' . $this->_rating . '/10 updated.</strong></p></div>';
     } else {
       return '<div id="message" class="error fade"><p><strong>Error: ' . $title_screen . ' not updated.</strong></p></div>';
     }
-  }
-
-
-  # send ping to pingerati.net (with blog's homepage as argument)
-  function send_ping() {
-    # Decide whether ping with movies page address or just blog home address
-    $page_url = get_option("wp_movie_ratings_page_url");
-    $link = preg_replace("/http[s]*:\/\//", "", trailingslashit((strlen($page_url) > 0 ? $page_url : get_option("home"))));
-
-    # GET
-    $req = new WP_HTTP_Request("http://reviews.pingerati.net/ping/" . $link);
-    $req->DownloadToString();
   }
 
 

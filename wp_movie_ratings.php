@@ -58,8 +58,9 @@ function wp_movie_ratings_install() {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
     dbDelta($sql);
 
-  # UPGRADE -> Add column not present in versions 1.0 - 1.3
+  # UPGRADE
   } else {
+    # add column not present in versions 1.0 - 1.3
     $found = false;
     $new_column = "replacement_url";
     $table_fields = $wpdb->get_results("DESCRIBE $table_name;");
@@ -69,6 +70,9 @@ function wp_movie_ratings_install() {
     }
 
     if (!$found) $wpdb->query("ALTER TABLE $table_name ADD COLUMN $new_column varchar(255) default '';");
+
+    # delete the no longer needed 'wp_movie_ratings_ping_pingerati' option
+    $wpdb->query("DELETE FROM " . $wpdb->prefix . "options WHERE option_name='wp_movie_ratings_ping_pingerati';");
   }
 
 
@@ -94,7 +98,6 @@ function wp_movie_ratings_install() {
   add_option('wp_movie_ratings_highlight', 'yes', 'Highlight top rated movies?', 'no');
   add_option('wp_movie_ratings_dialog_title', 'Movies I\'ve watched recently:', 'Dialog title for movie ratings box', 'no');
   add_option('wp_movie_ratings_page_url', '', 'Movie ratings page url', 'no');
-  add_option('wp_movie_ratings_ping_pingerati', 'yes', 'Ping pingerati.net with movie reviews', 'no');
   add_option('wp_movie_ratings_pagination_limit', 100, 'Display that many movies per page when using pagination in page mode', 'no');
 }
 
@@ -587,7 +590,6 @@ function wp_movie_ratings_get_plugin_options() {
   $options["highlight"] = get_option("wp_movie_ratings_highlight");
   $options["dialog_title"] = get_option("wp_movie_ratings_dialog_title");
   $options["page_url"] = get_option("wp_movie_ratings_page_url");
-  $options["ping_pingerati"] = get_option("wp_movie_ratings_ping_pingerati");
   $options["pagination_limit"] = get_option("wp_movie_ratings_pagination_limit");
   return $options;
 }
@@ -609,7 +611,6 @@ function wp_movie_ratings_options_page() {
     update_option("wp_movie_ratings_highlight", $_POST["wp_movie_ratings_highlight"]);
     update_option("wp_movie_ratings_dialog_title", stripslashes($_POST["wp_movie_ratings_dialog_title"]));
     update_option("wp_movie_ratings_page_url", stripslashes($_POST["wp_movie_ratings_page_url"]));
-    update_option("wp_movie_ratings_ping_pingerati", $_POST["wp_movie_ratings_ping_pingerati"]);
     update_option("wp_movie_ratings_pagination_limit", $_POST["wp_movie_ratings_pagination_limit"]);
     echo "<div id=\"message\" class=\"updated fade\"><p>Options updated</p></div>\n";
   }
@@ -645,17 +646,6 @@ Display that many characters when the movie title is too long to fit.
 <th scope="row"><label for="wp_movie_ratings_page_url">Movie ratings page url:</label></th>
 <td><input type="text" name="wp_movie_ratings_page_url" id="wp_movie_ratings_page_url" class="text" size="50" value="<?php echo stripslashes($plugin_options["page_url"]) ?>"/><br />
 If you enter the link (absolute) to the page listing all movie ratings it will create a link from movie ratings box to full archive.
-</td>
-</tr>
-
-<tr valign="top">
-<th scope="row"><label for="wp_movie_ratings_ping_pingerati_yes">Ping pingerati?</label></th>
-<td>
-<input type="radio" value="yes" id="wp_movie_ratings_ping_pingerati_yes" name="wp_movie_ratings_ping_pingerati"<?php echo ($plugin_options["ping_pingerati"] == "yes" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_ping_pingerati_yes">yes</label>
-<input type="radio" value="no" id="wp_movie_ratings_ping_pingerati_no" name="wp_movie_ratings_ping_pingerati"<?php echo ($plugin_options["ping_pingerati"] == "no" ? " checked=\"checked\"" : "") ?> />
-<label for="wp_movie_ratings_ping_pingerati_no">no</label><br />
-Will ping <a href="http://pingerati.net/">pingerati.net</a> for every new movie review you make.
 </td>
 </tr>
 
