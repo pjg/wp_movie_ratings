@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP Movie Ratings
-Version: 1.5.1
+Version: 1.6
 Plugin URI: http://paulgoscicki.com/projects/wp-movie-ratings/
 Author: Paul Goscicki
 Author URI: http://paulgoscicki.com/
@@ -9,7 +9,7 @@ Description: Wordpress movie rating plugin, which lets you easily rate movies yo
  */
 
 /*
-Copyright (c) 2006-2009 by Paul Goscicki, http://paulgoscicki.com/
+Copyright (c) 2006-2010 by Paul Goscicki, http://paulgoscicki.com/
 
 Available under the GNU General Public License (GPL) version 2 or later.
 http://www.gnu.org/licenses/gpl.html

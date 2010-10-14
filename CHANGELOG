@@ -2,9 +2,13 @@ WP Movie Ratings changelog:
 ===========================
 
 HEAD
-- full compatibility with Wordpress 2.7 (this unfortunately breaks compatibility with older versions of Wordpress)
+- no changes so far
+
+Release 1.6 (2010-10-14)
+- full compatibility with Wordpress 2.7.*, 2.8.*, 2.9.* and 3.0.* (this release breaks compatibility with older versions)
 - fixed: when 'only_rated' or 'only_unrated' option was used the 'count' argument the for wp_movie_ratings_show() function was ignored
 - removed automatic pingerati.net pinging (pingerati.net is AWOL)
+- fixed: fetching movie title from IMDb (after IMDb has changed their website)
 
 Release 1.5 (2008-05-18)
 - added option to add movies without rating them (to create a list of owned just not yet seen dvds, for example) (only through the administration panel)

@@ -1,5 +1,5 @@
-WP Movie Ratings v1.5.1 (2009-01-??)
-====================================
+WP Movie Ratings v1.6 (2010-10-14)
+==================================
 
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
 its core is a bookmarklet, which combined with the Internet Movie Database
@@ -88,7 +88,7 @@ Upgrading
 
 
 
-Copyright (c) 2006-2009 by Paul Goscicki, http://paulgoscicki.com/
+Copyright (c) 2006-2010 by Paul Goscicki, http://paulgoscicki.com/
 
 Available under the GNU General Public License (GPL) version 2 or later.
 http://www.gnu.org/licenses/gpl.html
