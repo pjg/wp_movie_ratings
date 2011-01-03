@@ -302,7 +302,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
   # html container
   $classes = ($page_mode == "yes" ? "page_mode " : "");
   $classes .= ($sidebar_mode == "yes" ? "sidebar_mode " : "");
-  if (strlen($classes) > 0) $classes = substr($classes, 0, strlen($classes)-1); # drop last space
+  if (strlen($classes) > 0) $classes = substr($classes, 0, strlen($classes)-1); # drop the last space
 
   $o .= "<div id=\"wp_movie_ratings\"" . (strlen($classes) > 0 ? " class=\"$classes\"" : "") . ">\n";
 
@@ -377,16 +377,19 @@ function wp_movie_ratings_get($count = null, $options = array()) {
     $total_movies = $m->get_watched_movies_count("total");
     $total_pages = ceil($total_movies / $limit);
 
-    # display only if $limit is less than $total, so the pagination makes sense
+    # display only if $limit is less than $total, so that the pagination makes sense
     if ($limit < $total_movies) {
 
       $link = $_SERVER["REQUEST_URI"];
+
+      # change '&' in link to a more compliant '&amp;'
+      $link = preg_replace("/&/", "&amp;", $link);
 
       # drop everything after '#' (including '#')
       if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
 
       # cleanup of my sh*t
-      $link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
+      $link = preg_replace("/(&amp;|\?)*movies_page=[0-9]*/", "", $link);
 
       # put ? or &amp; at the end of the link depending on the situation
       if (strpos($link, "?")) $link .= "&amp;";
