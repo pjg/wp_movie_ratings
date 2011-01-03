@@ -2,7 +2,7 @@
 
 class Movie {
   var $_id;               # 1 (database id for movie rating)
-  var $_url;              # http://imdb.com/title/tt0133093/
+  var $_url;              # http://akas.imdb.com/title/tt0133093/
   var $_url_short;        # 0133093
   var $_replacement_url;  # http://www.rottentomatoes.com/m/1086960-the_matrix/
   var $_title;            # The Matrix (1999)
@@ -40,7 +40,7 @@ class Movie {
   function parse_imdb_url() {
     if (preg_match("/^http:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $matches)) {
       $this->_url_short = $matches[2];
-      $this->_url = 'http://imdb.com/title/tt' . $this->_url_short . '/';
+      $this->_url = 'http://akas.imdb.com/title/tt' . $this->_url_short . '/';
       return "";
     } else return '<div id="message" class="error fade"><p><strong>Error: wrong imdb link.</strong></p></div>';
   }
@@ -240,7 +240,7 @@ class Movie {
 
     if ($results) {
       foreach ($results as $r) {
-        $url = (!empty($r->imdb_url_short) ? "http://imdb.com/title/tt" . $r->imdb_url_short . "/" : "");
+        $url = (!empty($r->imdb_url_short) ? "http://akas.imdb.com/title/tt" . $r->imdb_url_short . "/" : "");
         $movie = new Movie($url, $r->rating, wp_movie_ratings_real_unescape_string($r->review), wp_movie_ratings_real_unescape_string($r->title), $r->replacement_url, $r->watched_on, $r->id);
         array_push($movies, $movie);
       }
@@ -475,7 +475,7 @@ class Movie {
 <th scope="row"><label for="url">iMDB link:</label></th>
 <td><input type="text" name="url" id="url" class="text" size="40" value="<?php echo $this->_url ?>" />
 <br />
-Must be a valid <a href="http://imdb.com/">imdb</a> link (but may be left empty so the <strong>replacement link</strong> is used instead).</td>
+Must be a valid <a href="http://akas.imdb.com/">imdb</a> link (but may be left empty so that the <strong>replacement link</strong> is used instead).</td>
 </tr>
 
 <tr valign="top">
@@ -485,7 +485,7 @@ Must be a valid <a href="http://imdb.com/">imdb</a> link (but may be left empty 
 <?php if ($action == "Update") { ?>
 You <em>really</em> should not be editing the title.
 <?php } else { ?>
-If you leave the title empty and enter a correct <a href="http://imdb.com/">imdb</a> link, the title will be fetched automatically.
+If you leave the title empty and enter a correct <a href="http://akas.imdb.com/">imdb</a> link, the title will be fetched automatically.
 <?php } ?>
 </td>
 </tr>
@@ -523,7 +523,7 @@ HTML code allowed.
 <td>
 <input type="text" name="replacement_url" id="replacement_url" class="text" size="40" value="<?php echo $this->_replacement_url ?>" />
 <br />
-Type additional movie link if you don't want to display <a href="http://imdb.com/">imdb</a> links or when the movie is not listed on imdb.
+Type additional movie link if you don't want to display <a href="http://akas.imdb.com/">imdb</a> links or when the movie is not listed on imdb.
 </td>
 </tr>
 

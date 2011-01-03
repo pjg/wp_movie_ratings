@@ -2,7 +2,7 @@ WP Movie Ratings changelog:
 ===========================
 
 HEAD
-- no changes so far
+- fetch original movie titles from IMDb (ie: use akas.imdb.com instead of just imdb.com) and display links to akas.imdb.com (instead of imdb.com)
 
 Release 1.6 (2010-10-14)
 - full compatibility with Wordpress 2.7.*, 2.8.*, 2.9.* and 3.0.* (this release breaks compatibility with older versions)
