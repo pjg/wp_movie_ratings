@@ -50,7 +50,7 @@ class Movie {
   function get_title() {
     $req = new WP_HTTP_Request($this->_url);
     $imdb = $req->DownloadToString();
-    preg_match("/<meta property='og:title' content='(.+?)' \/>/i", $imdb, $title_matches);
+    preg_match('/<meta property.+?og:title.+?content=[\'"](.+?)[\'"].+?\/>/i', $imdb, $title_matches);
     $this->_title = $title_matches[1];
 
     if (empty($this->_title)) return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb.</strong></p></div>';
