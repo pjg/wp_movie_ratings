@@ -309,6 +309,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
   # sorting options for page mode
   if ($page_mode == "yes") {
 
+    # $link will contain plain '&' chars
     $link = $_SERVER["REQUEST_URI"];
 
     # drop everything after '#' (including '#')
@@ -317,6 +318,9 @@ function wp_movie_ratings_get($count = null, $options = array()) {
     # clear link from my stuff
     $link = preg_replace("/(&|\?)*sort=(title|rating|watched_on)&(ascending|descending)/", "", $link);
     $link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
+
+    # convert '&' to '&amp;' (so we're standards compliant if the base link included this char)
+    $link = str_replace("&", "&amp;", $link);
 
     # put ? or &amp; at the end of the link depending on the situation
     if (strpos($link, "?")) $link .= "&amp;";
