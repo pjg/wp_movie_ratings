@@ -787,9 +787,9 @@ class wp_movie_ratings_widget extends WP_Widget {
   // Sets up the widgets name etc
   public function __construct() {
     parent::__construct(
-      'wp_movie_ratings_widget',
-      __('Movie Ratings', 'wp_movie_ratings_widget_domain'),
-      array('description' => __('List of latest movie ratings.', 'wp_movie_ratings_widget_domain'))
+      'wp_movie_ratings_widget', # Base ID
+      __('Movie Ratings', 'wp_movie_ratings_widget_domain'), # Widget name
+      array('description' => __('List of latest movie ratings.', 'wp_movie_ratings_widget_domain')) # Widget description
     );
   }
 
