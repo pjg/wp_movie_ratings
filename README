@@ -13,7 +13,7 @@ function call from the template).
 The published movie reviews are hReview (http://microformats.org/wiki/hreview)
 compliant.
 
-Plugin page: http://paulgoscicki.com/projects/wp-movie-ratings/
+Plugin page: http://pawelgoscicki.com/projects/wp-movie-ratings/
 
 
 Requirements
@@ -65,7 +65,7 @@ Upgrading
 ----------------------------------
 
 1. Download the newest version of the plugin
-   (http://paulgoscicki.com/files/wp_movie_ratings.tar.gz).
+   (http://pawelgoscicki.com/files/wp_movie_ratings.tar.gz).
 
 2. Go to the Plugins section of the administration panel and deactivate
    the WP Movie Ratings plugin. Don't worry as it will NOT delete any movie
@@ -88,7 +88,7 @@ Upgrading
 
 
 
-Copyright (c) 2006-2011 by Paul Goscicki, http://paulgoscicki.com/
+Copyright (c) 2006-2011 by Paweł Gościcki, http://pawelgoscicki.com/
 
 Available under the GNU General Public License (GPL) version 2 or later.
 http://www.gnu.org/licenses/gpl.html
