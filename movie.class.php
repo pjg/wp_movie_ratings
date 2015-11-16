@@ -538,7 +538,7 @@ Remember to use correct date format (<code>YYYY-MM-DD HH:MM:SS</code>) when sett
 </table>
 
 <p class="submit">
-<?php if ($action == "Update") echo "<input type=\"submit\" name=\"action\" value=\"Delete movie review &raquo;\" onclick=\"return delete_confirmation()\" />\n"; ?>
+<?php if ($action == "Update") echo "<input class=\"button\" type=\"submit\" name=\"action\" value=\"Delete movie review &raquo;\" onclick=\"return delete_confirmation()\" />\n"; ?>
 <input class="button-primary" type="submit" name="action" value="<?php echo $action ?> movie review &raquo;" />
 </p>
 
