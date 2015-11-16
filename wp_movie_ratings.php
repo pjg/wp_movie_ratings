@@ -783,6 +783,22 @@ Display that many movies per page when in page mode (pagination).
 <?php
 }
 
+class wp_movie_ratings_widget extends WP_Widget {
+  // Sets up the widgets name etc
+  public function __construct() {
+    parent::__construct(
+      'wp_movie_ratings_widget',
+      __('Movie Ratings', 'wp_movie_ratings_widget_domain'),
+      array('description' => __('List of latest movie ratings.', 'wp_movie_ratings_widget_domain'))
+    );
+  }
+
+  // Outputs the content of the widget
+  public function widget($args, $instance) {
+    wp_movie_ratings_show();
+  }
+}
+
 # Hook for plugin installation
 add_action('activate_' . dirname(plugin_basename(__FILE__)) . '/' . basename(plugin_basename(__FILE__)), 'wp_movie_ratings_install');
 
@@ -796,5 +812,10 @@ add_action('admin_head', 'wp_movie_ratings_head_inclusion');
 
 # Filter [[wp_movie_ratings_page]] tag in page mode
 add_filter("the_content", "wp_movie_ratings_parse_page_tag");
+
+# Register widget
+add_action('widgets_init', function() {
+  register_widget('wp_movie_ratings_widget');
+});
 
 ?>
