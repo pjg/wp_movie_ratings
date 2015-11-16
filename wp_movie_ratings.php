@@ -96,7 +96,7 @@ function wp_movie_ratings_install() {
   add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
   add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
   add_option('wp_movie_ratings_highlight', 'yes', 'Highlight top rated movies?', 'no');
-  add_option('wp_movie_ratings_dialog_title', 'Latest movies', 'Dialog title for movie ratings box', 'no');
+  add_option('wp_movie_ratings_dialog_title', 'Recent movies', 'Dialog title for movie ratings box', 'no');
   add_option('wp_movie_ratings_page_url', '', 'Movie ratings page url', 'no');
   add_option('wp_movie_ratings_pagination_limit', 100, 'Display that many movies per page when using pagination in page mode', 'no');
 }
