@@ -9,7 +9,7 @@ Description: Wordpress movie rating plugin, which lets you easily rate movies yo
  */
 
 /*
-Copyright (c) 2006-2010 by Paweł Gościcki, http://pawelgoscicki.com/
+Copyright (c) 2006-2015 by Paweł Gościcki, http://pawelgoscicki.com/
 
 Available under the GNU General Public License (GPL) version 2 or later.
 http://www.gnu.org/licenses/gpl.html
