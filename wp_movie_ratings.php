@@ -306,7 +306,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
     $o .= '<aside class="widget widget_movie_ratings">';
     $o .= '<h2 class="widget-title">' . stripslashes(get_option("wp_movie_ratings_dialog_title")) . '</h2>';
 
-    $o .= '<ul>';
+    $o .= '<ul style="list-style:none">';
 
     if (count($movies) == 0) {
       $o .= "<li>No movies rated yet! Go and rate some.</li>\n";

@@ -476,7 +476,9 @@ class Movie {
       $o .= "\" title=\"$this->_title\n";
       $o .= "(watched and reviewed on $this->_watched_on)\">";
     }
-    $o .= $this->_title;
+
+    $o .= "<small>" . $this->_title;
+
     if ($is_url) $o .= "</a>";
     $o .= "\n"; # !important (gives space after movie's title regardless of the link)
 
@@ -487,6 +489,8 @@ class Movie {
         $o .= "<a class=\"edit\" href=\"" . get_settings('siteurl') . "/wp-admin/tools.php?page=wp_movie_ratings_management&amp;action=edit&amp;id=" . $this->_id . "\">e</a>\n";
       }
     }
+
+    $o .= "</small>\n";
 
     # Text rating
     if (($text_ratings == "yes") && ($this->_rating != 0)) {
