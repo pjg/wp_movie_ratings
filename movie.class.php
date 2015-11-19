@@ -67,7 +67,6 @@ class Movie {
 
   # save movie rating to the database
   function save() {
-
     $this->_title = wp_movie_ratings_real_unescape_string($this->_title);
     $title_screen = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "screen"));
     $title_db = wp_movie_ratings_real_escape_string($this->_title, array("encode_html" => true, "output" => "database"));
@@ -104,7 +103,6 @@ class Movie {
 
   # update movie data
   function update_from_post() {
-
     # check user submitted rating & imdb url
     $this->_url = wp_movie_ratings_utf8_raw_url_decode(trim($_POST["url"]));
     $this->_rating = intval($_POST["rating"]);
@@ -456,6 +454,89 @@ class Movie {
     $o .= "</div>\n";
 
     if (is_plugin_page()) $o .= "</form>\n";
+
+    return $o;
+  }
+
+  # light version of movie listing (used in widget)
+  function show_light($img_path, $options = array()) {
+    # output
+    $o = "";
+
+    # parse arugments
+    $text_ratings = (isset($options["text_ratings"]) ? $options["text_ratings"] : get_option("wp_movie_ratings_text_ratings"));
+    $five_stars_ratings = (isset($options["five_stars_ratings"]) ? $options["five_stars_ratings"] : get_option("wp_movie_ratings_five_stars_ratings"));
+    $highlight = (isset($options["highlight"]) ? $options["highlight"] : get_option("wp_movie_ratings_highlight"));
+
+    # Movie title
+    $is_url = ((!empty($this->_replacement_url) || !empty($this->_url)) ? true : false);
+    if ($is_url) {
+      $o .= "<a href=\"";
+      $o .= (!empty($this->_replacement_url) ? $this->_replacement_url : $this->_url);
+      $o .= "\" title=\"$this->_title\n";
+      $o .= "(watched and reviewed on $this->_watched_on)\">";
+    }
+    $o .= $this->_title;
+    if ($is_url) $o .= "</a>";
+    $o .= "\n"; # !important (gives space after movie's title regardless of the link)
+
+    # Edit link
+    if (!is_plugin_page()) {
+      $user = wp_get_current_user();
+      if ($user->ID && ($user->user_level >= 8)) {
+        $o .= "<a class=\"edit\" href=\"" . get_settings('siteurl') . "/wp-admin/tools.php?page=wp_movie_ratings_management&amp;action=edit&amp;id=" . $this->_id . "\">e</a>\n";
+      }
+    }
+
+    # Text rating
+    if (($text_ratings == "yes") && ($this->_rating != 0)) {
+      $o .= "<span class=\"rating" . ($this->_rating == 9 ? " half_light" : "") . ($this->_rating == 10 ? " highlight" : "") . "\"><span class=\"value\">";
+      $o .= ($five_stars_ratings == "yes" ? ($this->_rating / 2) : $this->_rating);
+      $o .= "</span>/<span class=\"best\">";
+      $o .= ($five_stars_ratings == "yes" ? "5" : "10");
+      $o .= "</span></span>\n";
+    }
+
+    # Stars rating using images
+    if ($text_ratings == "no" && ($this->_rating != 0)) {
+      $o .= "<div class=\"rating_stars\">\n";
+
+      if ($five_stars_ratings == "yes") {
+        for ($i=1; $i<6; $i++) {
+          if ($this->_rating == ($i*2 - 1)) {
+            $img_name = "half_star" . ($highlight == "yes" ? ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
+            $img_alt = "+";
+          }
+          else if ($this->_rating >= ($i*2)) {
+            $img_name = "full_star" . ($highlight == "yes" ? ($this->_rating == 10 ? "_highlight" : "") . ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
+            $img_alt = "*";
+          }
+          else {
+            $img_name = "empty_star.gif";
+            $img_alt = "";
+          }
+          $o .= "<img src=\"$img_path" . "$img_name\" alt=\"$img_alt\" />\n";
+        }
+      } else {
+        for ($i=1; $i<11; $i++) {
+          if ($this->_rating >= $i) {
+            $img_name = "full_star" . ($highlight == "yes" ? ($this->_rating == 10 ? "_highlight" : "") . ($this->_rating == 9 ? "_half_light" : "") : "") . ".gif";
+            $img_alt = "*";
+          } else {
+            $img_name = "empty_star.gif";
+            $img_alt = "";
+          }
+          $o .= "<img src=\"$img_path" . "$img_name\" alt=\"$img_alt\" />\n";
+        }
+      }
+
+      $o .= "</div>\n";
+    }
+
+    # Review
+    if ($this->_review != "") {
+      $o .= "<p><small>" . $this->_review . "</small></p>";
+    }
 
     return $o;
   }

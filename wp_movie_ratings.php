@@ -96,7 +96,7 @@ function wp_movie_ratings_install() {
   add_option('wp_movie_ratings_sidebar_mode', 'no', 'Display rating below movie title as to not use too much space', 'no');
   add_option('wp_movie_ratings_five_stars_ratings', 'no', 'Display ratings using 5 stars instead of 10', 'no');
   add_option('wp_movie_ratings_highlight', 'yes', 'Highlight top rated movies?', 'no');
-  add_option('wp_movie_ratings_dialog_title', 'Recent movies', 'Dialog title for movie ratings box', 'no');
+  add_option('wp_movie_ratings_dialog_title', 'Recent movie reviews', 'Dialog title for movie ratings box', 'no');
   add_option('wp_movie_ratings_page_url', '', 'Movie ratings page url', 'no');
   add_option('wp_movie_ratings_pagination_limit', 100, 'Display that many movies per page when using pagination in page mode', 'no');
 }
@@ -299,142 +299,168 @@ function wp_movie_ratings_get($count = null, $options = array()) {
   # some comment love
   $o .= "\n<!-- Recently watched movies list by WP Movie Ratings wordpress plugin: http://pawelgoscicki.com/projects/wp-movie-ratings/ -->\n";
 
-  # html container
-  $classes = ($page_mode == "yes" ? "page_mode " : "");
-  $classes .= ($sidebar_mode == "yes" ? "sidebar_mode " : "");
-  if (strlen($classes) > 0) $classes = substr($classes, 0, strlen($classes)-1); # drop the last space
 
-  $o .= "<div id=\"wp_movie_ratings\"" . (strlen($classes) > 0 ? " class=\"$classes\"" : "") . ">\n";
+  if (is_active_widget(false, false, 'wp_movie_ratings_widget') && ($page_mode != "yes")) {
 
-  # sorting options for page mode
-  if ($page_mode == "yes") {
+    # Widget version (light list)
+    $o .= '<aside class="widget widget_movie_ratings">';
+    $o .= '<h2 class="widget-title">' . stripslashes(get_option("wp_movie_ratings_dialog_title")) . '</h2>';
 
-    # $link will contain plain '&' chars
-    $link = $_SERVER["REQUEST_URI"];
+    $o .= '<ul>';
 
-    # drop everything after '#' (including '#')
-    if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
-
-    # clear link from my stuff
-    $link = preg_replace("/(&|\?)*sort=(title|rating|watched_on)&(ascending|descending)/", "", $link);
-    $link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
-
-    # convert '&' to '&amp;' (so we're standards compliant if the base link included this char)
-    $link = str_replace("&", "&amp;", $link);
-
-    # put ? or &amp; at the end of the link depending on the situation
-    if (strpos($link, "?")) $link .= "&amp;";
-    else $link .= "?";
-
-    # create appropriate sorting links
-    $link_t = $link_r = $link_w = $link;
-
-    $link_t .= "sort=title&amp;" . ((($order_by == "title") && ($order_direction == "ASC")) ? "descending" : "ascending");
-    $link_r .= "sort=rating&amp;" . ((($order_by == "rating") && ($order_direction == "DESC")) ? "ascending" : "descending");
-    $link_w .= "sort=watched_on&amp;" . ((($order_by == "watched_on") && ($order_direction == "DESC")) ? "ascending" : "descending");
-
-    $o .= "<p id=\"sort_options\">Sort list by: \n";
-    $o .= "<a href=\"$link_t\">title" . ($order_by == "title" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
-    $o .= "<a href=\"$link_r\">rating" . ($order_by == "rating" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
-    $o .= "<a href=\"$link_w\">view date" . ($order_by == "watched_on" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a>\n";
-    $o .= "</p>\n";
-  }
-
-  # dialog title
-  $dialog_title = stripslashes(get_option("wp_movie_ratings_dialog_title"));
-  if (($page_mode != "yes") && (strlen($dialog_title) > 0)) $o .= "<h2 id=\"reviews_title\">$dialog_title</h2>\n";
-
-  $o .= "<ul id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
-
-  if (count($movies) == 0) $o .= "<li>No movies rated yet! Go and rate some. Now.</li>\n";
-  else {
-    $i = 0; # row alternator
-    $separator = ""; # used when sorting by view date when in page mode
-    $separator_last = "";
-
-    foreach($movies as $movie) {
-
-      # Separator logic
-      if (($page_mode == "yes") && ($order_by == "watched_on")) {
-        $separator = substr($movie->_watched_on, 0, 7);
-        if (($i == 0) || ($separator != $separator_last)) {
-          $o .= "<li class=\"separator\">";
-          $o .= "<h3" . ($i == 0 ? " class=\"first\"" : "") . ">";
-          $o .= date("F, Y", mktime(1, 1, 0, substr($separator, 5, 2), 1, substr($separator, 0, 4)));
-          $o .= "</h3></li>\n";
-        }
-        $separator_last = $separator;
+    if (count($movies) == 0) {
+      $o .= "<li>No movies rated yet! Go and rate some.</li>\n";
+    } else {
+      foreach($movies as $movie) {
+        $o .= "<li>\n";
+        $o .= $movie->show_light(wp_movie_ratings_get_plugin_path("absolute"), array("text_ratings" => $text_ratings, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight));
+        $o .= "</li>\n";
       }
-
-      # Movie display
-      $o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
-      $o .= $movie->show(wp_movie_ratings_get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode, "char_limit" => $char_limit));
-      $o .= "</li>\n";
     }
-  }
 
-  $o .= "</ul>\n";
+    $o .= '</ul>';
+    $o .= "</aside>\n";
 
+  } else {
+    # Normal version (with page mode views)
 
-  # Pagination
-  if ($page_mode == "yes") {
-    $total_movies = $m->get_watched_movies_count("total");
-    $total_pages = ceil($total_movies / $limit);
+    # html container
+    $classes = ($page_mode == "yes" ? "page_mode " : "");
+    $classes .= ($sidebar_mode == "yes" ? "sidebar_mode " : "");
 
-    # display only if $limit is less than $total, so that the pagination makes sense
-    if ($limit < $total_movies) {
+    if (strlen($classes) > 0) $classes = substr($classes, 0, strlen($classes)-1); # drop the last space
 
+    $o .= "<div id=\"wp_movie_ratings\"" . (strlen($classes) > 0 ? " class=\"$classes\"" : "") . ">\n";
+
+    # sorting options for page mode
+    if ($page_mode == "yes") {
+
+      # $link will contain plain '&' chars
       $link = $_SERVER["REQUEST_URI"];
-
-      # change '&' in link to a more compliant '&amp;'
-      $link = preg_replace("/&/", "&amp;", $link);
 
       # drop everything after '#' (including '#')
       if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
 
-      # cleanup of my sh*t
-      $link = preg_replace("/(&amp;|\?)*movies_page=[0-9]*/", "", $link);
+      # clear link from my stuff
+      $link = preg_replace("/(&|\?)*sort=(title|rating|watched_on)&(ascending|descending)/", "", $link);
+      $link = preg_replace("/(&|\?)*movies_page=[0-9]*/", "", $link);
+
+      # convert '&' to '&amp;' (so we're standards compliant if the base link included this char)
+      $link = str_replace("&", "&amp;", $link);
 
       # put ? or &amp; at the end of the link depending on the situation
       if (strpos($link, "?")) $link .= "&amp;";
       else $link .= "?";
 
+      # create appropriate sorting links
+      $link_t = $link_r = $link_w = $link;
 
-      $o .= "<div id=\"pagination\"><p>";
+      $link_t .= "sort=title&amp;" . ((($order_by == "title") && ($order_direction == "ASC")) ? "descending" : "ascending");
+      $link_r .= "sort=rating&amp;" . ((($order_by == "rating") && ($order_direction == "DESC")) ? "ascending" : "descending");
+      $link_w .= "sort=watched_on&amp;" . ((($order_by == "watched_on") && ($order_direction == "DESC")) ? "ascending" : "descending");
 
-      # prev button
-      if ($current_page > 1) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page - 1) . "\">"; else $o .= "<em class=\"next_prev\">";
-      $o .= " <span class=\"bullet\">&larr;</span> previous";
-      if ($current_page > 1) $o .= "</a> "; else $o .= "</em> ";
-      $o .= "\n";
-
-      # pages
-      for ($i = 1; $i <= $total_pages; $i++) {
-        if ($current_page != $i) $o .= "<a href=\"" . $link . "movies_page=" . $i . "\">"; else $o .= "<em id=\"current\">";
-        $o .= $i;
-        if ($current_page != $i) $o .= "</a> "; else $o .= "</em> ";
-        $o .= "\n";
-      }
-
-      # next button
-      if ($current_page < $total_pages) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em class=\"next_prev\">";
-      $o .= "next <span class=\"bullet\">&rarr;</span>";
-      if ($current_page < $total_pages) $o .= "</a>"; else $o .= "</em>";
-      $o .= "\n";
-
-
-      $o .= "</p></div>\n";
+      $o .= "<p id=\"sort_options\">Sort list by: \n";
+      $o .= "<a href=\"$link_t\">title" . ($order_by == "title" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
+      $o .= "<a href=\"$link_r\">rating" . ($order_by == "rating" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a> | \n";
+      $o .= "<a href=\"$link_w\">view date" . ($order_by == "watched_on" ? " <span class=\"bullet\">&" . ($order_direction == "ASC" ? "u" : "d") . "arr;</span>" : "") . "</a>\n";
+      $o .= "</p>\n";
     }
+
+    # dialog title
+    $dialog_title = stripslashes(get_option("wp_movie_ratings_dialog_title"));
+    if (($page_mode != "yes") && (strlen($dialog_title) > 0)) $o .= "<h2 id=\"reviews_title\">$dialog_title</h2>\n";
+
+    $o .= "<ul id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
+
+    if (count($movies) == 0) $o .= "<li>No movies rated yet! Go and rate some.</li>\n";
+    else {
+      $i = 0; # row alternator
+      $separator = ""; # used when sorting by view date when in page mode
+      $separator_last = "";
+
+      foreach($movies as $movie) {
+
+        # Separator logic
+        if (($page_mode == "yes") && ($order_by == "watched_on")) {
+          $separator = substr($movie->_watched_on, 0, 7);
+          if (($i == 0) || ($separator != $separator_last)) {
+            $o .= "<li class=\"separator\">";
+            $o .= "<h3" . ($i == 0 ? " class=\"first\"" : "") . ">";
+            $o .= date("F, Y", mktime(1, 1, 0, substr($separator, 5, 2), 1, substr($separator, 0, 4)));
+            $o .= "</h3></li>\n";
+          }
+          $separator_last = $separator;
+        }
+
+        # Movie display
+        $o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
+        $o .= $movie->show(wp_movie_ratings_get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode, "char_limit" => $char_limit));
+        $o .= "</li>\n";
+      }
+    }
+
+    $o .= "</ul>\n";
+
+
+    # Pagination
+    if ($page_mode == "yes") {
+      $total_movies = $m->get_watched_movies_count("total");
+      $total_pages = ceil($total_movies / $limit);
+
+      # display only if $limit is less than $total, so that the pagination makes sense
+      if ($limit < $total_movies) {
+
+        $link = $_SERVER["REQUEST_URI"];
+
+        # change '&' in link to a more compliant '&amp;'
+        $link = preg_replace("/&/", "&amp;", $link);
+
+        # drop everything after '#' (including '#')
+        if (strpos($link, "#")) $link = substr($link, 0, strpos($link, "#"));
+
+        # cleanup of my sh*t
+        $link = preg_replace("/(&amp;|\?)*movies_page=[0-9]*/", "", $link);
+
+        # put ? or &amp; at the end of the link depending on the situation
+        if (strpos($link, "?")) $link .= "&amp;";
+        else $link .= "?";
+
+
+        $o .= "<div id=\"pagination\"><p>";
+
+        # prev button
+        if ($current_page > 1) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page - 1) . "\">"; else $o .= "<em class=\"next_prev\">";
+        $o .= " <span class=\"bullet\">&larr;</span> previous";
+        if ($current_page > 1) $o .= "</a> "; else $o .= "</em> ";
+        $o .= "\n";
+
+        # pages
+        for ($i = 1; $i <= $total_pages; $i++) {
+          if ($current_page != $i) $o .= "<a href=\"" . $link . "movies_page=" . $i . "\">"; else $o .= "<em id=\"current\">";
+          $o .= $i;
+          if ($current_page != $i) $o .= "</a> "; else $o .= "</em> ";
+          $o .= "\n";
+        }
+
+        # next button
+        if ($current_page < $total_pages) $o .= "<a class=\"next_prev\" href=\"" . $link . "movies_page=" . ($current_page + 1) . "\">"; else $o .= "<em class=\"next_prev\">";
+        $o .= "next <span class=\"bullet\">&rarr;</span>";
+        if ($current_page < $total_pages) $o .= "</a>"; else $o .= "</em>";
+        $o .= "\n";
+
+
+        $o .= "</p></div>\n";
+      }
+    }
+
+    # Please do not remove the love ad. Thank you :-)
+    if ($page_mode == "yes")
+      $o .= "<p id=\"link_love\">List generated by <a href=\"http://pawelgoscicki.com/projects/wp-movie-ratings/\">WP Movie Ratings</a>.</p>\n";
+    else if (!is_plugin_page() && (strlen($page_url) > 0))
+      $o .= "<p id=\"page_url\"><a href=\"$page_url\">Movie ratings archive &raquo;</a></p>\n";
+
+    $o .= "</div>\n";
   }
-
-
-  # Please do not remove the love ad. Thank you :-)
-  if ($page_mode == "yes")
-    $o .= "<p id=\"link_love\">List generated by <a href=\"http://pawelgoscicki.com/projects/wp-movie-ratings/\">WP Movie Ratings</a>.</p>\n";
-  else if (!is_plugin_page() && (strlen($page_url) > 0))
-    $o .= "<p id=\"page_url\"><a href=\"$page_url\">Movie ratings archive &raquo;</a></p>\n";
-
-  $o .= "</div>\n";
 
   return $o;
 }
