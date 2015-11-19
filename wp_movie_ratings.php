@@ -286,6 +286,7 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
   # fetch movies
   $m = new Movie();
+
   if ($page_mode == "yes") {
     $movies = $m->get_all_movies($order_by, $order_direction, $start, $limit);
   } elseif ($only_not_rated == "yes") {
@@ -319,6 +320,10 @@ function wp_movie_ratings_get($count = null, $options = array()) {
     }
 
     $o .= '</ul>';
+
+    if (!is_plugin_page() && (strlen($page_url) > 0))
+      $o .= "<p id=\"page_url\"><a href=\"$page_url\">All movie ratings »</a></p>\n";
+
     $o .= "</aside>\n";
 
   } else {
