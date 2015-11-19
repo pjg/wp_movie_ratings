@@ -1,5 +1,4 @@
-WP Movie Ratings v1.6 (2010-10-14)
-==================================
+# WP Movie Ratings v1.7 (2015-11-19)
 
 WP Movie Ratings is a wordpress plugin that makes rating movies very easy. At
 its core is a bookmarklet, which combined with the Internet Movie Database
@@ -16,16 +15,14 @@ compliant.
 Plugin page: http://pawelgoscicki.com/projects/wp-movie-ratings/
 
 
-Requirements
-----------------------------------
+## Requirements
 
 * Wordpress 2.7 or newer
 * FTP, SSH or SCP access to your wordpress blog (so you can upload this
   plugin).
 
 
-Installation
-----------------------------------
+## Installation
 
 1. Download the plugin.
 
@@ -45,24 +42,28 @@ Installation
 5. Go to the Options section in the administration panel and under the Movies
    tab customize this plugin's options.
 
-6. Edit your blog template (it's probably the best to edit the index.php file)
-   and put this line there:
+6. Customize your theme:
 
-   wp_movie_ratings_show();
+   * go into Widget Area
+   * click "Add a Widget"
+   * click on "Movie Ratings"
+   * click on "Save & Publish"
 
    If you want to have movie ratings listed in the sidebar, you must, of
    course, edit the sidebar.php file from your current theme. Alternatively
    you can create a new post/page and type it there:
 
-   [[wp_movie_ratings_page]]
+   You should also create a page listing all movie reviews. Create a new Page in
+   Wordpress and put the following as the contents:
+
+   `[[wp_movie_ratings_page]]`
 
    It will create a listing of all rated movies sorted by title.
 
 7. Go to your blog and see the movie ratings!
 
 
-Upgrading
-----------------------------------
+## Upgrading
 
 1. Download the newest version of the plugin
    (http://pawelgoscicki.com/files/wp_movie_ratings.tar.gz).
@@ -87,6 +88,7 @@ Upgrading
 6. Enjoy life with the newest version of the WP Movie Ratings plugin.
 
 
+## License
 
 Copyright (c) 2006-2015 by Paweł Gościcki, http://pawelgoscicki.com/
 

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP Movie Ratings
-Version: 1.6
+Version: 1.7
 Plugin URI: http://pawelgoscicki.com/projects/wp-movie-ratings/
 Author: Paweł Gościcki
 Author URI: http://pawelgoscicki.com/
