@@ -554,14 +554,14 @@ class Movie {
 
 <tr valign="top">
 <th scope="row"><label for="url">iMDB link:</label></th>
-<td><input type="text" name="url" id="url" class="text" value="<?php echo $this->_url ?>" />
+<td><input type="text" name="url" id="url" class="text" size="50" value="<?php echo $this->_url ?>" />
 <br />
 Must be a valid <a href="http://akas.imdb.com/">imdb</a> link (but may be left empty so that the <strong>replacement link</strong> is used instead).</td>
 </tr>
 
 <tr valign="top">
 <th scope="row"><label for="title">Title:</label></th>
-<td><input type="text" name="title" id="title" class="text" value="<?php echo $this->_title ?>" />
+<td><input type="text" name="title" id="title" class="text" size="50" value="<?php echo $this->_title ?>" />
 <br />
 <?php if ($action == "Update") { ?>
 You <em>really</em> should not be editing the title.
@@ -591,7 +591,7 @@ for($i=0; $i<11; $i++) {
 <tr valign="top">
 <th scope="row"><label for="review">Short review:</label></th>
 <td>
-<textarea name="review" id="review">
+<textarea name="review" id="review" cols="80" rows="5">
 <?php echo $this->_review ?>
 </textarea>
 <br />
@@ -602,7 +602,7 @@ HTML code allowed.
 <tr valign="top">
 <th scope="row"><label for="replacement_url">Replacement link:</label></th>
 <td>
-<input type="text" name="replacement_url" id="replacement_url" class="text" value="<?php echo $this->_replacement_url ?>" />
+<input type="text" name="replacement_url" id="replacement_url" class="text" size="50" value="<?php echo $this->_replacement_url ?>" />
 <br />
 Type additional movie link if you don't want to display <a href="http://akas.imdb.com/">imdb</a> links or when the movie is not listed on imdb.
 </td>
@@ -611,7 +611,7 @@ Type additional movie link if you don't want to display <a href="http://akas.imd
 <tr valign="top">
 <th scope="row"><label for="watched_on">Watched on:</label></th>
 <?php $watched_on = ($this->_watched_on == null ? $this->get_current_time() : $this->_watched_on); ?>
-<td><input type="text" name="watched_on" id="watched_on" class="text" value="<?php echo $watched_on ?>" />
+<td><input type="text" name="watched_on" id="watched_on" class="text" size="25" value="<?php echo $watched_on ?>" />
 <br />
 Remember to use correct date format (<code>YYYY-MM-DD HH:MM:SS</code>) when setting custom dates.</td>
 </tr>

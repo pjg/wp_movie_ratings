@@ -792,7 +792,7 @@ when in page mode.
 
 <tr valign="top">
 <th scope="row"><label for="wp_movie_ratings_pagination_limit">Max movies per page:</label></th>
-<td><input type="text" name="wp_movie_ratings_pagination_limit" id="wp_movie_ratings_pagination_limit" class="text" size="2" value="<?php echo $plugin_options["pagination_limit"] ?>"/><br />
+<td><input type="number" name="wp_movie_ratings_pagination_limit" id="wp_movie_ratings_pagination_limit" class="text" step="1" value="<?php echo $plugin_options["pagination_limit"] ?>"/><br />
 Display that many movies per page when in page mode (pagination).
 </td>
 </tr>
