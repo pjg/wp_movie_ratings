@@ -173,8 +173,8 @@ function wp_movie_ratings_real_escape_string($v, $options = array()) {
     # FORCE stripslashes() anyway (suxx... can break things; but it mostly fixes them)
     $v = stripslashes($v);
 
-    # then apply better mysql escaping
-    $v = mysql_real_escape_string($v);
+    # then apply SQL escaping provided by Wordpress
+    $v = esc_sql($v);
   }
 
   return $v;
