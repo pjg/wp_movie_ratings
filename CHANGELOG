@@ -1,6 +1,9 @@
 WP Movie Ratings changelog:
 ===========================
 
+HEAD (unreleased)
+- small visual tweaks to the widget
+
 Relase 1.7 (2015-11-19)
 - widgetization: added possiblity to display 'Recent ratings' in a widget
 - fetch original movie titles from IMDb (ie: use akas.imdb.com instead of just imdb.com) and display links to akas.imdb.com (instead of imdb.com)
