@@ -3,6 +3,7 @@ WP Movie Ratings changelog:
 
 HEAD (unreleased)
 - small visual tweaks to the widget
+- make plugin work with https imdb links
 
 Relase 1.7 (2015-11-19)
 - widgetization: added possiblity to display 'Recent ratings' in a widget
