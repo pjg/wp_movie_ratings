@@ -5,7 +5,7 @@ Version: 1.7
 Plugin URI: http://pawelgoscicki.com/projects/wp-movie-ratings/
 Author: Paweł Gościcki
 Author URI: http://pawelgoscicki.com/
-Description: Wordpress movie rating plugin, which lets you easily rate movies you've seen recently and display a short list of those movies on your blog. <a href="https://akas.imdb.com/">IMDb</a> is used to automatically fetch movie titles. One-click movie rating (while browsing the imdb) is possible using the included bookmarklet (see <a href="tools.php?page=wp_movie_ratings_management">management page</a>). <strong>Reviews management: <a href="tools.php?page=wp_movie_ratings_management">Tools/Movies</a></strong>. <strong>Configuration: <a href="options-general.php?page=wp_movie_ratings_options">Settings/Movies</a></strong>.
+Description: Wordpress movie rating plugin, which lets you easily rate movies you've seen recently and display a short list of those movies on your blog. <a href="https://www.imdb.com/">IMDb</a> is used to automatically fetch movie titles. One-click movie rating (while browsing the imdb) is possible using the included bookmarklet (see <a href="tools.php?page=wp_movie_ratings_management">management page</a>). <strong>Reviews management: <a href="tools.php?page=wp_movie_ratings_management">Tools/Movies</a></strong>. <strong>Configuration: <a href="options-general.php?page=wp_movie_ratings_options">Settings/Movies</a></strong>.
  */
 
 /*
