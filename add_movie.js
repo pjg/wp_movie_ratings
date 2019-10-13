@@ -72,7 +72,7 @@ function add_behaviour() {
   elements.each(function(node) {
     node.addEventListener('click', function () {
       var message = $('message')
-      if ($F('url').match(/^https?:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}.*$/i)) {
+      if ($F('url').match(/^https?:\/\/.*imdb\.com\/title\/tt([0-9]{7,8})(\/){0,1}.*$/i)) {
         var rating = parseInt(this.id.substr(6))
         // make selected rating 'stuck'
         $A( $('rating').getElementsByTagName('a') ).each( function(el) {
@@ -113,8 +113,8 @@ function parse_uri() {
 
   // Parse and set as url if it is imdb movie page
   var url = unescape(location.href.substring(location.href.indexOf('?url=') + 5))
-  console.log(url)
-  if (url.match(/^https?:\/\/.*imdb\.com\/title\/tt([0-9]{7})(\/){0,1}.*$/i)) {
+
+  if (url.match(/^https?:\/\/.*imdb\.com\/title\/tt([0-9]{7,8})(\/){0,1}.*$/i)) {
     $('url').value = beautify_imdb_uri(url)
   }
 }

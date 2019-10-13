@@ -38,7 +38,7 @@ class Movie {
 
   # check if we have a valid imdb.com link
   function parse_imdb_url() {
-    if (preg_match("/^https?:\/\/(.*)imdb\.com\/title\/tt([0-9]{7})(\/){0,1}$/i", $this->_url, $matches)) {
+    if (preg_match("/^https?:\/\/(.*)imdb\.com\/title\/tt([0-9]{7,8})(\/){0,1}$/i", $this->_url, $matches)) {
       $this->_url_short = $matches[2];
       $this->_url = 'https://www.imdb.com/title/tt' . $this->_url_short . '/';
       return "";
