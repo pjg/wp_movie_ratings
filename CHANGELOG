@@ -1,7 +1,7 @@
 WP Movie Ratings changelog:
 ===========================
 
-HEAD (unreleased)
+Release 1.8 (2019-10-13)
 - small visual tweaks to the widget
 - make plugin work with https imdb links
 - use www.imdb.com for all imdb links/operations (SSL certificate for akas.imdb.com no longer works)

@@ -68,6 +68,9 @@ Plugin page: http://pawelgoscicki.com/projects/wp-movie-ratings/
 1. Download the newest version of the plugin
    (http://pawelgoscicki.com/files/wp_movie_ratings.tar.gz).
 
+   The most recent, but not yet released can be found at GitHub:
+   https://github.com/pjg/wp_movie_ratings
+
 2. Go to the Plugins section of the administration panel and deactivate
    the WP Movie Ratings plugin. Don't worry as it will NOT delete any movie
    ratings.
