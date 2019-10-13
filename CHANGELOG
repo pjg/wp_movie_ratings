@@ -5,6 +5,8 @@ HEAD (unreleased)
 - small visual tweaks to the widget
 - make plugin work with https imdb links
 - use www.imdb.com for all imdb links/operations (SSL certificate for akas.imdb.com no longer works)
+- fix/tweak IMDb titles parsing
+- support imdb IDs over 10 mln
 
 Relase 1.7 (2015-11-19)
 - widgetization: added possiblity to display 'Recent ratings' in a widget
