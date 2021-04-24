@@ -15,7 +15,7 @@ class Movie {
 
 
   # constructor
-  function Movie($url=null, $rating=null, $review=null, $title=null, $replacement_url=null, $watched_on=null, $id=null) {
+  function __construct($url=null, $rating=null, $review=null, $title=null, $replacement_url=null, $watched_on=null, $id=null) {
     global $wpdb;
     $this->_url = rawurldecode(trim($url));
     $this->_rating = intval($rating);
@@ -24,7 +24,7 @@ class Movie {
     $this->_replacement_url = rawurldecode(trim($replacement_url));
     $this->_watched_on = $watched_on;
     $this->_id = $id;
-    $this->_wpdb = $wpdb;
+    $this->_wpdb = $GLOBALS['wpdb'];
     $this->_table = $wpdb->prefix . "movie_ratings";
   }
 

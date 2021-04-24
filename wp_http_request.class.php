@@ -43,7 +43,7 @@ class WP_HTTP_Request {
   }
 
   # constructor
-  function WP_HTTP_Request($url) {
+  function __construct($url) {
     $this->_url = $url;
     $this->_scan_url();
   }

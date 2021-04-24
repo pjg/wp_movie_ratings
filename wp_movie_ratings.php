@@ -167,10 +167,7 @@ function wp_movie_ratings_real_escape_string($v, $options = array()) {
   }
 
   if (isset($options["output"]) && $options["output"] == "database") {
-    # first remove default escaping
-    #if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) $v = stripslashes($v);
-
-    # FORCE stripslashes() anyway (suxx... can break things; but it mostly fixes them)
+    # can break things
     $v = stripslashes($v);
 
     # then apply SQL escaping provided by Wordpress
@@ -183,13 +180,7 @@ function wp_movie_ratings_real_escape_string($v, $options = array()) {
 
 # Advanced version of stripslashes()
 function wp_movie_ratings_real_unescape_string($v) {
-  # work your way through different PHP configurations and strip automatic character escaping
-  if (get_magic_quotes_gpc() || get_magic_quotes_runtime()) {
-    if (ini_get("get_magic_quotes_sybase") == 1) $v = str_replace("''", "'", $v);
-    #else $v = stripslashes($v);
-  }
-
-  # FORCE stripslashes() anyway (suxx... can break things; but it mostly fixes them)
+  # can break things
   $v = stripslashes($v);
 
   return $v;
