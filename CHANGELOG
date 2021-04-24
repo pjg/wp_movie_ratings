@@ -1,6 +1,10 @@
 WP Movie Ratings changelog:
 ===========================
 
+Unreleased:
+- compatibility with PHP v8
+- support imdb IDs over 100 mln
+
 Release 1.8 (2019-10-13)
 - small visual tweaks to the widget
 - make plugin work with https imdb links
