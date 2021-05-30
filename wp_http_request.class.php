@@ -51,9 +51,10 @@ class WP_HTTP_Request {
   # download URL to string
   function DownloadToString() {
     $crlf = "\r\n";
+    $language = 'Accept-Language: en-US,en';
 
     # generate request
-    $req = 'GET ' . $this->_uri . ' HTTP/1.0' . $crlf . 'Host: ' . $this->_host . $crlf . $crlf;
+    $req = 'GET ' . $this->_uri . ' HTTP/1.0' . $crlf . 'Host: ' . $this->_host . $crlf . $language . $crlf . $crlf;
 
     # fetch
     $response = '';
