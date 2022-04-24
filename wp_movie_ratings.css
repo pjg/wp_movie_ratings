@@ -49,9 +49,17 @@
 /* LIST */
 
 #wp_movie_ratings #reviews {
+    margin: 6px 5px 3px 3px;
+}
+
+#wp_movie_ratings #reviews p {
+    margin: 0;
+}
+
+#wp_movie_ratings #reviews ul {
     background: transparent;
     list-style: none;
-    margin: 6px 5px 3px 3px;
+    margin: 0;
     padding: 0;
     text-indent: 0;
 }
@@ -95,7 +103,7 @@
     position: relative;
 }
 
-#wp_movie_ratings.page_mode #reviews li.separator {
+#wp_movie_ratings.page_mode #reviews h3.separator {
     padding: 2px 0 5px 0;
 }
 
@@ -116,15 +124,7 @@
 
 /* SEPARATOR */
 
-#wp_movie_ratings #reviews li.separator {
-    background: transparent;
-}
-
-#wp_movie_ratings #reviews li.separator:hover {
-    background-color: transparent;
-}
-
-#wp_movie_ratings #reviews li.separator h3 {
+#wp_movie_ratings #reviews h3.separator {
     background: transparent;
     border-bottom: 1px solid #C9CFB6;
     display: block;
@@ -133,11 +133,15 @@
     font-size: 14px;
     font-weight: bold;
     font-style: normal;
-    margin: 35px 0 2px 0;
+    margin: 35px 0 6px 0;
     padding: 0 0 2px 0;
 }
 
-#wp_movie_ratings #reviews li.separator h3.first {
+#wp_movie_ratings #reviews h3.separator:hover {
+    background-color: transparent;
+}
+
+#wp_movie_ratings #reviews h3.separator.first {
     margin-top: 0;
 }
 

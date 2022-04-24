@@ -293,24 +293,23 @@ function wp_movie_ratings_get($count = null, $options = array()) {
 
 
   if (is_active_widget(false, false, 'wp_movie_ratings_widget') && ($page_mode != "yes")) {
-
     # Widget version (light list)
-    $o .= '<aside class="widget widget_movie_ratings">';
-    $o .= '<h2 class="widget-title">' . stripslashes(get_option("wp_movie_ratings_dialog_title")) . '</h2>';
+    $o .= "<aside class=\"widget widget_movie_ratings\">\n";
+    $o .= "<h2 class=\"widget-title\">" . stripslashes(get_option("wp_movie_ratings_dialog_title")) . "</h2>\n\n";
 
-    $o .= '<ul>';
+    $o .= "<ul>\n";
 
     if (count($movies) == 0) {
       $o .= "<li>No movies rated yet! Go and rate some.</li>\n";
     } else {
       foreach($movies as $movie) {
-        $o .= "<li>\n";
+        $o .= "\n<li>\n";
         $o .= $movie->show_light(wp_movie_ratings_get_plugin_path("absolute"), array("text_ratings" => $text_ratings, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight));
-        $o .= "</li>\n";
+        $o .= "\n</li>\n";
       }
     }
 
-    $o .= '</ul>';
+    $o .= "</ul>\n";
 
     if (!is_plugin_page() && (strlen($page_url) > 0))
       $o .= "<p id=\"page_url\"><a href=\"$page_url\">All movie ratings »</a></p>\n";
@@ -366,15 +365,17 @@ function wp_movie_ratings_get($count = null, $options = array()) {
     $dialog_title = stripslashes(get_option("wp_movie_ratings_dialog_title"));
     if (($page_mode != "yes") && (strlen($dialog_title) > 0)) $o .= "<h2 id=\"reviews_title\">$dialog_title</h2>\n";
 
-    $o .= "<ul id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
+    $o .= "<div id=\"reviews\"" . ($text_ratings == "yes" ? " class=\"text_ratings\"" : "") . ">\n";
 
     if (count($movies) == 0) {
-      $o .= "<li>No movies rated yet! Go and rate some.</li>\n";
+      $o .= "<p>No movies rated yet! Go and rate some.</p>\n";
     } else {
       $i = 0; # row alternator
 
       $separator = ""; # used when sorting by view date when in page mode
       $separator_last = "";
+
+      $o .= "\n<ul>\n";
 
       foreach($movies as $movie) {
         # Separator logic
@@ -382,10 +383,13 @@ function wp_movie_ratings_get($count = null, $options = array()) {
           $separator = substr($movie->_watched_on, 0, 7);
 
           if (($i == 0) || ($separator != $separator_last)) {
-            $o .= "<li class=\"separator\">";
-            $o .= "<h3" . ($i == 0 ? " class=\"first\"" : "") . ">";
+            $o .= "</ul>\n";
+
+            $o .= "\n<h3 class=\"separator" . ($i == 0 ? " first" : "") . "\">";
             $o .= date("F, Y", mktime(1, 1, 0, substr($separator, 5, 2), 1, substr($separator, 0, 4)));
-            $o .= "</h3></li>\n";
+            $o .= "</h3>\n\n";
+
+            $o .= "<ul>\n";
           }
 
           $separator_last = $separator;
@@ -394,11 +398,13 @@ function wp_movie_ratings_get($count = null, $options = array()) {
         # Movie display
         $o .= "<li" . ((++$i % 2) == 0 ? " class=\"odd\"" : "") . ">\n";
         $o .= $movie->show(wp_movie_ratings_get_plugin_path("absolute"), array("include_review" => $include_review, "text_ratings" => $text_ratings, "sidebar_mode" => $sidebar_mode, "five_stars_ratings" => $five_stars_ratings, "highlight" => $highlight, "page_mode" => $page_mode, "char_limit" => $char_limit));
-        $o .= "</li>\n";
+        $o .= "</li>\n\n";
       }
+
+      $o .= "</ul>\n";
     }
 
-    $o .= "</ul>\n";
+    $o .= "</div>\n";
 
 
     # Pagination
