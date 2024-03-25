@@ -5,6 +5,7 @@
 - compatibility with PHP v8
 - support imdb IDs over 100 mln
 - improve rendering performance for large lists when in page mode and sorting movies by `watched_on` date
+- improve/fix rendering time of large lists when in page mode on recent Wordpress versions (6.3.3+) by converting plus/minus images to inlined SVGs
 
 ## Release 1.8 (2019-10-13)
 
