@@ -93,7 +93,7 @@ Plugin page: http://pawelgoscicki.com/projects/wp-movie-ratings/
 
 ## License
 
-Copyright (c) 2006-2021 by Paweł Gościcki, http://pawelgoscicki.com/
+Copyright (c) 2006-2025 by Paweł Gościcki, http://pawelgoscicki.com/
 
 Available under the GNU General Public License (GPL) version 2 or later.
 http://www.gnu.org/licenses/gpl.html
