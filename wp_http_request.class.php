@@ -54,7 +54,14 @@ class WP_HTTP_Request {
     $language = 'Accept-Language: en-US,en';
 
     # generate request
-    $req = 'GET ' . $this->_uri . ' HTTP/1.0' . $crlf . 'Host: ' . $this->_host . $crlf . $language . $crlf . $crlf;
+    $user_agent = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+
+    $req =
+      'GET ' . $this->_uri . ' HTTP/1.0' . $crlf .
+      'Host: ' . $this->_host . $crlf .
+      $user_agent . $crlf .
+      $language . $crlf .
+      $crlf;
 
     # fetch
     $response = '';
