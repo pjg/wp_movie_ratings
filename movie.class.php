@@ -48,6 +48,7 @@ class Movie {
 
   # get title from imdb.com
   # Caught Stealing (2025) - IMDb
+  # Heweliusz (TV Mini Series 2025) - IMDb
   function get_title() {
     $req = new WP_HTTP_Request($this->_url);
     $imdb = $req->DownloadToString();
@@ -56,7 +57,7 @@ class Movie {
       return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (empty response).</strong></p></div>';
     }
 
-    if (preg_match('/<title>(.*?\s*\(\d{4}\))/i', $imdb, $title_matches)) {
+    if (preg_match('/<title>(.*?\s*\(.+\)) - IMDb/i', $imdb, $title_matches)) {
       $this->_title = $title_matches[1];
       return '';
     }

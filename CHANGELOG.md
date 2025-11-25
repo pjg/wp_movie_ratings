@@ -1,5 +1,9 @@
 # WP Movie Ratings CHANGELOG
 
+## UNRELEASED
+
+- fixed issue with rating TV Series/Mini Series
+
 ## Release 1.9 (2025-11-16)
 
 - compatibility with PHP v8
