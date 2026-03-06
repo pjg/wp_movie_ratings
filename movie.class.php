@@ -46,23 +46,41 @@ class Movie {
   }
 
 
-  # get title from imdb.com
-  # Caught Stealing (2025) - IMDb
-  # Heweliusz (TV Mini Series 2025) - IMDb
+  # get title from imdb.com via the IMDb suggestions API (no auth needed)
+  # returns JSONP: imdb$ttXXXX({"d":[{"l":"Title","y":2014,"qid":"movie"|"tvSeries"|"tvMiniSeries"|...}]})
   function get_title() {
-    $req = new WP_HTTP_Request($this->_url);
-    $imdb = $req->DownloadToString();
+    $api_url  = 'https://sg.media-imdb.com/suggests/t/tt' . $this->_url_short . '.json';
+    $response = wp_remote_get($api_url, array('timeout' => 15));
 
-    if ($imdb === false || $imdb === '') {
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
       return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (empty response).</strong></p></div>';
     }
 
-    if (preg_match('/<title>(.*?\s*\(.+\)) - IMDb/i', $imdb, $title_matches)) {
-      $this->_title = $title_matches[1];
-      return '';
+    $body = wp_remote_retrieve_body($response);
+
+    # strip JSONP wrapper: imdb$ttXXXX({...})
+    if (!preg_match('/\((\{.*\})\)/', $body, $m)) {
+      return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (pattern not found).</strong></p></div>';
     }
 
-    return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (pattern not found).</strong></p></div>';
+    $data = json_decode($m[1], true);
+    if (empty($data['d'][0])) {
+      return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (pattern not found).</strong></p></div>';
+    }
+
+    $d = $data['d'][0];
+    $type_map = array(
+      'movie'        => '',
+      'tvSeries'     => 'TV Series, ',
+      'tvMiniSeries' => 'TV Mini Series, ',
+      'tvMovie'      => 'TV Movie, ',
+      'tvShort'      => 'TV Short, ',
+      'short'        => 'Short, ',
+    );
+    $prefix = isset($type_map[$d['qid']]) ? $type_map[$d['qid']] : '';
+    $this->_title = $d['l'] . ' (' . $prefix . $d['y'] . ')';
+
+    return '';
   }
 
 

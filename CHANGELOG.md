@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - fixed issue with rating TV Series/Mini Series
+- switched to media-imdb.com for fetching movie titles
 
 ## Release 1.9 (2025-11-16)
 
@@ -23,21 +24,21 @@
 ## Relase 1.7 (2015-11-19)
 - widgetization: added possiblity to display 'Recent ratings' in a widget
 - fetch original movie titles from IMDb (ie: use akas.imdb.com instead of just imdb.com) and display links to akas.imdb.com (instead of imdb.com)
-- fixed: make movies page pagination links XHTML standards compliant (& => &amp;)
+- fixed: make movies page pagination links XHTML standards compliant (`&` => `&amp;`)
 - compatibility/deprecation fixes (some of them at least...)
 
 ## Release 1.6 (2010-10-14)
 
 - full compatibility with Wordpress 2.7.*, 2.8.*, 2.9.* and 3.0.* (this release breaks compatibility with older versions)
-- fixed: when 'only_rated' or 'only_unrated' option was used the 'count' argument the for wp_movie_ratings_show() function was ignored
+- fixed: when `'only_rated'` or `'only_unrated'` option was used the 'count' argument the for `wp_movie_ratings_show()` function was ignored
 - removed automatic pingerati.net pinging (pingerati.net is AWOL)
 - fixed: fetching movie title from IMDb (after IMDb has changed their website)
 
 ## Release 1.5 (2008-05-18)
 
 - added option to add movies without rating them (to create a list of owned just not yet seen dvds, for example) (only through the administration panel)
-- added option to select all 'only_rated' or 'only_not_rated' movies using the wp_movie_ratings_show() function call
-- char_limit option can now be passed as a parameter to the wp_movie_ratings_show() function call
+- added option to select all `only_rated` or `only_not_rated` movies using the `wp_movie_ratings_show()` function call
+- `char_limit` option can now be passed as a parameter to the `wp_movie_ratings_show()` function call
 - fixed problems making the movie reviews pages non XHTML compliant
 - fixed error which prevented certain users from activating the plugin (the database table was not created)
 - fixed XHTML validation error in the bookmarklet
@@ -82,16 +83,16 @@
 - fixed hardcoded wordpress table names which could have resulted in errors during installation and usage (no longer, hopefully)
 - fixed plugin activation problems on Windows machines
 - magic quotes/strip slashes fixes
-- added separate page listing all movies (just create a new wordpress page and add this tag there: [[wp_movie_ratings_page]])
+- added separate page listing all movies (just create a new wordpress page and add this tag there: `[[wp_movie_ratings_page]]`)
 
 ## Release 1.1 (2006-06-27)
 
 - sidebar mode, where movie ratings are on a separate line, so the box can be as thin as 170px for star ratings (images) and 100px for text ratings
-- renamed HTTPRequest class to WP_HTTP_Request to avoid conflicts with other HTTPRequest classes from other plugins
+- renamed HTTPRequest class to `WP_HTTP_Request` to avoid conflicts with other HTTPRequest classes from other plugins
 - new options panel which lets you set different display options (like the aforementioned sidebar mode)
 - option to display movie ratings using just text as an alternative to the images with stars
 - fixed CSS problems with Internet Explorer (now works properly even with IE 5.0)
-- css inclusion moved to <head> so that the generated pages that include the output from this plugin can now be XHTML compliant
+- css inclusion moved to `<head>` so that the generated pages that include the output from this plugin can now be XHTML compliant
 - removed nested SQL queries so that the plugin now works with older versions of MySQL
 
 ## Release 1.0.1 (2006-06-18)
