@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # Anti-hack
 if (!defined('ABSPATH')) die("No cheating!");
 
-include_once(dirname(__FILE__) . "/wp_http_request.class.php");
 include_once(dirname(__FILE__) . "/movie.class.php");
 
 # Plugin installation function
