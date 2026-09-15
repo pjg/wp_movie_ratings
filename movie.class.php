@@ -89,9 +89,12 @@ class Movie {
       'tvShort'      => 'TV Short, ',
       'short'        => 'Short, ',
     );
-    $prefix = (isset($d['qid']) && isset($type_map[$d['qid']])) ? $type_map[$d['qid']] : '';
+    $qid = isset($d['qid']) ? $d['qid'] : '';
+    $prefix = isset($type_map[$qid]) ? $type_map[$qid] : '';
     $year = isset($d['y']) ? $d['y'] : '';
-    $this->_title = $d['l'] . ' (' . $prefix . $year . ')';
+    # TV Series (but not TV Mini Series) get a season marker: "Title S01 (TV Series, 2025)"
+    $season = ($qid === 'tvSeries') ? ' S01' : '';
+    $this->_title = $d['l'] . $season . ' (' . $prefix . $year . ')';
 
     return '';
   }
