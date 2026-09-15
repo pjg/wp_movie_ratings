@@ -47,7 +47,9 @@ class Movie {
 
 
   # get title from imdb.com via the IMDb suggestions API (no auth needed)
-  # returns JSONP: imdb$ttXXXX({"d":[{"l":"Title","y":2014,"qid":"movie"|"tvSeries"|"tvMiniSeries"|...}]})
+  # returns JSONP: imdb$ttXXXX({"d":[{"id":"ttXXXX","l":"Title","y":2014,"qid":"movie"|"tvSeries"|"tvMiniSeries"|...}]})
+  # "d" is a search result list: promoted entries (ie: {"id":"/emmys/","l":"Primetime Emmys"}) or other
+  # titles can come before the requested one, so we pick the entry whose id matches the requested title
   function get_title() {
     $api_url  = 'https://sg.media-imdb.com/suggests/t/tt' . $this->_url_short . '.json';
     $response = wp_remote_get($api_url, array('timeout' => 15));
@@ -64,11 +66,21 @@ class Movie {
     }
 
     $data = json_decode($m[1], true);
-    if (empty($data['d'][0])) {
+    if (empty($data['d']) || !is_array($data['d'])) {
       return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (pattern not found).</strong></p></div>';
     }
 
-    $d = $data['d'][0];
+    $d = null;
+    foreach ($data['d'] as $entry) {
+      if (isset($entry['id']) && $entry['id'] === 'tt' . $this->_url_short) {
+        $d = $entry;
+        break;
+      }
+    }
+    if ($d === null || !isset($d['l'])) {
+      return '<div id="message" class="error fade"><p><strong>Error while retrieving the title of the movie from imdb (title not found).</strong></p></div>';
+    }
+
     $type_map = array(
       'movie'        => '',
       'tvSeries'     => 'TV Series, ',
@@ -77,8 +89,9 @@ class Movie {
       'tvShort'      => 'TV Short, ',
       'short'        => 'Short, ',
     );
-    $prefix = isset($type_map[$d['qid']]) ? $type_map[$d['qid']] : '';
-    $this->_title = $d['l'] . ' (' . $prefix . $d['y'] . ')';
+    $prefix = (isset($d['qid']) && isset($type_map[$d['qid']])) ? $type_map[$d['qid']] : '';
+    $year = isset($d['y']) ? $d['y'] : '';
+    $this->_title = $d['l'] . ' (' . $prefix . $year . ')';
 
     return '';
   }

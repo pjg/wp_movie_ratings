@@ -4,6 +4,7 @@
 
 - fixed issue with rating TV Series/Mini Series
 - switched to media-imdb.com for fetching movie titles
+- fixed: wrong title (ie: "Primetime Emmys ()") saved when IMDb puts a promoted entry first in the suggestions API results
 
 ## Release 1.9 (2025-11-16)
 
